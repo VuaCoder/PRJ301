@@ -122,17 +122,29 @@
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Current Images</label>
                             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                                <% for (String img : images) {%>
-                                <img src="<%= request.getContextPath() + "/img/" + img%>" style="width:100px;border-radius:8px;">
+                                <% for (int i = 0; i < images.length; i++) { String img = images[i].trim(); %>
+                                <label style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                                    <input type="checkbox" class="current-image-checkbox" name="replaceIndex" value="<%= i %>" data-imgsrc="<%= img.startsWith("http") ? img : request.getContextPath() + "/img/" + img %>" style="margin-bottom:4px;display:none;">
+                                    <img src="<%= img.startsWith("http") ? img : request.getContextPath() + "/img/" + img %>" class="preview-img selectable-img" data-checkbox-index="<%= i %>">
+                                </label>
                                 <% } %>
                             </div>
+                            <input type="hidden" name="oldImages" value="<%= room.getImages() %>">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Preview Selected Image</label>
+                            <div id="currentImagePreview" style="min-height:120px;"></div>
                         </div>
                         <% }%>
                         <!-- Input upload ảnh mới -->
                         <div class="mb-6">
                             <label for="images" class="block text-sm font-medium text-gray-700 mb-2">Upload New Images</label>
                             <input type="file" id="images" name="images" multiple accept="image/*" class="block w-full text-sm text-gray-500">
-                            <p class="text-xs text-gray-400 mt-1">Leave blank to keep current images.</p>
+                            <h4 class="text-xs text-gray-400 mt-1">Leave blank to keep current images.</h4>
+                            <div class="mt-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Preview New Images</label>
+                                <div id="newImagePreview" style="display:flex;gap:8px;flex-wrap:wrap;min-height:120px;"></div>
+                            </div>
                         </div>
                         <!-- Form Actions -->
                         <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
@@ -146,4 +158,70 @@
             </div>
         </div>
     </body>
+<script>
+// Preview current image when click vào ảnh (ẩn checkbox), hiệu ứng viền sáng khi chọn
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.current-image-checkbox');
+    const preview = document.getElementById('currentImagePreview');
+    const imgs = document.querySelectorAll('.selectable-img');
+    imgs.forEach((img, idx) => {
+        img.addEventListener('click', function() {
+            // Toggle chọn ảnh
+            checkboxes[idx].checked = !checkboxes[idx].checked;
+            // Không còn hiệu ứng viền khi chọn
+            // Hiện preview các ảnh đã chọn
+            preview.innerHTML = '';
+            checkboxes.forEach((box, i) => {
+                if (box.checked) {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = imgs[i].src;
+                    imgEl.className = 'preview-img'; // Không có 'selected'
+                    preview.appendChild(imgEl);
+                }
+            });
+        });
+    });
+    // Khi submit form, nếu ảnh nào được click (checked) thì giữ checked, còn lại bỏ
+    const form = document.getElementById('editRoomForm');
+    if (form) {
+        form.addEventListener('submit', function() {
+            // Không cần xử lý gì thêm vì checked đã đúng
+        });
+    }
+    // Preview new images when selected
+    const fileInput = document.getElementById('images');
+    const newPreview = document.getElementById('newImagePreview');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            newPreview.innerHTML = '';
+            Array.from(fileInput.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-img';
+                    newPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+});
+</script>
+<style>
+.preview-img {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+.preview-img:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+}
+</style>
 </html> 

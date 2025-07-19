@@ -1,8 +1,4 @@
-<%-- 
-    Document   : home
-    Created on : Jun 15, 2025, 1:31:54 PM
-    Author     : quangminhnguyen
---%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page import="model.UserAccount"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -24,8 +20,6 @@
               rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <script src="js/forms.js"></script>
-        <!-- FontAwesome -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     </head>
@@ -92,10 +86,11 @@
                         <div class="option-field">
                             <label for="location">Location</label>
                             <select id="location" name="location" required>
-                                <option value="" disabled hidden>Which city do you prefer?</option>
+                                <option value="">Which city do you prefer?</option>
                                 <option value="Ho Chi Minh">Ho Chi Minh</option>
                                 <option value="Da Nang">Da Nang</option>
                                 <option value="Ha Noi">Ha Noi</option>
+                                <option value="Nha Trang">Nha Trang</option>
                             </select>
                         </div>
                         <div class="option-field">
@@ -120,9 +115,26 @@
         <div class="second">
             <div class="lastest-selection">
                 <div class="lastest-selection-header">
+                    <h1>Nearby Listed Properties</h1>
+                    <div class="show-on-map"><img src="img/location.png" alt="location">
+                        <a href="#">
+                            <p>Show on map</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="property-listing" id="nearby-properties">
+                    <p>Đang tìm phòng gần bạn...</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="third">
+            <div class="lastest-selection">
+                <div class="lastest-selection-header">
                     <h1>Lastest on the Property Listing</h1>
                 </div>
-                <div class="property-listing">
+                <div class="property-listing" id="property-listing">
                     <c:forEach var="room" items="${latestRooms}">
                         <div class="card" onclick="window.location.href = 'detail?id=${room.roomId}'">                       
                             <div class="card-footer">
@@ -152,21 +164,6 @@
                 </div>
             </div>
 
-        </div>
-        <div class="third">
-            <div class="lastest-selection">
-                <div class="lastest-selection-header">
-                    <h1>Nearby Listed Properties</h1>
-                    <div class="show-on-map"><img src="img/location.png" alt="location"></i>
-                        <a href="#">
-                            <p>Show on map</p>
-                        </a>
-                    </div>
-                </div>
-                <div class="property-listing" id="nearby-properties">
-                    <p>Đang tìm phòng gần bạn...</p>
-                </div>
-            </div>
 
         </div>
         <div class="fifth">
@@ -388,6 +385,27 @@
             </div>
         </footer>
         <jsp:include page="/chatBotElement.jsp"></jsp:include>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var locationSelect = document.getElementById('location');
+    var nearbyProperties = document.getElementById('nearby-properties');
+    if(locationSelect && nearbyProperties) {
+        locationSelect.addEventListener('change', function() {
+            var city = locationSelect.value;
+            if(city) {
+                fetch('home?city=' + encodeURIComponent(city))
+                    .then(res => res.text())
+                    .then(html => {
+                        nearbyProperties.innerHTML = html;
+                    })
+                    .catch(err => {
+                        nearbyProperties.innerHTML = '<div>Không thể tải danh sách phòng.</div>';
+                    });
+            }
+        });
+    }
+});
+</script>
     </body>
 
 </html>

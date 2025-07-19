@@ -128,23 +128,55 @@ public class RoomServlet extends HttpServlet {
                     room.setStatus(status);
                 }
 
-                List<String> imageUrls = new ArrayList<>();
+                // --- Xử lý ảnh ---
+                // Lấy danh sách ảnh cũ từ hidden input
+                String[] oldImages = request.getParameter("oldImages") != null ? request.getParameter("oldImages").split(",") : new String[0];
+                // Lấy index các ảnh cần thay thế
+                String[] replaceIndexArr = request.getParameterValues("replaceIndex");
+                List<Integer> replaceIndexes = new ArrayList<>();
+                if (replaceIndexArr != null) {
+                    for (String idx : replaceIndexArr) {
+                        replaceIndexes.add(Integer.parseInt(idx));
+                    }
+                }
+                // Lấy danh sách ảnh mới upload
+                List<String> newImages = new ArrayList<>();
                 for (Part part : request.getParts()) {
                     if (part.getName().equals("images") && part.getSize() > 0) {
                         try {
                             String url = imageUtil.upload(part);
                             if (url != null) {
-                                imageUrls.add(url);
+                                newImages.add(url);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 }
-
-                if (!imageUrls.isEmpty()) {
-                    room.setImages(String.join(",", imageUrls));
+                List<String> finalImages = new ArrayList<>();
+                if (!replaceIndexes.isEmpty()) {
+                    // Copy ảnh cũ sang list
+                    for (String img : oldImages) finalImages.add(img);
+                    int min = Math.min(replaceIndexes.size(), newImages.size());
+                    // Thay đúng vị trí ảnh cũ đã tick bằng ảnh mới
+                    for (int i = 0; i < min; i++) {
+                        finalImages.set(replaceIndexes.get(i), newImages.get(i));
+                    }
+                    // Nếu còn ảnh mới dư ra, thêm vào cuối
+                    for (int i = min; i < newImages.size(); i++) {
+                        finalImages.add(newImages.get(i));
+                    }
+                } else {
+                    // Không tick ảnh nào, chỉ thêm ảnh mới vào cuối danh sách ảnh cũ
+                    for (String img : oldImages) finalImages.add(img);
+                    finalImages.addAll(newImages);
                 }
+                // Nếu không có ảnh mới và không tick gì, giữ nguyên ảnh cũ
+                if (finalImages.isEmpty() && oldImages.length > 0 && (newImages.isEmpty())) {
+                    for (String img : oldImages) finalImages.add(img);
+                }
+                room.setImages(String.join(",", finalImages));
+                // --- End xử lý ảnh ---
 
                 roomService.updateRoom(room);
             }

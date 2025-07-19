@@ -5,156 +5,62 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
+        <meta charset="UTF-8" />
         <title>Host Dashboard - Staytion</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+            />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
+            />
+        <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     </head>
     <body class="bg-gray-50 font-sans">
-
         <jsp:include page="/view/common/header.jsp" />
 
         <div class="max-w-7xl mx-auto p-6">
-
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white p-8 rounded-xl shadow-lg mb-8">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h1 class="text-3xl font-bold mb-2">Host Dashboard</h1>
-                        <p class="text-lg opacity-90">Manage your properties and track your performance</p>
-
-                        <c:if test="${not empty host and host.verified}">
-                            <div class="flex items-center mt-3">
-                                <i class="fas fa-check-circle text-green-300 mr-2"></i>
-                                <span class="text-sm">Verified Host</span>
-                            </div>
-                        </c:if>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-4xl font-bold">
-                            <c:out value="${fn:length(rooms)}"/>
-                        </div>
-                        <div class="text-sm opacity-75">Total Properties</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Rooms -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border">
-                    <div class="flex items-center">
-                        <div class="bg-blue-600 p-3 rounded-lg text-white mr-4">
-                            <i class="fas fa-home text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800">
-                                <c:out value="${fn:length(rooms)}"/>
-                            </h3>
-                            <p class="text-gray-600">Total Rooms</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Rooms -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border">
-                    <div class="flex items-center">
-                        <div class="bg-green-600 p-3 rounded-lg text-white mr-4">
-                            <i class="fas fa-check-circle text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800">
-                                <c:set var="activeCount" value="0"/>
-                                <c:forEach var="r" items="${rooms}">
-                                    <c:if test="${r.status eq 'active'}">
-                                        <c:set var="activeCount" value="${activeCount + 1}" />
-                                    </c:if>
-                                </c:forEach>
-                                ${activeCount}
-                            </h3>
-                            <p class="text-gray-600">Active Listings</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Average Price -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border">
-                    <div class="flex items-center">
-                        <div class="bg-yellow-600 p-3 rounded-lg text-white mr-4">
-                            <i class="fas fa-dollar-sign text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800">
-                                $<fmt:formatNumber value="${avgPrice}" type="number" maxFractionDigits="0"/>
-                            </h3>
-                            <p class="text-gray-600">Average Price</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rating -->
-                <div class="bg-white p-6 rounded-xl shadow-lg border">
-                    <div class="flex items-center">
-                        <div class="bg-purple-600 p-3 rounded-lg text-white mr-4">
-                            <i class="fas fa-star text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800">4.8</h3>
-                            <p class="text-gray-600">Average Rating</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Management Buttons -->
-            <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-lg border">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Room Management</h2>
-                    <p class="text-gray-600 mt-1">Manage your property listings and bookings</p>
-                </div>
-                <div class="flex space-x-3">
-                    <a href="${pageContext.request.contextPath}/host/room?action=create" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-plus"></i> Add New Room
-                    </a>
-                    <a href="${pageContext.request.contextPath}/view/host/bookings.jsp" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300">
-                        <i class="fas fa-calendar-alt"></i> View Bookings
-                    </a>
-                </div>
-            </div>
-
-            <!-- Rooms Grid -->
             <c:choose>
                 <c:when test="${not empty rooms}">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <c:forEach var="r" items="${rooms}">
+                        <c:forEach var="r" items="${rooms}" varStatus="loop">
                             <div class="bg-white rounded-xl shadow-lg border hover:shadow-xl transition overflow-hidden">
-                                <div class="relative">
+
+                                <!-- Swiper Image Carousel -->
+                                <div class="relative w-full h-56 rounded-t-xl overflow-hidden">
                                     <c:choose>
                                         <c:when test="${not empty r.images}">
                                             <c:set var="imgArr" value="${fn:split(r.images, ',')}" />
-                                            <div class="grid grid-cols-2 gap-1 overflow-hidden">
-                                                <c:forEach var="img" items="${imgArr}">
-                                                    <div class="w-full h-36">
-                                                        <img src="${img}" alt="${r.title}" class="w-full h-full object-cover" />
-                                                    </div>
-                                                </c:forEach>
+                                            <div class="swiper swiper-room-${loop.index} w-full h-full">
+                                                <div class="swiper-wrapper">
+                                                    <c:forEach var="img" items="${imgArr}">
+                                                        <div class="swiper-slide">
+                                                            <img src="${img}" class="w-full h-full object-cover" alt="Room Image">
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
                                             </div>
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex justify-center items-center">
+                                            <div class="h-full bg-gradient-to-br from-blue-400 to-purple-500 flex justify-center items-center">
                                                 <i class="fas fa-bed text-6xl text-white opacity-50"></i>
                                             </div>
                                         </c:otherwise>
                                     </c:choose>
-                                    <div class="absolute top-4 right-4">
+
+                                    <!-- Room Status -->
+                                    <div class="absolute top-3 right-3 z-30">
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold text-white
-                                              ${r.status eq 'active' ? 'bg-green-500' : 'bg-red-500'}">
-                                            ${r.status eq 'active' ? 'Available' : 'Unavailable'}
+                                              ${r.status eq 'Available' || r.status eq 'active' || r.status eq 'Active' ? 'bg-green-500' : 'bg-red-500'}">
+                                            ${r.status eq 'Available' || r.status eq 'active' || r.status eq 'Active' ? 'Available' : 'Unavailable'}
                                         </span>
                                     </div>
                                 </div>
 
-                                <div class="p-6">
+                                <!-- Room Details -->
+                                <div class="p-6 relative">
                                     <h3 class="text-xl font-bold text-gray-800 mb-2">${r.title}</h3>
                                     <c:if test="${not empty r.description}">
                                         <p class="text-sm text-gray-600 mb-4">${r.description}</p>
@@ -179,7 +85,11 @@
                                             <i class="fas fa-trash"></i> Delete
                                         </a>
                                     </div>
+
+                                    <!-- Custom Swiper Pagination -->
+                                    <div class="swiper-pagination swiper-pagination-${loop.index} mt-4 !z-50 flex justify-center gap-2"></div>
                                 </div>
+
                             </div>
                         </c:forEach>
                     </div>
@@ -202,7 +112,29 @@
             </c:choose>
         </div>
 
-        <jsp:include page="/view/common/footer.jsp" />
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const swipers = document.querySelectorAll('[class^="swiper swiper-room-"]');
+                swipers.forEach((swiperEl, index) => {
+                    new Swiper(swiperEl, {
+                        loop: true,
+                        autoplay: {
+                            delay: 1000,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true
+                        },
+                        pagination: {
+                            el: `.swiper-pagination-${index}`,
+                            clickable: true,
+                            renderBullet: function (index, className) {
+                                return `<span class="${className} !bg-black transition-all duration-300 w-2.5 h-2.5 rounded-full mx-1 inline-block"></span>`;
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
 
+        <jsp:include page="/view/common/footer.jsp" />
     </body>
 </html>

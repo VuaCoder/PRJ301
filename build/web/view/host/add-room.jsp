@@ -337,7 +337,12 @@
                         const reader = new FileReader();
                         reader.onload = function (e) {
                             const img = document.createElement('img');
-                            img.src = e.target.result;
+                            // Nếu là link http thì render trực tiếp, nếu không thì render như file upload
+                            if (file.name.startsWith('http')) {
+                                img.src = file.name;
+                            } else {
+                                img.src = e.target.result;
+                            }
                             img.className = 'object-cover w-full h-40 rounded-lg border';
                             previewContainer.appendChild(img);
                         };

@@ -132,7 +132,7 @@
                         <div class="mb-6">
                             <label for="images" class="block text-sm font-medium text-gray-700 mb-2">Upload New Images</label>
                             <input type="file" id="images" name="images" multiple accept="image/*" class="block w-full text-sm text-gray-500">
-                            <p class="text-xs text-gray-400 mt-1">Leave blank to keep current images.</p>
+                            <h4 class="text-xs text-gray-400 mt-1">Leave blank to keep current images.</h4>
                         </div>
                         <!-- Form Actions -->
                         <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">

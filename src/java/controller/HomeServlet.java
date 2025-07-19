@@ -66,13 +66,17 @@ public class HomeServlet extends HttpServlet {
                     }
                 }
 
-                out.println("<div class='card' onclick=\"window.location.href='detail?id=" + room.getRoomId() + "'\">");
-                out.println("  <div class='card-footer'>");
-                out.println("    <img class='image-placeholder' src='" + imageUrl + "' alt='Room Image'/>");
-                out.println("    <h4>" + room.getTitle() + "</h4>");
-                out.println("    <p>" + room.getCity() + "</p>");
-                out.println("  </div>");
-                out.println("</div>");
+                out.println("<div class='card' onclick=\"window.location.href='detail?id=" + room.getRoomId() + "'\">\n" +
+                        "  <div class='card-footer'>\n" +
+                        "    <img class='image-placeholder' src='" + imageUrl + "' alt='Room Image'/>\n" +
+                        "    <h4>" + room.getTitle() + "</h4>\n" +
+                        "    <p>" + room.getCity() + "</p>\n" +
+                        "  </div>\n" +
+                        "</div>");
+            }
+            // Nếu không có phòng nào, trả về thông báo
+            if (nearbyRooms.isEmpty()) {
+                out.println("<div>Không có phòng nào ở thành phố này.</div>");
             }
             return;
         }
