@@ -94,12 +94,9 @@
                             </select>
                         </div>
                         <div class="option-field">
-                            <label for="check-in">Check In</label>
-                            <input type="date" id="check-in" name="check_in" placeholder="Add Dates">
+                            
                         </div>
                         <div class="option-field">
-                            <label for="check-out">Check Out</label>
-                            <input type="date" id="check-out" name="check_out" placeholder="Add Dates">
                         </div>
                         <div class="option-field">
                             <label for="guests">Guest</label>
