@@ -121,13 +121,28 @@
                         if (images.length > 0 && !images[0].isEmpty()) { %>
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Current Images</label>
-                            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                                <% for (String img : images) {%>
-                                <img src="<%= request.getContextPath() + "/img/" + img%>" style="width:100px;border-radius:8px;">
+                            <input type="hidden" name="oldImages" value="<%= room.getImages() %>">
+                            <input type="hidden" id="oldImagesToDelete" name="oldImagesToDelete">
+                            <input type="hidden" id="selectedReplaceIndexOld" name="replaceIndex">
+                            <div id="oldImagesPreview" style="display:flex;gap:12px;flex-wrap:wrap;">
+                                <% for (int i = 0; i < images.length; i++) { 
+                                    String img = images[i].trim();
+                                    String imgUrl = (img.startsWith("http")) ? img : (request.getContextPath() + "/img/" + img);
+                                %>
+                                    <div class="old-img-wrapper" data-index="<%=i%>" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;">
+                                        <img src="<%= imgUrl %>" style="width:120px;height:90px;object-fit:cover;border-radius:10px;box-shadow:0 2px 8px #0001;">
+                                        <span class="delete-old-img" data-index="<%=i%>" style="position:absolute;top:2px;right:6px;background:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#d00;cursor:pointer;box-shadow:0 1px 4px #0002;z-index:2;">×</span>
+                                    </div>
                                 <% } %>
                             </div>
                         </div>
                         <% }%>
+                        <!-- Preview New Images -->
+                        <div class="mb-6" id="previewNewImagesContainer" style="display:none;">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Preview New Images</label>
+                            <div id="previewNewImages" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
+                            <input type="hidden" id="selectedReplaceIndex" name="replaceIndex">
+                        </div>
                         <!-- Input upload ảnh mới -->
                         <div class="mb-6">
                             <label for="images" class="block text-sm font-medium text-gray-700 mb-2">Upload New Images</label>
@@ -145,5 +160,116 @@
                 </div>
             </div>
         </div>
+        <script>
+            // Preview new images, ẩn tickbox, cho phép chọn ảnh để thay, và xóa ảnh preview
+            const imageInput = document.getElementById('images');
+            const previewNewImages = document.getElementById('previewNewImages');
+            const previewNewImagesContainer = document.getElementById('previewNewImagesContainer');
+            const replaceLabels = document.querySelectorAll('.replace-label');
+            const selectedReplaceIndex = document.getElementById('selectedReplaceIndex');
+            let previewFiles = [];
+            if(imageInput) {
+                imageInput.addEventListener('change', function(event) {
+                    const files = Array.from(event.target.files);
+                    previewFiles = files;
+                    previewNewImages.innerHTML = '';
+                    if (files.length === 0) {
+                        previewNewImagesContainer.style.display = 'none';
+                        replaceLabels.forEach(lab => lab.style.display = '');
+                        selectedReplaceIndex.value = '';
+                        return;
+                    }
+                    previewNewImagesContainer.style.display = '';
+                    replaceLabels.forEach(lab => lab.style.display = 'none');
+                    files.forEach((file, idx) => {
+                        if (!file.type.startsWith('image/')) return;
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const wrapper = document.createElement('div');
+                            wrapper.style.position = 'relative';
+                            wrapper.style.display = 'inline-block';
+                            wrapper.style.marginRight = '8px';
+                            wrapper.style.cursor = 'pointer';
+                            wrapper.className = 'preview-img-wrapper';
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '120px';
+                            img.style.height = '90px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '10px';
+                            img.style.boxShadow = '0 2px 8px #0001';
+                            img.title = 'Click để chọn thay ảnh cũ';
+                            // Highlight nếu được chọn
+                            img.addEventListener('click', function() {
+                                document.querySelectorAll('.preview-img-wrapper').forEach(w => w.style.outline = 'none');
+                                wrapper.style.outline = '2px solid #007bff';
+                                selectedReplaceIndex.value = idx;
+                            });
+                            // Nút x xoá ảnh
+                            const closeBtn = document.createElement('span');
+                            closeBtn.textContent = '×';
+                            closeBtn.style.position = 'absolute';
+                            closeBtn.style.top = '2px';
+                            closeBtn.style.right = '6px';
+                            closeBtn.style.background = '#fff';
+                            closeBtn.style.borderRadius = '50%';
+                            closeBtn.style.width = '20px';
+                            closeBtn.style.height = '20px';
+                            closeBtn.style.display = 'flex';
+                            closeBtn.style.alignItems = 'center';
+                            closeBtn.style.justifyContent = 'center';
+                            closeBtn.style.fontWeight = 'bold';
+                            closeBtn.style.color = '#d00';
+                            closeBtn.style.cursor = 'pointer';
+                            closeBtn.style.boxShadow = '0 1px 4px #0002';
+                            closeBtn.title = 'Xoá ảnh này';
+                            closeBtn.onclick = function(ev) {
+                                ev.stopPropagation();
+                                previewFiles.splice(idx, 1);
+                                // Tạo lại FileList mới
+                                const dataTransfer = new DataTransfer();
+                                previewFiles.forEach(f => dataTransfer.items.add(f));
+                                imageInput.files = dataTransfer.files;
+                                imageInput.dispatchEvent(new Event('change'));
+                            };
+                            wrapper.appendChild(img);
+                            wrapper.appendChild(closeBtn);
+                            previewNewImages.appendChild(wrapper);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+            }
+        </script>
+        <script>
+            // Click vào ảnh cũ để chọn vị trí thay thế
+            const oldImagesPreview = document.getElementById('oldImagesPreview');
+            const selectedReplaceIndexOld = document.getElementById('selectedReplaceIndexOld');
+            const oldImagesToDelete = document.getElementById('oldImagesToDelete');
+            if (oldImagesPreview) {
+                oldImagesPreview.querySelectorAll('.old-img-wrapper').forEach(div => {
+                    div.addEventListener('click', function(e) {
+                        // Nếu click vào nút x thì không chọn thay thế
+                        if (e.target.classList.contains('delete-old-img')) return;
+                        oldImagesPreview.querySelectorAll('.old-img-wrapper').forEach(w => w.style.outline = 'none');
+                        div.style.outline = '2px solid #007bff';
+                        selectedReplaceIndexOld.value = div.getAttribute('data-index');
+                    });
+                });
+                // Xoá ảnh cũ khỏi preview và đánh dấu vào hidden input
+                oldImagesPreview.querySelectorAll('.delete-old-img').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = btn.getAttribute('data-index');
+                        // Ẩn ảnh khỏi preview
+                        btn.parentElement.style.display = 'none';
+                        // Cập nhật hidden input oldImagesToDelete
+                        let toDelete = oldImagesToDelete.value ? oldImagesToDelete.value.split(',') : [];
+                        if (!toDelete.includes(idx)) toDelete.push(idx);
+                        oldImagesToDelete.value = toDelete.join(',');
+                    });
+                });
+            }
+        </script>
     </body>
 </html> 

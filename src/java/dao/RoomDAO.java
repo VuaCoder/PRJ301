@@ -61,7 +61,7 @@ public class RoomDAO extends genericDAO<Room> {
 
             return em.createQuery(
                     "SELECT r FROM Room r JOIN FETCH r.propertyId p "
-                    + "WHERE LOWER(TRIM(p.city)) LIKE :city AND r.status = 'active'", Room.class)
+                    + "WHERE LOWER(TRIM(p.city)) LIKE :city AND r.status = 'Available'", Room.class)
                     .setParameter("city", "%" + city + "%")
                     .getResultList();
         } finally {
@@ -74,7 +74,7 @@ public class RoomDAO extends genericDAO<Room> {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT r FROM Room r WHERE r.status = 'active' AND r.approvalStatus = 'Approved' ORDER BY r.createdAt DESC",
+                    "SELECT r FROM Room r WHERE r.status = 'Available' AND r.approvalStatus = 'Approved' ORDER BY r.createdAt DESC",
                     Room.class)
                     .setMaxResults(limit)
                     .getResultList();
@@ -88,7 +88,7 @@ public class RoomDAO extends genericDAO<Room> {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT r FROM Room r WHERE r.propertyId.city LIKE :location AND r.capacity >= :guests AND r.status = 'active'",
+                    "SELECT r FROM Room r WHERE r.propertyId.city LIKE :location AND r.capacity >= :guests AND r.status = 'Available'",
                     Room.class)
                     .setParameter("location", "%" + location + "%")
                     .setParameter("guests", guests)
@@ -103,7 +103,7 @@ public class RoomDAO extends genericDAO<Room> {
         try {
             return em.createQuery("""
                 SELECT r FROM Room r 
-                WHERE r.status = 'active' 
+                WHERE r.status = 'Available' 
                 AND r.approvalStatus = 'Approved'
                 AND r.type = :type
                 """, Room.class)
@@ -273,5 +273,47 @@ public class RoomDAO extends genericDAO<Room> {
 
     public boolean rejectRoom(int roomId) {
         return updateApprovalStatus(roomId, "Rejected");
+    }
+
+    // Lấy tất cả phòng active để lọc realtime
+    public List<Room> getAllActiveRooms() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT r FROM Room r WHERE r.status = 'Available'", Room.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Lấy danh sách phòng còn trống theo thành phố, số khách, ngày checkin/checkout
+    public List<Room> getAvailableRooms(String city, int guests, java.util.Date checkin, java.util.Date checkout) {
+        EntityManager em = getEntityManager();
+        try {
+            String jpql = """
+                SELECT r FROM Room r
+                WHERE r.status = 'Available'
+                AND r.approvalStatus = 'Approved'
+                AND r.capacity >= :guests
+                AND r.propertyId.city LIKE :city
+                AND NOT EXISTS (
+                    SELECT b FROM Booking b
+                    WHERE b.roomId = r
+                    AND b.status IN ('Pending', 'Confirmed')
+                    AND NOT (
+                        b.checkoutDate <= :checkin OR b.checkinDate >= :checkout
+                    )
+                )
+            """;
+
+            return em.createQuery(jpql, Room.class)
+                    .setParameter("guests", guests)
+                    .setParameter("city", "%" + city + "%")
+                    .setParameter("checkin", checkin)
+                    .setParameter("checkout", checkout)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

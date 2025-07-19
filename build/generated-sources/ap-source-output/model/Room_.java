@@ -10,7 +10,7 @@ import model.Amenity;
 import model.Booking;
 import model.Property;
 
-@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-19T18:33:12", comments="EclipseLink-2.7.12.v20230209-rNA")
+@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-20T02:35:51", comments="EclipseLink-2.7.12.v20230209-rNA")
 @StaticMetamodel(Room.class)
 public class Room_ { 
 

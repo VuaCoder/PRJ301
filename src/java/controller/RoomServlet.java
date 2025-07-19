@@ -136,7 +136,19 @@ public class RoomServlet extends HttpServlet {
                 List<Integer> replaceIndexes = new ArrayList<>();
                 if (replaceIndexArr != null) {
                     for (String idx : replaceIndexArr) {
-                        replaceIndexes.add(Integer.parseInt(idx));
+                        if (idx != null && !idx.isEmpty()) {
+                            replaceIndexes.add(Integer.parseInt(idx));
+                        }
+                    }
+                }
+                // Lấy index các ảnh cần xóa
+                String oldImagesToDeleteStr = request.getParameter("oldImagesToDelete");
+                List<Integer> deleteIndexes = new ArrayList<>();
+                if (oldImagesToDeleteStr != null && !oldImagesToDeleteStr.isEmpty()) {
+                    for (String idx : oldImagesToDeleteStr.split(",")) {
+                        if (idx != null && !idx.isEmpty()) {
+                            deleteIndexes.add(Integer.parseInt(idx));
+                        }
                     }
                 }
                 // Lấy danh sách ảnh mới upload
@@ -153,10 +165,17 @@ public class RoomServlet extends HttpServlet {
                         }
                     }
                 }
+                // Xử lý danh sách ảnh cũ: loại bỏ các ảnh bị xóa
+                List<String> oldImagesList = new ArrayList<>();
+                for (int i = 0; i < oldImages.length; i++) {
+                    if (!deleteIndexes.contains(i)) {
+                        oldImagesList.add(oldImages[i]);
+                    }
+                }
                 List<String> finalImages = new ArrayList<>();
                 if (!replaceIndexes.isEmpty()) {
                     // Copy ảnh cũ sang list
-                    for (String img : oldImages) finalImages.add(img);
+                    for (String img : oldImagesList) finalImages.add(img);
                     int min = Math.min(replaceIndexes.size(), newImages.size());
                     // Thay đúng vị trí ảnh cũ đã tick bằng ảnh mới
                     for (int i = 0; i < min; i++) {
@@ -167,13 +186,13 @@ public class RoomServlet extends HttpServlet {
                         finalImages.add(newImages.get(i));
                     }
                 } else {
-                    // Không tick ảnh nào, chỉ thêm ảnh mới vào cuối danh sách ảnh cũ
-                    for (String img : oldImages) finalImages.add(img);
+                    // Không tick ảnh nào, chỉ thêm ảnh mới vào cuối danh sách ảnh cũ (đã loại bỏ ảnh bị xóa)
+                    for (String img : oldImagesList) finalImages.add(img);
                     finalImages.addAll(newImages);
                 }
-                // Nếu không có ảnh mới và không tick gì, giữ nguyên ảnh cũ
-                if (finalImages.isEmpty() && oldImages.length > 0 && (newImages.isEmpty())) {
-                    for (String img : oldImages) finalImages.add(img);
+                // Nếu không có ảnh mới và không tick gì, giữ nguyên ảnh cũ (đã loại bỏ ảnh bị xóa)
+                if (finalImages.isEmpty() && oldImagesList.size() > 0 && (newImages.isEmpty())) {
+                    for (String img : oldImagesList) finalImages.add(img);
                 }
                 room.setImages(String.join(",", finalImages));
                 // --- End xử lý ảnh ---

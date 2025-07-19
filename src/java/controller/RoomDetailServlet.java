@@ -42,6 +42,16 @@ public class RoomDetailServlet extends HttpServlet {
 
             // Truyền dữ liệu sang JSP
             request.setAttribute("room", room);
+            // Tách imageList giống home.jsp
+            java.util.List<String> imageList = new java.util.ArrayList<>();
+            if (room.getImages() != null && !room.getImages().isEmpty()) {
+                String[] imgArr = room.getImages().replace("[", "").replace("]", "").replace("\"", "").split(",");
+                for (String img : imgArr) {
+                    String trimmed = img.trim();
+                    if (!trimmed.isEmpty()) imageList.add(trimmed);
+                }
+            }
+            request.setAttribute("imageList", imageList);
             request.getRequestDispatcher("view/common/room-detail.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {

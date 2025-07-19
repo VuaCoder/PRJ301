@@ -1,59 +1,209 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Jul 13, 2025, 5:44:03 PM
-    Author     : HOANG PHUC
-*/
-* {
+/* Reset & base */
+* { box-sizing: border-box; }
+body {
+    font-family: 'Noto Sans', sans-serif;
+    background: #f5f6fa;
+    color: #222;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
-
-body {
-    font-family: "Noto Sans", sans-serif;
-    background-color: #f5f5f5;
-    padding: 20px;
+.lux-room-detail-container {
+    max-width: 980px;
+    margin: 40px auto 32px auto;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    padding: 0 0 32px 0;
+    overflow: hidden;
 }
-
-.room-container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 800px;
-    margin: auto;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.lux-room-main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    padding: 32px 32px 0 32px;
 }
-
-.room-image {
+.lux-room-slider {
+    flex: 1 1 420px;
+    min-width: 320px;
+    max-width: 520px;
+    align-self: flex-start;
+}
+.lux-room-img-slide {
     width: 100%;
-    height: auto;
-    border-radius: 6px;
-    margin-bottom: 15px;
+    height: 436px;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
-
-.room-title {
-    font-size: 24px;
-    margin-bottom: 10px;
+.lux-room-info-block {
+    flex: 1 1 320px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 18px;
+    padding-top: 12px;
 }
-
-.room-info {
-    font-size: 16px;
-    line-height: 1.6;
+.lux-room-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1a2340;
 }
-
-.back-btn {
-    margin-top: 20px;
-    display: inline-block;
-    background: #007bff;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
+.lux-room-meta {
+    display: flex;
+    gap: 18px;
+    font-size: 1.08rem;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+.lux-room-meta i {
+    color: #2d7dd2;
+    margin-right: 6px;
+}
+.lux-room-price {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 18px 20px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #d4af37;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+.lux-room-price-label {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 400;
+    margin-bottom: 2px;
+}
+.lux-room-price-value {
+    font-size: 1.5rem;
+    color: #d4af37;
+    font-weight: 700;
+}
+.lux-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     text-decoration: none;
+    margin-top: 10px;
 }
-
-.back-btn:hover {
-    background: #0056b3;
+.lux-btn-primary {
+    background: linear-gradient(90deg, #2d7dd2 0%, #1a2340 100%);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(45,125,210,0.10);
+}
+.lux-btn-primary:hover {
+    background: linear-gradient(90deg, #1a2340 0%, #2d7dd2 100%);
+    color: #fff;
+}
+.lux-btn-outline {
+    background: #fff;
+    color: #2d7dd2;
+    border: 2px solid #2d7dd2;
+}
+.lux-btn-outline:hover {
+    background: #2d7dd2;
+    color: #fff;
+}
+.lux-btn-large {
+    font-size: 1.15rem;
+    padding: 14px 36px;
+}
+.lux-btn-back {
+    margin: 32px 0 0 32px;
+}
+.lux-room-section {
+    margin: 32px 32px 0 32px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 28px 32px 18px 32px;
+}
+.lux-room-section h2 {
+    font-size: 1.3rem;
+    color: #1a2340;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+.lux-room-desc {
+    font-size: 1.08rem;
+    color: #333;
+    line-height: 1.7;
+}
+.lux-amenities-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 32px;
+    margin-top: 8px;
+}
+.lux-amenity-item {
+    font-size: 1.08rem;
+    color: #2d7dd2;
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.lux-room-policy ul {
+    margin: 0 0 0 18px;
+    padding: 0;
+    color: #444;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+/* Swiper custom */
+.lux-swiper-room-detail .swiper-button-next,
+.lux-swiper-room-detail .swiper-button-prev {
+    color: #fff;
+    background: rgba(0,0,0,0.18);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background 0.2s;
+}
+.lux-swiper-room-detail .swiper-button-next:hover,
+.lux-swiper-room-detail .swiper-button-prev:hover {
+    background: rgba(0,0,0,0.32);
+}
+.lux-swiper-room-detail .swiper-pagination-bullet {
+    background: #fff;
+    opacity: 0.7;
+}
+.lux-swiper-room-detail .swiper-pagination-bullet-active {
+    background: #fff;
+    opacity: 1;
+    border: 2px solid #d4af37;
+}
+.lux-room-slider .swiper-button-next,
+.lux-room-slider .swiper-button-prev {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.lux-room-slider:hover .swiper-button-next,
+.lux-room-slider:hover .swiper-button-prev {
+    opacity: 1;
+    pointer-events: auto;
+}
+@media (max-width: 900px) {
+    .lux-room-main { flex-direction: column; gap: 18px; padding: 18px 8px 0 8px; }
+    .lux-room-slider, .lux-room-info-block { max-width: 100%; min-width: 0; }
+    .lux-room-section { margin: 24px 8px 0 8px; padding: 18px 10px 12px 10px; }
+    .lux-btn-back { margin-left: 8px; }
 }
