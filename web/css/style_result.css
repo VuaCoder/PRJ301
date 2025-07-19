@@ -1,0 +1,140 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jul 12, 2025, 11:35:51 PM
+    Author     : HOANG PHUC
+*/
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jul 13, 2025, 3:30:07 PM
+    Author     : HOANG PHUC
+*/
+
+/*phần giữa*/
+a {
+    text-decoration: none;
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+    background: #fafbfc;
+    margin: 0;
+    padding: 0;
+}
+.category-bar{
+    display:flex;
+    margin: 0 40px;
+}
+.category-bar a {
+    position: relative;
+    text-decoration: none;
+    color: black;
+    transition: font-weight 0.3s ease;
+    font-weight: 400;
+    padding-bottom: 5px;
+    margin-right: 12px; /* tạo khoảng cách cho dấu chấm */
+}
+
+.category-bar a:not(:last-of-type)::after {
+    content: "•";
+    color: #bbb;
+    margin-left: 8px;
+    font-size: 1.2rem;
+    position: static;
+    vertical-align: middle;
+}
+
+.category-bar a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: black;
+    transition: width 0.3s ease;
+}
+
+.category-bar a:hover {
+    font-weight: 700;
+}
+
+.category-bar a:hover::before {
+    width: 60%;
+}
+.filter-btn {
+    margin-left: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 6px 18px;
+    cursor: pointer;
+}
+.property-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding: 40px;
+}
+.property-card {
+    background: #f4f5f7;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    padding: 0 0 18px 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.card-image {
+    height: 170px;
+    background: #d3d5db;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 12px;
+}
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    margin-bottom: 8px;
+}
+.price {
+    color: #888;
+    font-size: 0.95rem;
+}
+.fav {
+    font-size: 1.3rem;
+    color: #bbb;
+    cursor: pointer;
+}
+.card-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0 16px;
+    margin-bottom: 2px;
+}
+.card-location {
+    color: #888;
+    font-size: 0.95rem;
+    padding: 0 16px;
+}
+.no-results{
+    display: flex;
+    align-items: center;
+}
+.property-list.empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+.footer {
+    background-color: #f4f5f7;
+    color: #333;
+}
+

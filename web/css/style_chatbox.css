@@ -1,0 +1,90 @@
+/* ... Đã rút gọn phần CSS để vừa nội dung ... */
+#chat-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+    transition: all 0.3s ease;
+}
+#chat-icon:hover { transform: scale(1.1); }
+
+#chatbox {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#chat-header {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+.message {
+    margin: 6px 0;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+.user-message { background: #007bff; color: white; align-self: flex-end; }
+.bot-message { background: #e9ecef; color: #333; align-self: flex-start; }
+
+#chat-input {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+#chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+}
+#chat-input button {
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 0 15px;
+    cursor: pointer;
+}
+
+.quick-replies {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.quick-reply-btn {
+    background: #f0f0f0;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}

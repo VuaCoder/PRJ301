@@ -1,0 +1,114 @@
+package dao;
+
+import model.Role;
+import model.UserAccount;
+import model.Host;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import java.util.List;
+import javax.persistence.EntityTransaction;
+
+public class UserDAO extends genericDAO<UserAccount> {
+
+    public UserDAO() {
+        super(UserAccount.class);
+    }
+
+    // Đăng nhập: check email + password
+    public UserAccount checkLogin(String email, String password) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<UserAccount> query = em.createQuery(
+                    "SELECT u FROM UserAccount u WHERE u.email = :email AND u.password = :password", UserAccount.class);
+            query.setParameter("email", email);
+            query.setParameter("password", password);
+            List<UserAccount> users = query.getResultList();
+            if (users.isEmpty()) {
+                return null;
+            }
+            return users.get(0);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Đăng ký tài khoản mới
+    public boolean registerUser(UserAccount user) {
+        EntityManager em = getEntityManager();
+        try {
+            Role role = em.find(Role.class, 1); // hoặc new Role(1)
+            user.setRoleId(role);
+            em.getTransaction().begin();
+            em.persist(user);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Lấy host_id từ user_id (nếu có)
+    public int getHostIdByUserId(int userId) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Host> query = em.createQuery(
+                    "SELECT h FROM Host h WHERE h.userId.userId = :userId", Host.class);
+            query.setParameter("userId", userId);
+            Host host = query.getSingleResult();
+            return host.getHostId();
+        } catch (NoResultException e) {
+            return -1;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Lấy toàn bộ người dùng (User + Role)
+    public List<UserAccount> getAllUsers() {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<UserAccount> query = em.createQuery(
+                    "SELECT u FROM UserAccount u", UserAccount.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean updateRole(int userId, int roleId) {
+        EntityManager em = getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            UserAccount user = em.find(UserAccount.class, userId);
+            if (user == null) {
+                tx.rollback();
+                return false;
+            }
+
+            // lấy entity Role đã tồn tại, tránh tạo Role mới trống
+            Role roleRef = em.getReference(Role.class, roleId); // hoặc em.find(Role.class, roleId)
+            user.setRoleId(roleRef);  // user đang managed -> tự flush khi commit
+
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+}
