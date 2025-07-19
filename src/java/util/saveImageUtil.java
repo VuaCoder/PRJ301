@@ -1,11 +1,11 @@
 package util;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import com.cloudinary.utils.ObjectUtils; // Đây mới là dòng đúng
 
 public class saveImageUtil {
 
@@ -14,9 +14,9 @@ public class saveImageUtil {
     // ⚙️ Cấu hình tài khoản Cloudinary
     public saveImageUtil() {
         this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-            "cloud_name", "datmsosje",
-            "api_key", "466369822117672",
-            "api_secret", "Us-cuX0XjITqihcrviCABaRZF7s"
+                "cloud_name", "datmsosje",
+                "api_key", "466369822117672",
+                "api_secret", "Us-cuX0XjITqihcrviCABaRZF7s"
         ));
     }
 
@@ -37,7 +37,7 @@ public class saveImageUtil {
         filePart.write(tempFile.getAbsolutePath());
 
         Map uploadResult = cloudinary.uploader().upload(tempFile, ObjectUtils.asMap(
-            "resource_type", "video"
+                "resource_type", "video"
         ));
 
         tempFile.delete(); // dọn file tạm

@@ -9,7 +9,6 @@
         <title>Host Dashboard - Staytion</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
     </head>
     <body class="bg-gray-50 font-sans">
 
@@ -42,7 +41,6 @@
 
             <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-
                 <!-- Total Rooms -->
                 <div class="bg-white p-6 rounded-xl shadow-lg border">
                     <div class="flex items-center">
@@ -94,7 +92,7 @@
                     </div>
                 </div>
 
-                <!-- Placeholder for Rating -->
+                <!-- Rating -->
                 <div class="bg-white p-6 rounded-xl shadow-lg border">
                     <div class="flex items-center">
                         <div class="bg-purple-600 p-3 rounded-lg text-white mr-4">
@@ -108,7 +106,7 @@
                 </div>
             </div>
 
-            <!-- Room Management Actions -->
+            <!-- Management Buttons -->
             <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-lg border">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">Room Management</h2>
@@ -124,7 +122,7 @@
                 </div>
             </div>
 
-            <!-- Rooms List -->
+            <!-- Rooms Grid -->
             <c:choose>
                 <c:when test="${not empty rooms}">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -133,11 +131,14 @@
                                 <div class="relative">
                                     <c:choose>
                                         <c:when test="${not empty r.images}">
-                                            <%-- Hiển thị tất cả ảnh --%>
                                             <c:set var="imgArr" value="${fn:split(r.images, ',')}" />
-                                            <c:forEach var="img" items="${imgArr}">
-                                                <img src="${pageContext.request.contextPath}/img/${img}" alt="${r.title}" class="w-full h-48 object-cover mb-1"/>
-                                            </c:forEach>
+                                            <div class="grid grid-cols-2 gap-1 overflow-hidden">
+                                                <c:forEach var="img" items="${imgArr}">
+                                                    <div class="w-full h-36">
+                                                        <img src="${img}" alt="${r.title}" class="w-full h-full object-cover" />
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
                                         </c:when>
                                         <c:otherwise>
                                             <div class="h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex justify-center items-center">
