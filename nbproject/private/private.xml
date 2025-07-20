@@ -2,6 +2,7 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group>
             <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/LoginGoogleServlet.java</file>
             <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/ChatBotServlet.java</file>
@@ -29,5 +30,8 @@
             <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/host/all-reviews.jsp</file>
             <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/host/dashboard.jsp</file>
         </group>
+=======
+        <group/>
+>>>>>>> c5ef0c4d1f937cf2d1acb313302313822b5fb113
     </open-files>
 </project-private>
