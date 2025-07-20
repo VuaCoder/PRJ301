@@ -289,46 +289,67 @@
                 </div>
             </div>
 
-            <form class="review-form" method="POST" action="${pageContext.request.contextPath}/review">
-                <input type="hidden" name="bookingId" value="${booking.bookingId}">
-
-                <div class="form-group">
-                    <label class="form-label">Đánh giá của bạn <span style="color: #dc2626;">*</span></label>
-                    <div class="star-rating">
-                        <i class="fas fa-star star" data-rating="1"></i>
-                        <i class="fas fa-star star" data-rating="2"></i>
-                        <i class="fas fa-star star" data-rating="3"></i>
-                        <i class="fas fa-star star" data-rating="4"></i>
-                        <i class="fas fa-star star" data-rating="5"></i>
-                        <span class="rating-text">Chọn điểm đánh giá</span>
+            <c:choose>
+                <c:when test="${hasReviewed}">
+                    <div class="success-message" style="text-align:center; font-size:1.2rem; margin: 30px 0;">
+                        <i class="fas fa-check-circle"></i> Bạn đã đánh giá phòng này!
                     </div>
-                    <input type="hidden" name="rating" id="rating-input" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Nhận xét của bạn <span style="color: #dc2626;">*</span></label>
-                    <textarea 
-                        class="form-textarea" 
-                        name="comment" 
-                        placeholder="Chia sẻ trải nghiệm của bạn về chuyến đi này (tối thiểu 10 ký tự)..."
-                        required
-                        minlength="10"
-                        maxlength="500"
-                        id="comment-textarea"></textarea>
-                    <div class="char-count">
-                        <span id="char-count">0</span>/500 ký tự
+                    <div class="reviewed-info" style="margin: 20px auto; max-width: 500px; background: #f8fafc; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
+                        <div style="margin-bottom: 12px;">
+                            <span style="font-weight:600; color:#374151;">Số sao đã đánh giá:</span>
+                            <span style="color:#fbbf24; font-size:1.3rem;">
+                                <c:forEach var="i" begin="1" end="5">
+                                    <i class="fa-star fa ${i <= review.rating ? 'fas' : 'far'}"></i>
+                                </c:forEach>
+                                (${review.rating}/5)
+                            </span>
+                        </div>
+                        <div>
+                            <span style="font-weight:600; color:#374151;">Nội dung đánh giá:</span>
+                            <div style="margin-top:6px; color:#374151; background:#fff; border-radius:8px; padding:12px; border:1px solid #e2e8f0;">${review.comment}</div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-actions">
-                    <a href="${pageContext.request.contextPath}/my-bookings" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Quay lại
-                    </a>
-                    <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                        <i class="fas fa-paper-plane"></i> Gửi đánh giá
-                    </button>
-                </div>
-            </form>
+                </c:when>
+                <c:otherwise>
+                    <form class="review-form" method="POST" action="${pageContext.request.contextPath}/review">
+                        <input type="hidden" name="bookingId" value="${booking.bookingId}">
+                        <div class="form-group">
+                            <label class="form-label">Đánh giá của bạn <span style="color: #dc2626;">*</span></label>
+                            <div class="star-rating">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                                <span class="rating-text">Chọn điểm đánh giá</span>
+                            </div>
+                            <input type="hidden" name="rating" id="rating-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nhận xét của bạn <span style="color: #dc2626;">*</span></label>
+                            <textarea 
+                                class="form-textarea" 
+                                name="comment" 
+                                placeholder="Chia sẻ trải nghiệm của bạn về chuyến đi này (tối thiểu 10 ký tự)..."
+                                required
+                                minlength="10"
+                                maxlength="500"
+                                id="comment-textarea"></textarea>
+                            <div class="char-count">
+                                <span id="char-count">0</span>/500 ký tự
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <a href="${pageContext.request.contextPath}/my-bookings" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
+                                <i class="fas fa-paper-plane"></i> Gửi đánh giá
+                            </button>
+                        </div>
+                    </form>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <jsp:include page="../common/footer.jsp" />
