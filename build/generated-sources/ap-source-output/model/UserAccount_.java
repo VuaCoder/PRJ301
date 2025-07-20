@@ -10,7 +10,7 @@ import model.Customer;
 import model.Host;
 import model.Role;
 
-@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-20T08:43:05", comments="EclipseLink-2.7.12.v20230209-rNA")
+@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-20T19:08:29", comments="EclipseLink-2.7.12.v20230209-rNA")
 @StaticMetamodel(UserAccount.class)
 public class UserAccount_ { 
 

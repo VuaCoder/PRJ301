@@ -35,14 +35,16 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Review.findByStatus", query = "SELECT r FROM Review r WHERE r.status = :status")})
 public class Review implements Serializable {
 
+    @Basic(optional = false)
+    @Column(name = "rating")
+    private int rating;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "review_id")
     private Integer reviewId;
-    @Column(name = "rating")
-    private Integer rating;
     @Column(name = "comment")
     private String comment;
     @Column(name = "created_at")
@@ -69,13 +71,6 @@ public class Review implements Serializable {
         this.reviewId = reviewId;
     }
 
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
 
     public String getComment() {
         return comment;
@@ -132,6 +127,14 @@ public class Review implements Serializable {
     @Override
     public String toString() {
         return "model.Review[ reviewId=" + reviewId + " ]";
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
     
 }

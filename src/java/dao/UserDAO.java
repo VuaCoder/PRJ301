@@ -54,6 +54,42 @@ public class UserDAO extends genericDAO<UserAccount> {
             em.close();
         }
     }
+public UserAccount findByEmail(String email) {
+    EntityManager em = getEntityManager();
+    try {
+        TypedQuery<UserAccount> query = em.createQuery(
+                "SELECT u FROM UserAccount u WHERE u.email = :email", UserAccount.class);
+        query.setParameter("email", email);
+        return query.getSingleResult();
+    } catch (NoResultException e) {
+        return null;
+    } finally {
+        em.close();
+    }
+}
+
+public void createGoogleUser(String email, String fullName) {
+    EntityManager em = getEntityManager();
+    try {
+        Role role = em.find(Role.class, 1); // 1 = customer
+        UserAccount user = new UserAccount();
+        user.setEmail(email);
+        user.setFullName(fullName);
+        user.setPassword(""); // Không có password
+        user.setRoleId(role);
+
+        em.getTransaction().begin();
+        em.persist(user);
+        em.getTransaction().commit();
+    } catch (Exception e) {
+        e.printStackTrace();
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+    } finally {
+        em.close();
+    }
+}
 
     // Lấy host_id từ user_id (nếu có)
     public int getHostIdByUserId(int userId) {
@@ -107,6 +143,30 @@ public class UserDAO extends genericDAO<UserAccount> {
                 tx.rollback();
             }
             return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Gán roleId = 1 (customer) cho user khi roleId bị null hoặc khi tạo user Google
+    public void assignDefaultRole(int userId) {
+        EntityManager em = getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            UserAccount user = em.find(UserAccount.class, userId);
+            if (user == null) {
+                tx.rollback();
+                return;
+            }
+            Role role = em.find(Role.class, 1); // 1 = customer
+            user.setRoleId(role);
+            tx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
         } finally {
             em.close();
         }

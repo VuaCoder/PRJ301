@@ -93,8 +93,8 @@ public class BookingServlet extends HttpServlet {
                 return;
             }
 
-            // Parse dates
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            // Parse dates theo dd/MM/yyyy
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Date checkinDate = sdf.parse(checkin);
             Date checkoutDate = sdf.parse(checkout);
             int guestsInt = Integer.parseInt(guests);
@@ -138,7 +138,7 @@ public class BookingServlet extends HttpServlet {
 
         try {
             int roomIdInt = Integer.parseInt(roomId);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Date checkinDate = sdf.parse(checkin);
             Date checkoutDate = sdf.parse(checkout);
 
@@ -203,7 +203,7 @@ public class BookingServlet extends HttpServlet {
 
         try {
             int roomIdInt = Integer.parseInt(roomId);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Date checkinDate = sdf.parse(checkin);
             Date checkoutDate = sdf.parse(checkout);
             int guestsInt = Integer.parseInt(guests);

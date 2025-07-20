@@ -31,10 +31,6 @@
 .account-menu { list-style: none; margin: 0; padding: 0; }
 .account-menu li { padding: 10px 16px; cursor: pointer; }
 .account-menu li a { color: #333; text-decoration: none; display: block; }
-.account-menu li a:hover { 
-    background: #f3f3f3; 
-    color: #2563eb !important;
-}
 </style>
 <div class="header">
     <div class="main-header">
