@@ -227,6 +227,12 @@
                 </div>
             </c:if>
             
+            <c:if test="${param.message == 'review-success'}">
+                <div class="message message-success">
+                    <i class="fas fa-star"></i> Đánh giá của bạn đã được gửi thành công!
+                </div>
+            </c:if>
+            
             <c:if test="${not empty error}">
                 <div class="message message-error">
                     <i class="fas fa-exclamation-triangle"></i> ${error}

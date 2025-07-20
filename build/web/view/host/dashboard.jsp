@@ -76,6 +76,15 @@
                             <p class="text-sm text-gray-600">Xem báo cáo và thống kê</p>
                         </div>
                     </a>
+                    
+                    <a href="${pageContext.request.contextPath}/host/reviews" 
+                       class="flex items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+                        <i class="fas fa-star text-2xl text-yellow-600 mr-4"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Xem đánh giá</h3>
+                            <p class="text-sm text-gray-600">Xem đánh giá của khách hàng</p>
+                        </div>
+                    </a>
                 </div>
             </div>
             <c:choose>
@@ -134,6 +143,9 @@
                                     <div class="flex gap-3">
                                         <a href="${pageContext.request.contextPath}/host/room?action=edit&id=${r.roomId}" class="flex-1 text-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
                                             <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a href="${pageContext.request.contextPath}/host/reviews?roomId=${r.roomId}" class="text-center bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
+                                            <i class="fas fa-star"></i> Reviews
                                         </a>
                                         <a href="${pageContext.request.contextPath}/host/room?action=delete&id=${r.roomId}"
                                            onclick="return confirm('Are you sure you want to delete this room?');"

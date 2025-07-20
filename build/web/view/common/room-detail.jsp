@@ -67,6 +67,126 @@
             width: 100%;
             margin-top: 10px;
         }
+        
+        /* CSS cho phần đánh giá */
+        .lux-room-rating {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .rating-stars .fa-star,
+        .rating-stars .fa-star-half-alt {
+            color: #d1d5db;
+            font-size: 1.2rem;
+        }
+        
+        .rating-stars .fa-star.filled,
+        .rating-stars .fa-star-half-alt.filled {
+            color: #fbbf24;
+        }
+        
+        .rating-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rating-score {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        .rating-count {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .reviews-section {
+            margin-top: 30px;
+        }
+        
+        .review-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .reviewer-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .review-date {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .review-rating {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .review-rating .fa-star {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+        
+        .review-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .no-reviews {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .no-reviews i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #d1d5db;
+        }
     </style>
 </head>
 <body>
@@ -121,6 +241,31 @@
                     <fmt:formatNumber value="${room.price}" type="number" maxFractionDigits="0" groupingUsed="true"/> VNĐ
                 </span>
             </div>
+            
+            <!-- Hiển thị đánh giá -->
+            <c:if test="${reviewCount > 0}">
+                <div class="lux-room-rating">
+                    <div class="rating-stars">
+                        <c:forEach var="i" begin="1" end="5">
+                            <c:choose>
+                                <c:when test="${i <= averageRating}">
+                                    <i class="fas fa-star filled"></i>
+                                </c:when>
+                                <c:when test="${i - averageRating < 1 && i - averageRating > 0}">
+                                    <i class="fas fa-star-half-alt filled"></i>
+                                </c:when>
+                                <c:otherwise>
+                                    <i class="fas fa-star"></i>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                    </div>
+                    <div class="rating-info">
+                        <span class="rating-score">${averageRating}</span>
+                        <span class="rating-count">(${reviewCount} đánh giá)</span>
+                    </div>
+                </div>
+            </c:if>
             
             <%-- Kiểm tra đăng nhập và role --%>
             <%

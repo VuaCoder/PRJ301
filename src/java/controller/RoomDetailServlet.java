@@ -1,6 +1,7 @@
 package controller;
 
 import dao.RoomDAO;
+import service.ReviewService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.Room;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet(name = "RoomDetailServlet", urlPatterns = {"/detail"})
 public class RoomDetailServlet extends HttpServlet {
@@ -52,6 +54,17 @@ public class RoomDetailServlet extends HttpServlet {
                 }
             }
             request.setAttribute("imageList", imageList);
+            
+            // Lấy đánh giá của phòng
+            ReviewService reviewService = new ReviewService();
+            List<model.Review> reviews = reviewService.getReviewsByRoomId(roomId);
+            double averageRating = reviewService.getAverageRatingByRoomId(roomId);
+            int reviewCount = reviewService.getReviewCountByRoomId(roomId);
+            
+            request.setAttribute("reviews", reviews);
+            request.setAttribute("averageRating", averageRating);
+            request.setAttribute("reviewCount", reviewCount);
+            
             request.getRequestDispatcher("view/common/room-detail.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
