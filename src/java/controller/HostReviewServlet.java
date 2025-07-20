@@ -44,7 +44,7 @@ public class HostReviewServlet extends HttpServlet {
             List<model.Review> hostReviews = reviewService.getReviewsByHostId(host.getHostId());
 
             request.setAttribute("reviews", hostReviews);
-            request.getRequestDispatcher("/view/host/all-reviews.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/host/review-list.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();

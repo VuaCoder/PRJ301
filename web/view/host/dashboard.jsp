@@ -24,18 +24,18 @@
                 bottom: 0 !important;
                 z-index: 10 !important;
             }
-
+            
             .swiper-pagination-bullet {
                 background: #000 !important;
                 opacity: 0.5 !important;
                 transition: all 0.3s ease !important;
             }
-
+            
             .swiper-pagination-bullet-active {
                 opacity: 1 !important;
                 background: #000 !important;
             }
-
+            
             /* Đảm bảo swiper container có position relative */
             .swiper {
                 position: relative !important;
@@ -58,7 +58,7 @@
                             <p class="text-sm text-gray-600">Quản lý và xác nhận đặt phòng</p>
                         </div>
                     </a>
-
+                    
                     <a href="${pageContext.request.contextPath}/host/room?action=create" 
                        class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
                         <i class="fas fa-plus text-2xl text-green-600 mr-4"></i>
@@ -67,7 +67,7 @@
                             <p class="text-sm text-gray-600">Tạo phòng mới để cho thuê</p>
                         </div>
                     </a>
-
+                    
                     <a href="${pageContext.request.contextPath}/host/dashboard" 
                        class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
                         <i class="fas fa-chart-line text-2xl text-purple-600 mr-4"></i>
@@ -76,7 +76,7 @@
                             <p class="text-sm text-gray-600">Xem báo cáo và thống kê</p>
                         </div>
                     </a>
-
+                    
                     <a href="${pageContext.request.contextPath}/host/reviews" 
                        class="flex items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
                         <i class="fas fa-star text-2xl text-yellow-600 mr-4"></i>
@@ -141,16 +141,12 @@
                                     </div>
 
                                     <div class="flex gap-3">
-                                         <a href="${pageContext.request.contextPath}/host/room?action=edit&id=${r.roomId}" class="flex-1 text-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="${pageContext.request.contextPath}/host/reviews?roomId=${r.roomId}" class="text-center bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
-                                            <i class="fas fa-star"></i> Reviews
-                                        </a>
+                                        <a href="${pageContext.request.contextPath}/host/room?action=edit&id=${r.roomId}" class="flex-1 text-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                            <i class="fas fa-edit"></i> Sửa
                                         <a href="${pageContext.request.contextPath}/host/room?action=delete&id=${r.roomId}"
                                            onclick="return confirm('Are you sure you want to delete this room?');"
                                            class="text-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                                            <i class="fas fa-trash"></i> Delete
+                                            <i class="fas fa-trash"></i> Xoá
                                         </a>
                                     </div>
 
@@ -178,7 +174,7 @@
                     </div>
                 </c:otherwise>
             </c:choose>
-
+            
             <!-- Booking Statistics Section -->
             <div class="mt-8 bg-white rounded-xl shadow-lg border p-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Thống kê đặt phòng</h2>
@@ -188,19 +184,19 @@
                         <h3 class="text-2xl font-bold text-gray-800">${pendingBookings}</h3>
                         <p class="text-sm text-gray-600">Chờ xác nhận</p>
                     </div>
-
+                    
                     <div class="text-center p-4 bg-green-50 rounded-lg">
                         <i class="fas fa-check text-3xl text-green-600 mb-2"></i>
                         <h3 class="text-2xl font-bold text-gray-800">${confirmedBookings}</h3>
                         <p class="text-sm text-gray-600">Đã xác nhận</p>
                     </div>
-
+                    
                     <div class="text-center p-4 bg-red-50 rounded-lg">
                         <i class="fas fa-times text-3xl text-red-600 mb-2"></i>
                         <h3 class="text-2xl font-bold text-gray-800">${cancelledBookings}</h3>
                         <p class="text-sm text-gray-600">Đã từ chối</p>
                     </div>
-
+                    
                     <div class="text-center p-4 bg-blue-50 rounded-lg">
                         <i class="fas fa-calendar text-3xl text-blue-600 mb-2"></i>
                         <h3 class="text-2xl font-bold text-gray-800">${totalBookings}</h3>

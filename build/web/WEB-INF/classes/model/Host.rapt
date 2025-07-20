@@ -1,0 +1,12 @@
+model/Payment_.java
+model/Property_.java
+model/Host_.java
+model/Customer_.java
+model/Role_.java
+model/AIChatLog_.java
+model/UserAccount_.java
+model/Promotion_.java
+model/Amenity_.java
+model/Booking_.java
+model/Review_.java
+model/Room_.java
