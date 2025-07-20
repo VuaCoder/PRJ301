@@ -17,11 +17,67 @@
             href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
             />
         <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+        <style>
+            /* Đảm bảo pagination hiển thị */
+            .swiper-pagination {
+                position: relative !important;
+                bottom: 0 !important;
+                z-index: 10 !important;
+            }
+            
+            .swiper-pagination-bullet {
+                background: #000 !important;
+                opacity: 0.5 !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .swiper-pagination-bullet-active {
+                opacity: 1 !important;
+                background: #000 !important;
+            }
+            
+            /* Đảm bảo swiper container có position relative */
+            .swiper {
+                position: relative !important;
+            }
+        </style>
     </head>
     <body class="bg-gray-50 font-sans">
         <jsp:include page="/view/common/header.jsp" />
 
         <div class="max-w-7xl mx-auto p-6">
+            <!-- Quick Actions Section -->
+            <div class="mb-8 bg-white rounded-xl shadow-lg border p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Quản lý nhanh</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="${pageContext.request.contextPath}/host/manage-bookings" 
+                       class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        <i class="fas fa-calendar-check text-2xl text-blue-600 mr-4"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Xem đặt phòng</h3>
+                            <p class="text-sm text-gray-600">Quản lý và xác nhận đặt phòng</p>
+                        </div>
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/host/room?action=create" 
+                       class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                        <i class="fas fa-plus text-2xl text-green-600 mr-4"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Thêm phòng mới</h3>
+                            <p class="text-sm text-gray-600">Tạo phòng mới để cho thuê</p>
+                        </div>
+                    </a>
+                    
+                    <a href="${pageContext.request.contextPath}/host/dashboard" 
+                       class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                        <i class="fas fa-chart-line text-2xl text-purple-600 mr-4"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Thống kê</h3>
+                            <p class="text-sm text-gray-600">Xem báo cáo và thống kê</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
             <c:choose>
                 <c:when test="${not empty rooms}">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,6 +166,36 @@
                     </div>
                 </c:otherwise>
             </c:choose>
+            
+            <!-- Booking Statistics Section -->
+            <div class="mt-8 bg-white rounded-xl shadow-lg border p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Thống kê đặt phòng</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                        <i class="fas fa-clock text-3xl text-yellow-600 mb-2"></i>
+                        <h3 class="text-2xl font-bold text-gray-800">${pendingBookings}</h3>
+                        <p class="text-sm text-gray-600">Chờ xác nhận</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <i class="fas fa-check text-3xl text-green-600 mb-2"></i>
+                        <h3 class="text-2xl font-bold text-gray-800">${confirmedBookings}</h3>
+                        <p class="text-sm text-gray-600">Đã xác nhận</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-red-50 rounded-lg">
+                        <i class="fas fa-times text-3xl text-red-600 mb-2"></i>
+                        <h3 class="text-2xl font-bold text-gray-800">${cancelledBookings}</h3>
+                        <p class="text-sm text-gray-600">Đã từ chối</p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <i class="fas fa-calendar text-3xl text-blue-600 mb-2"></i>
+                        <h3 class="text-2xl font-bold text-gray-800">${totalBookings}</h3>
+                        <p class="text-sm text-gray-600">Tổng đặt phòng</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script>
@@ -119,7 +205,7 @@
                     new Swiper(swiperEl, {
                         loop: true,
                         autoplay: {
-                            delay: 1000,
+                            delay: 5000, // Tăng lên 5 giây
                             disableOnInteraction: false,
                             pauseOnMouseEnter: true
                         },
@@ -127,8 +213,13 @@
                             el: `.swiper-pagination-${index}`,
                             clickable: true,
                             renderBullet: function (index, className) {
-                                return `<span class="${className} !bg-black transition-all duration-300 w-2.5 h-2.5 rounded-full mx-1 inline-block"></span>`;
+                                return `<span class="${className} bg-black opacity-50 transition-all duration-300 w-3 h-3 rounded-full mx-1 inline-block"></span>`;
                             }
+                        },
+                        // Thêm navigation nếu cần
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
                         }
                     });
                 });

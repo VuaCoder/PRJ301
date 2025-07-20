@@ -17,6 +17,7 @@ import model.Host;
 import model.Room;
 import model.UserAccount;
 import service.RoomService;
+import service.BookingService;
 
 /**
  *
@@ -26,6 +27,7 @@ import service.RoomService;
 public class HostDashboardServlet extends HttpServlet {
     private final RoomService roomService = new RoomService();
     private final HostDAO hostDAO = new HostDAO();
+    private final BookingService bookingService = new BookingService();
 
     //chưa chặn được nếu là người dùng thì vẫn có thể vào dashboard
     @Override
@@ -45,8 +47,20 @@ public class HostDashboardServlet extends HttpServlet {
         }
 
         List<Room> rooms = roomService.getRoomsByHostId(host.getHostId());
+        
+        // Lấy thống kê booking
+        List<model.Booking> allBookings = bookingService.getBookingsByHostId(host.getHostId());
+        long pendingBookings = allBookings.stream().filter(b -> "Pending".equals(b.getStatus())).count();
+        long confirmedBookings = allBookings.stream().filter(b -> "Confirmed".equals(b.getStatus())).count();
+        long cancelledBookings = allBookings.stream().filter(b -> "Cancelled".equals(b.getStatus())).count();
+        long totalBookings = allBookings.size();
+        
         request.setAttribute("rooms", rooms);
-        request.setAttribute("host", host); // Add host information
+        request.setAttribute("host", host);
+        request.setAttribute("pendingBookings", pendingBookings);
+        request.setAttribute("confirmedBookings", confirmedBookings);
+        request.setAttribute("cancelledBookings", cancelledBookings);
+        request.setAttribute("totalBookings", totalBookings);
         request.getRequestDispatcher("/view/host/dashboard.jsp").forward(request, response);
     }
 }

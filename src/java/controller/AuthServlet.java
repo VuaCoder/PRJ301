@@ -60,6 +60,16 @@ public class AuthServlet extends HttpServlet {
                 response.addCookie(cPass);
             }
 
+            // Kiểm tra xem có pending booking không
+            String pendingBooking = (String) session.getAttribute("pendingBooking");
+            if (pendingBooking != null) {
+                // Xóa pending booking khỏi session
+                session.removeAttribute("pendingBooking");
+                // Redirect đến booking với thông tin đã lưu
+                response.sendRedirect(request.getContextPath() + "/booking?" + pendingBooking);
+                return;
+            }
+
             String role = user.getRoleId().getRoleName();
 
             // Điều hướng theo role

@@ -4,6 +4,7 @@
     Author     : quangminhnguyen
 --%>
 <%@page import="model.UserAccount"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     UserAccount user = (UserAccount) session.getAttribute("user");
     boolean isHost = user != null && user.getRoleId() != null && "host".equalsIgnoreCase(user.getRoleId().getRoleName());
@@ -30,7 +31,10 @@
 .account-menu { list-style: none; margin: 0; padding: 0; }
 .account-menu li { padding: 10px 16px; cursor: pointer; }
 .account-menu li a { color: #333; text-decoration: none; display: block; }
-.account-menu li a:hover { background: #f3f3f3; }
+.account-menu li a:hover { 
+    background: #f3f3f3; 
+    color: #2563eb !important;
+}
 </style>
 <div class="header">
     <div class="main-header">
@@ -58,11 +62,58 @@
             <div id="menuDropdown" class="account-interface">
                 <ul class="account-menu">
                     <% if (user != null) { %>
-                        <li class="font-semibold text-gray-800">Hello, <%= user.getFullName() %></li>
-                        <li><a href="${pageContext.request.contextPath}/logout" class="block px-4 py-2 hover:bg-gray-100">Logout</a></li>
+                        <li style="font-weight: 600; color: #333; padding: 12px 16px; border-bottom: 1px solid #eee;">
+                            Hello, <%= user.getFullName() != null ? user.getFullName() : user.getUsername() %>
+                        </li>
+                        
+                        <%-- Chỉ hiển thị My Bookings cho guests/customers --%>
+                        <% 
+                            String userRole = user.getRoleId() != null ? user.getRoleId().getRoleName() : "";
+                            boolean isGuest = "guest".equalsIgnoreCase(userRole) || "customer".equalsIgnoreCase(userRole);
+                        %>
+                        <% if (isGuest) { %>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/my-bookings" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-calendar-alt" style="margin-right: 8px; width: 16px;"></i> 
+                                My Bookings
+                            </a>
+                        </li>
+                        <% } %>
+                        
+                        <% if (isHost) { %>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/host/manage-bookings" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-tasks" style="margin-right: 8px; width: 16px;"></i> 
+                                Manage Bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/host/dashboard" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-chart-line" style="margin-right: 8px; width: 16px;"></i> 
+                                Dashboard
+                            </a>
+                        </li>
+                        <% } %>
+                        
+                        <li>
+                            <a href="${pageContext.request.contextPath}/logout" style="display: block; padding: 12px 16px; color: #dc2626; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-sign-out-alt" style="margin-right: 8px; width: 16px;"></i> 
+                                Logout
+                            </a>
+                        </li>
                     <% } else { %>
-                        <li><a href="${pageContext.request.contextPath}/view/auth/register.jsp" class="w-full block text-left">Sign Up</a></li>
-                        <li><a href="${pageContext.request.contextPath}/view/auth/login.jsp" class="w-full block text-left">Login</a></li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/view/auth/register.jsp" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-user-plus" style="margin-right: 8px; width: 16px;"></i> 
+                                Sign Up
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/view/auth/login.jsp" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-sign-in-alt" style="margin-right: 8px; width: 16px;"></i> 
+                                Login
+                            </a>
+                        </li>
                     <% } %>
                 </ul>
             </div>

@@ -8,15 +8,17 @@ public class CustomerDAO extends genericDAO<Customer> {
         super(Customer.class);
     }
 
-    public void createCustomer(Customer customer) {
+    public boolean createCustomer(Customer customer) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(customer);
             em.getTransaction().commit();
+            return true;
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            return false;
         } finally {
             em.close();
         }

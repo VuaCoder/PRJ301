@@ -74,6 +74,19 @@ public class BookingDAO extends genericDAO<Booking> {
         }
     }
 
+    // Lấy danh sách booking theo hostId
+    public List<Booking> getBookingsByHostId(int hostId) {
+        EntityManager em = getEntityManager();
+        try {
+            String jpql = "SELECT b FROM Booking b WHERE b.roomId.propertyId.hostId.hostId = :hostId";
+            TypedQuery<Booking> query = em.createQuery(jpql, Booking.class);
+            query.setParameter("hostId", hostId);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     // Cập nhật trạng thái booking
     public boolean updateBookingStatus(int bookingId, String newStatus) {
         EntityManager em = getEntityManager();

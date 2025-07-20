@@ -27,49 +27,11 @@
         <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     </head>
     <body>
+        <jsp:include page="view/common/header.jsp"/>
         <div class="header">
             <div class="main-header">
                 <div class="main-image">
                     <img src="img/forest.jpg" alt="forest">
-                </div>
-                <div class="main-header-logo">
-                    <a href="#"><img src="img/logo.png"></a>
-                </div>
-                <div class="main-header-option">
-                    <ul>
-                        <li><a href="#">Find a Property</a></li>
-                        <li><a href="#">Rental Guides</a></li>
-                        <li><a href="#">Download Mobile App</a></li>
-                            <% if (user != null && isHost) {%>
-                        <li style="background-color: #484848; color: white; padding: 13px 40px; border-radius: 20px; display: inline-block;">Hello, Host <%= user.getFullName()%></li>
-                            <% } else { %>
-                        <li><a href="${pageContext.request.contextPath}/view/host/becomeHost.jsp" id="become-a-host">Become a host</a></li>
-                            <% } %>
-                    </ul>
-                </div>
-                <div id="account" class="account-container">
-                    <label for="toggle-account-menu" class="hamburger-label">
-                        <img src="img/hamburger-lines.png" alt="hamburger" class="hamburger" id="menuButton">
-                    </label>
-                    <a href="#"><img src="img/user.png" alt="avatar" class="avatar"></a>
-                    <div id="menuDropdown" class="account-interface">
-                        <ul class="account-menu">
-                            <% if (user != null) {%>
-                            <li class="font-semibold text-gray-800"> Hello, <%= user.getFullName()%></li>
-                            <li><a href="${pageContext.request.contextPath}/logout" class="block px-4 py-2 hover:bg-gray-100">Logout</a></li>
-                                <% } else { %>
-                            <li><a href="${pageContext.request.contextPath}/view/auth/register.jsp" class="w-full block text-left">Sign Up</a></li>
-                            <li><a href="${pageContext.request.contextPath}/view/auth/login.jsp" class="w-full block text-left">Login</a></li>
-                                <% }%>
-                        </ul>
-                    </div>
-                </div>
-
-
-                <!-- Form containers -->
-                <div class="absolute top-20 left-1/2 -translate-x-1/2 z-50 w-[360px]" id="formsContainer">
-                    <div id="signupFormContainer"></div>
-                    <div id="loginFormContainer"></div>
                 </div>
             </div>
             <div class="header-bottom">
@@ -725,6 +687,104 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script>
+// Xử lý hamburger menu cho trang home
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById("menuButton");
+    const menuDropdown = document.getElementById("menuDropdown");
+    
+    if (menuButton && menuDropdown) {
+        menuButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            menuDropdown.classList.toggle("active");
+        });
+        
+        document.addEventListener("click", (e) => {
+            if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
+                menuDropdown.classList.remove("active");
+            }
+        });
+    }
+});
+
+// Xử lý search theo thời gian thực
+document.addEventListener('DOMContentLoaded', function() {
+    const checkInInput = document.getElementById('check-in');
+    const checkOutInput = document.getElementById('check-out');
+    const locationSelect = document.getElementById('location');
+    const moneySelect = document.getElementById('money');
+    const guestsInput = document.getElementById('guests');
+    const nearbyProperties = document.getElementById('nearby-properties');
+    
+    let searchTimeout;
+    
+    function performSearch() {
+        const checkIn = checkInInput.value;
+        const checkOut = checkOutInput.value;
+        const location = locationSelect.value;
+        const money = moneySelect.value;
+        const guests = guestsInput.value;
+        
+        // Chỉ search nếu có ít nhất 2 thông tin
+        const hasCheckIn = checkIn && checkIn.trim() !== '';
+        const hasCheckOut = checkOut && checkOut.trim() !== '';
+        const hasLocation = location && location.trim() !== '';
+        const hasGuests = guests && guests.trim() !== '';
+        
+        if ((hasCheckIn && hasCheckOut) || hasLocation || hasGuests) {
+            // Hiển thị loading
+            nearbyProperties.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i><br>Đang tìm kiếm phòng...</div>';
+            
+            // Tạo URL với parameters
+            const params = new URLSearchParams();
+            if (checkIn) params.append('check_in', checkIn);
+            if (checkOut) params.append('check_out', checkOut);
+            if (location) params.append('location', location);
+            if (money) params.append('money', money);
+            if (guests) params.append('guests', guests);
+            
+            // Gửi AJAX request
+            fetch('${pageContext.request.contextPath}/home?' + params.toString(), {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                nearbyProperties.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                nearbyProperties.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i><br>Có lỗi xảy ra khi tìm kiếm</div>';
+            });
+        }
+    }
+    
+    // Thêm event listeners cho các input
+    [checkInInput, checkOutInput, locationSelect, moneySelect, guestsInput].forEach(input => {
+        if (input) {
+            input.addEventListener('change', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 500); // Delay 500ms
+            });
+        }
+    });
+    
+    // Cập nhật min date cho check-out khi check-in thay đổi
+    if (checkInInput && checkOutInput) {
+        checkInInput.addEventListener('change', function() {
+            if (this.value) {
+                const nextDay = new Date(this.value);
+                nextDay.setDate(nextDay.getDate() + 1);
+                checkOutInput.min = nextDay.toISOString().split('T')[0];
+            }
+        });
+    }
+});
+</script>
+
+<jsp:include page="view/common/footer.jsp"/>
     </body>
 
 </html>

@@ -10,6 +10,8 @@ import model.Room;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet(name = "HomeServlet", urlPatterns = {"/home"})
@@ -53,7 +55,7 @@ public class HomeServlet extends HttpServlet {
         if (city != null) {
             String cityLower = city.toLowerCase();
             if (cityLower.contains("hồ chí minh") || cityLower.contains("ho chi minh")) city = "Ho Chi Minh";
-            // Có thể bổ sung các trường hợp khác ở đây
+            
         }
 
         if (city != null && !city.trim().isEmpty()) {
@@ -94,16 +96,43 @@ public class HomeServlet extends HttpServlet {
         String checkIn = request.getParameter("check_in");
         String checkOut = request.getParameter("check_out");
         String guestsParam = request.getParameter("guests");
-        if (requestedWith != null && requestedWith.equals("XMLHttpRequest") && (location != null || money != null || checkIn != null || checkOut != null || guestsParam != null)) {
-            List<Room> allRooms = roomDAO.getAllActiveRooms(); // Cần có hàm này trả về tất cả phòng active
+        
+        if (requestedWith != null && requestedWith.equals("XMLHttpRequest")) {
+            List<Room> allRooms = roomDAO.getAllActiveRooms();
+            
+            // Kiểm tra availability theo thời gian thực
+            if (checkIn != null && !checkIn.isEmpty() && checkOut != null && !checkOut.isEmpty()) {
+                try {
+                    // Parse ngày từ yyyy-MM-dd format (HTML date input)
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date checkInDate = sdf.parse(checkIn);
+                    Date checkOutDate = sdf.parse(checkOut);
+                    
+                    // Kiểm tra ngày hợp lệ
+                    if (checkInDate.before(checkOutDate)) {
+                        // Lọc phòng theo availability
+                        allRooms = roomDAO.getAvailableRooms(checkInDate, checkOutDate);
+                        System.out.println("=== Availability Check ===");
+                        System.out.println("Check-in: " + checkInDate);
+                        System.out.println("Check-out: " + checkOutDate);
+                        System.out.println("Available rooms: " + allRooms.size());
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error parsing dates: " + e.getMessage());
+                }
+            }
+            
             // Lọc theo location
             if (location != null && !location.isEmpty()) {
-                allRooms.removeIf(r -> r.getCity() == null || !r.getCity().toLowerCase().contains(location.toLowerCase()));
+                allRooms.removeIf(r -> r.getCity() == null || 
+                    !r.getCity().toLowerCase().contains(location.toLowerCase()));
             }
+            
             // Lọc theo money (giá tiền)
             if (money != null && !money.isEmpty()) {
                 allRooms.removeIf(r -> !matchMoneyFilter(r.getPrice(), money));
             }
+            
             // Lọc theo số khách
             if (guestsParam != null && !guestsParam.isEmpty()) {
                 try {
@@ -111,7 +140,6 @@ public class HomeServlet extends HttpServlet {
                     allRooms.removeIf(r -> r.getCapacity() < guests);
                 } catch (NumberFormatException ignored) {}
             }
-            // (Có thể bổ sung lọc theo ngày checkIn/checkOut nếu muốn)
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
             if (!allRooms.isEmpty()) {

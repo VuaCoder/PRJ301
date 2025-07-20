@@ -316,4 +316,83 @@ public class RoomDAO extends genericDAO<Room> {
             em.close();
         }
     }
+    
+    /**
+     * Lấy danh sách phòng có sẵn theo thời gian (không trùng với booking)
+     */
+    public List<Room> getAvailableRooms(java.util.Date checkin, java.util.Date checkout) {
+        EntityManager em = getEntityManager();
+        try {
+            // Query để lấy phòng có sẵn trong khoảng thời gian
+            // Kiểm tra xem có booking nào trùng với khoảng thời gian này không
+            return em.createQuery("""
+                SELECT DISTINCT r FROM Room r 
+                WHERE r.status = 'Available' 
+                AND r.approvalStatus = 'Approved'
+                AND NOT EXISTS (
+                    SELECT b FROM Booking b 
+                    WHERE b.roomId = r
+                    AND b.status IN ('Pending', 'Confirmed')
+                    AND (
+                        (b.checkinDate < :checkout AND b.checkoutDate > :checkin)
+                    )
+                )
+                """, Room.class)
+                .setParameter("checkin", checkin)
+                .setParameter("checkout", checkout)
+                .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Cập nhật status phòng thành Unavailable khi được đặt
+     */
+    public boolean updateRoomStatus(int roomId, String status) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Room room = em.find(Room.class, roomId);
+            if (room != null) {
+                room.setStatus(status);
+                em.merge(room);
+                em.getTransaction().commit();
+                return true;
+            }
+            em.getTransaction().rollback();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Kiểm tra xem phòng có available trong khoảng thời gian không
+     */
+    public boolean isRoomAvailable(int roomId, java.util.Date checkin, java.util.Date checkout) {
+        EntityManager em = getEntityManager();
+        try {
+            Long count = em.createQuery("""
+                SELECT COUNT(b) FROM Booking b 
+                WHERE b.roomId.roomId = :roomId
+                AND b.status IN ('Pending', 'Confirmed')
+                AND (b.checkinDate < :checkout AND b.checkoutDate > :checkin)
+                """, Long.class)
+                .setParameter("roomId", roomId)
+                .setParameter("checkin", checkin)
+                .setParameter("checkout", checkout)
+                .getSingleResult();
+            
+            return count == 0;
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -52,7 +52,7 @@
         </style>
 
         <script>
-            let countdown = 30;
+            let countdown = 5;
 
             function updateCountdown() {
                 const countdownEl = document.getElementById("autoRedirect");
@@ -62,7 +62,7 @@
                     countdown--;
                     setTimeout(updateCountdown, 1000);
                 } else {
-                    window.location.href = "<c:url value='/home' />";
+                    window.location.href = "${pageContext.request.contextPath}/home";
                 }
             }
 
@@ -74,13 +74,12 @@
     <body>
        
         <div class="thankyou-box">
-            <h2>✅ Thanh toán thành công!</h2>
-            <p>Cảm ơn bạn đã thanh toán. Đơn đặt phòng của bạn đã được ghi nhận.</p>
+            <h2>✅ Đặt phòng thành công!</h2>
+            <p>Cảm ơn bạn đã đặt phòng. Đơn đặt phòng của bạn đã được ghi nhận và đang chờ xác nhận.</p>
 
-            <button onclick="window.location.href = '${pageContext.request.contextPath}/home/my-bookings ' ">
-                Xem thông tin phòng đã đặt
-            </button>
-
+            <a href="${pageContext.request.contextPath}/my-bookings" class="action-btn">
+                <i class="fas fa-calendar-alt"></i> Xem đặt phòng của tôi
+            </a>
 
             <p id="autoRedirect"></p>
         </div>

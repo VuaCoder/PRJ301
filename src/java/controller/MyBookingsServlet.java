@@ -1,68 +1,67 @@
 package controller;
 
-import dao.BookingDAO;
-import jakarta.servlet.*;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-import model.Booking;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import service.BookingService;
+import model.UserAccount;
+import model.Customer;
 
 import java.io.IOException;
 import java.util.List;
-import model.UserAccount;
-//@WebServlet("/home/my-bookings")
-//public class MyBookingsServlet extends HttpServlet {
-//    @Override
-//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//
-//        HttpSession session = request.getSession();
-//        UserAccount user = (UserAccount) session.getAttribute("user");
-//
-//        if (user == null || user.getCustomer() == null) {
-//            response.sendRedirect("view/auth/login.jsp");
-//            return;
-//        }
-//
-//        int customerId = user.getCustomer().getCustomerId();
-//
-//        String bookingIdStr = request.getParameter("bookingId");
-//        if (bookingIdStr != null) {
-//            int bookingId = Integer.parseInt(bookingIdStr);
-//            Booking booking = new BookingDAO().findById(bookingId);
-//            request.setAttribute("booking", booking);
-//            request.getRequestDispatcher("/view/customer/booking_detail.jsp").forward(request, response);
-//            return;
-//        }
-//
-//        List<Booking> bookings = new BookingDAO().getBookingsByCustomerId(customerId);
-//        request.setAttribute("bookings", bookings);
-//        request.getRequestDispatcher("/view/customer/my_bookings.jsp").forward(request, response);
-//    }
-//}
-@WebServlet("/home/my-bookings")
+
+@WebServlet(name = "MyBookingsServlet", urlPatterns = {"/my-bookings"})
 public class MyBookingsServlet extends HttpServlet {
+
+    private final BookingService bookingService = new BookingService();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         HttpSession session = request.getSession();
         UserAccount user = (UserAccount) session.getAttribute("user");
-
-        if (user == null || user.getCustomer() == null) {
+        
+        if (user == null) {
             response.sendRedirect("view/auth/login.jsp");
             return;
         }
 
-        int customerId = user.getCustomer().getCustomerId();
-        List<Booking> bookings = new BookingDAO().getBookingsByCustomerId(customerId);
-
-        request.setAttribute("bookings", bookings);
-
-        String status = request.getParameter("status");
-        if ("PAID".equalsIgnoreCase(status)) {
-            request.setAttribute("message", "✅ Đặt phòng thành công!");
+        try {
+            System.out.println("=== MyBookingsServlet called ===");
+            System.out.println("User: " + user.getFullName());
+            
+            // Lấy customer từ user
+            Customer customer = user.getCustomer();
+            System.out.println("Customer: " + (customer != null ? customer.getCustomerId() : "null"));
+            
+            if (customer == null) {
+                System.out.println("Customer not found");
+                request.setAttribute("error", "Không tìm thấy thông tin khách hàng.");
+                request.getRequestDispatcher("view/common/error.jsp").forward(request, response);
+                return;
+            }
+            
+            // Lấy danh sách booking của customer
+            List<model.Booking> bookings = bookingService.getBookingsByCustomerId(customer.getCustomerId());
+            System.out.println("Found " + bookings.size() + " bookings");
+            
+            request.setAttribute("bookings", bookings);
+            request.getRequestDispatcher("view/customer/my-bookings.jsp").forward(request, response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Có lỗi xảy ra khi tải danh sách đặt phòng.");
+            request.getRequestDispatcher("view/common/error.jsp").forward(request, response);
         }
+    }
 
-        request.getRequestDispatcher("/view/customer/my_bookings.jsp").forward(request, response);
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }
