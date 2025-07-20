@@ -65,13 +65,13 @@ public class ReviewServlet extends HttpServlet {
                 return;
             }
             
-            // Bỏ qua kiểm tra review đã tồn tại để test
-            // if (reviewService.hasReviewForBooking(bookingId)) {
-            //     request.setAttribute("error", "Bạn đã đánh giá đặt phòng này rồi.");
-            //     request.getRequestDispatcher("view/common/error.jsp").forward(request, response);
-            //     return;
-            // }
-            
+            // Kiểm tra đã đánh giá chưa
+            boolean hasReviewed = reviewService.hasReviewForBooking(bookingId);
+            request.setAttribute("hasReviewed", hasReviewed);
+            if (hasReviewed) {
+                model.Review review = reviewService.getReviewByBookingId(bookingId);
+                request.setAttribute("review", review);
+            }
             request.setAttribute("booking", booking);
             request.getRequestDispatcher("view/customer/review-form.jsp").forward(request, response);
             

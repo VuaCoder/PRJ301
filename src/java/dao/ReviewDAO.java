@@ -78,7 +78,13 @@ public class ReviewDAO extends genericDAO<Review> {
     public List<Review> getReviewsByHostId(int hostId) {
         EntityManager em = getEntityManager();
         try {
-            String jpql = "SELECT r FROM Review r WHERE r.bookingId.roomId.propertyId.hostId.hostId = :hostId ORDER BY r.createdAt DESC";
+            String jpql = "SELECT r FROM Review r " +
+                          "JOIN r.bookingId b " +
+                          "JOIN b.roomId rm " +
+                          "JOIN rm.propertyId p " +
+                          "JOIN p.hostId h " +
+                          "WHERE h.hostId = :hostId " +
+                          "ORDER BY r.createdAt DESC";
             TypedQuery<Review> query = em.createQuery(jpql, Review.class);
             query.setParameter("hostId", hostId);
             List<Review> results = query.getResultList();
