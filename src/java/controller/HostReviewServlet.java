@@ -40,10 +40,35 @@ public class HostReviewServlet extends HttpServlet {
         }
 
         try {
-            // Lấy tất cả đánh giá của host hiện tại
-            List<model.Review> hostReviews = reviewService.getReviewsByHostId(host.getHostId());
-
-            request.setAttribute("reviews", hostReviews);
+            String roomIdParam = request.getParameter("roomId");
+            List<model.Review> reviews;
+            if (roomIdParam != null && !roomIdParam.isEmpty()) {
+                int roomId = Integer.parseInt(roomIdParam);
+                reviews = reviewService.getReviewsByRoomId(roomId);
+            } else {
+                reviews = reviewService.getReviewsByHostId(host.getHostId());
+            }
+            // Debug: log thông tin review, booking, customer
+            for (model.Review r : reviews) {
+                System.out.println("ReviewID: " + r.getReviewId()
+                    + ", Booking: " + (r.getBookingId() != null ? r.getBookingId().getBookingId() : "null")
+                    + ", Customer: " + (r.getBookingId() != null && r.getBookingId().getCustomerId() != null ? r.getBookingId().getCustomerId().getCustomerId() : "null")
+                    + ", Name: " + (r.getBookingId() != null && r.getBookingId().getCustomerId() != null ? r.getBookingId().getCustomerId().getFullName() : "null"));
+                // Nếu thiếu booking hoặc customer, tạo object tạm để JSP không lỗi
+                if (r.getBookingId() == null) {
+                    model.Booking fakeBooking = new model.Booking();
+                    fakeBooking.setBookingId(-1);
+                    model.Customer fakeCustomer = new model.Customer();
+                    fakeCustomer.setFullName("Unknown");
+                    fakeBooking.setCustomerId(fakeCustomer);
+                    r.setBookingId(fakeBooking);
+                } else if (r.getBookingId().getCustomerId() == null) {
+                    model.Customer fakeCustomer = new model.Customer();
+                    fakeCustomer.setFullName("Unknown");
+                    r.getBookingId().setCustomerId(fakeCustomer);
+                }
+            }
+            request.setAttribute("reviews", reviews);
             request.getRequestDispatcher("/view/host/all-reviews.jsp").forward(request, response);
 
         } catch (Exception e) {

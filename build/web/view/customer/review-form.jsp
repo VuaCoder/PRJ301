@@ -28,23 +28,23 @@
                 margin: 50px auto;
                 padding: 30px;
             }
-            
+
             .review-header {
                 text-align: center;
                 margin-bottom: 40px;
             }
-            
+
             .review-header h1 {
                 color: #2563eb;
                 font-size: 2.5rem;
                 margin-bottom: 10px;
             }
-            
+
             .review-header p {
                 color: #6b7280;
                 font-size: 1.1rem;
             }
-            
+
             .booking-info {
                 background: #f8fafc;
                 border-radius: 16px;
@@ -52,39 +52,39 @@
                 margin-bottom: 30px;
                 border: 1px solid #e2e8f0;
             }
-            
+
             .booking-info h3 {
                 color: #1f2937;
                 margin-bottom: 20px;
                 font-size: 1.3rem;
             }
-            
+
             .info-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
             }
-            
+
             .info-item {
                 display: flex;
                 justify-content: space-between;
                 padding: 10px 0;
                 border-bottom: 1px solid #e2e8f0;
             }
-            
+
             .info-item:last-child {
                 border-bottom: none;
             }
-            
+
             .info-label {
                 font-weight: 600;
                 color: #374151;
             }
-            
+
             .info-value {
                 color: #6b7280;
             }
-            
+
             .room-image {
                 width: 100%;
                 height: 200px;
@@ -92,18 +92,18 @@
                 border-radius: 12px;
                 margin-bottom: 20px;
             }
-            
+
             .review-form {
                 background: #fff;
                 border-radius: 16px;
                 padding: 40px;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             }
-            
+
             .form-group {
                 margin-bottom: 30px;
             }
-            
+
             .form-label {
                 display: block;
                 font-weight: 600;
@@ -111,35 +111,35 @@
                 margin-bottom: 10px;
                 font-size: 1.1rem;
             }
-            
+
             .star-rating {
                 display: flex;
                 gap: 10px;
                 align-items: center;
             }
-            
+
             .star {
                 font-size: 2rem;
                 color: #d1d5db;
                 cursor: pointer;
                 transition: color 0.2s;
             }
-            
+
             .star:hover,
             .star.active {
                 color: #fbbf24;
             }
-            
+
             .star.filled {
                 color: #fbbf24;
             }
-            
+
             .rating-text {
                 margin-left: 15px;
                 font-weight: 600;
                 color: #374151;
             }
-            
+
             .form-textarea {
                 width: 100%;
                 min-height: 120px;
@@ -151,26 +151,26 @@
                 resize: vertical;
                 transition: border-color 0.2s;
             }
-            
+
             .form-textarea:focus {
                 outline: none;
                 border-color: #2563eb;
             }
-            
+
             .char-count {
                 text-align: right;
                 color: #6b7280;
                 font-size: 0.9rem;
                 margin-top: 5px;
             }
-            
+
             .form-actions {
                 display: flex;
                 gap: 15px;
                 justify-content: center;
                 margin-top: 40px;
             }
-            
+
             .btn {
                 padding: 12px 30px;
                 border: none;
@@ -182,25 +182,25 @@
                 text-align: center;
                 font-size: 1rem;
             }
-            
+
             .btn-primary {
                 background: #2563eb;
                 color: white;
             }
-            
+
             .btn-primary:hover {
                 background: #1d4ed8;
             }
-            
+
             .btn-secondary {
                 background: #6b7280;
                 color: white;
             }
-            
+
             .btn-secondary:hover {
                 background: #4b5563;
             }
-            
+
             .error-message {
                 background: #fef2f2;
                 color: #dc2626;
@@ -209,7 +209,7 @@
                 border-radius: 8px;
                 margin-bottom: 20px;
             }
-            
+
             .success-message {
                 background: #f0fdf4;
                 color: #16a34a;
@@ -234,7 +234,6 @@
                     <i class="fas fa-exclamation-triangle"></i> ${error}
                 </div>
             </c:if>
-
             <c:if test="${not empty success}">
                 <div class="success-message">
                     <i class="fas fa-check-circle"></i> ${success}
@@ -243,43 +242,36 @@
 
             <div class="booking-info">
                 <h3><i class="fas fa-info-circle"></i> Thông tin đặt phòng</h3>
-
                 <c:if test="${not empty booking.roomId.images}">
                     <c:set var="imgArr" value="${fn:split(booking.roomId.images, ',')}" />
                     <c:set var="imgRaw" value="${imgArr[0]}" />
                     <img src="${imgRaw}" alt="Room Image" class="room-image">
                 </c:if>
-
                 <div class="info-grid">
                     <div class="info-item">
                         <span class="info-label">Phòng:</span>
                         <span class="info-value">${booking.roomId.title}</span>
                     </div>
-
                     <div class="info-item">
                         <span class="info-label">Địa điểm:</span>
                         <span class="info-value">${booking.roomId.city}</span>
                     </div>
-
                     <div class="info-item">
                         <span class="info-label">Ngày nhận phòng:</span>
                         <span class="info-value">
                             <fmt:formatDate value="${booking.checkinDate}" pattern="dd/MM/yyyy"/>
                         </span>
                     </div>
-
                     <div class="info-item">
                         <span class="info-label">Ngày trả phòng:</span>
                         <span class="info-value">
                             <fmt:formatDate value="${booking.checkoutDate}" pattern="dd/MM/yyyy"/>
                         </span>
                     </div>
-
                     <div class="info-item">
                         <span class="info-label">Số khách:</span>
                         <span class="info-value">${booking.guests} người</span>
                     </div>
-
                     <div class="info-item">
                         <span class="info-label">Tổng tiền:</span>
                         <span class="info-value">
@@ -289,50 +281,74 @@
                 </div>
             </div>
 
-            <form class="review-form" method="POST" action="${pageContext.request.contextPath}/review">
-                <input type="hidden" name="bookingId" value="${booking.bookingId}">
-
-                <div class="form-group">
-                    <label class="form-label">Đánh giá của bạn <span style="color: #dc2626;">*</span></label>
-                    <div class="star-rating">
-                        <i class="fas fa-star star" data-rating="1"></i>
-                        <i class="fas fa-star star" data-rating="2"></i>
-                        <i class="fas fa-star star" data-rating="3"></i>
-                        <i class="fas fa-star star" data-rating="4"></i>
-                        <i class="fas fa-star star" data-rating="5"></i>
-                        <span class="rating-text">Chọn điểm đánh giá</span>
+            <c:choose>
+                <c:when test="${hasReviewed}">
+                    <div class="review-form" style="text-align:center;">
+                        <div class="success-message" style="font-size:1.2rem; margin-bottom:24px;">
+                            <i class="fas fa-check-circle"></i> Bạn đã đánh giá phòng này!
+                        </div>
+                        <div style="margin-bottom:18px;">
+                            <span style="font-weight:600; color:#374151;">Số sao đã đánh giá:</span>
+                            <span style="color:#fbbf24; font-size:1.3rem; margin-left:8px;">
+                                <c:forEach var="i" begin="1" end="5">
+                                    <i class="fa-star fa ${i <= review.rating ? 'fas' : 'far'}"></i>
+                                </c:forEach>
+                                (${review.rating}/5)
+                            </span>
+                        </div>
+                        <div style="max-width:500px; margin:0 auto 18px auto;">
+                            <span style="font-weight:600; color:#374151;">Nội dung đánh giá:</span>
+                            <div style="margin-top:6px; color:#374151; background:#fff; border-radius:8px; padding:12px; border:1px solid #e2e8f0;">${review.comment}</div>
+                        </div>
+                        <div class="form-actions" style="justify-content:center;">
+                            <a href="${pageContext.request.contextPath}/my-bookings" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                        </div>
                     </div>
-                    <input type="hidden" name="rating" id="rating-input" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Nhận xét của bạn <span style="color: #dc2626;">*</span></label>
-                    <textarea 
-                        class="form-textarea" 
-                        name="comment" 
-                        placeholder="Chia sẻ trải nghiệm của bạn về chuyến đi này (tối thiểu 10 ký tự)..."
-                        required
-                        minlength="10"
-                        maxlength="500"
-                        id="comment-textarea"></textarea>
-                    <div class="char-count">
-                        <span id="char-count">0</span>/500 ký tự
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <a href="${pageContext.request.contextPath}/my-bookings" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Quay lại
-                    </a>
-                    <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                        <i class="fas fa-paper-plane"></i> Gửi đánh giá
-                    </button>
-                </div>
-            </form>
+                </c:when>
+                <c:otherwise>
+                    <form class="review-form" method="POST" action="${pageContext.request.contextPath}/review">
+                        <input type="hidden" name="bookingId" value="${booking.bookingId}">
+                        <div class="form-group">
+                            <label class="form-label">Đánh giá của bạn <span style="color: #dc2626;">*</span></label>
+                            <div class="star-rating">
+                                <i class="fas fa-star star" data-rating="1"></i>
+                                <i class="fas fa-star star" data-rating="2"></i>
+                                <i class="fas fa-star star" data-rating="3"></i>
+                                <i class="fas fa-star star" data-rating="4"></i>
+                                <i class="fas fa-star star" data-rating="5"></i>
+                                <span class="rating-text">Chọn điểm đánh giá</span>
+                            </div>
+                            <input type="hidden" name="rating" id="rating-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nhận xét của bạn <span style="color: #dc2626;">*</span></label>
+                            <textarea 
+                                class="form-textarea" 
+                                name="comment" 
+                                placeholder="Chia sẻ trải nghiệm của bạn về chuyến đi này (tối thiểu 10 ký tự)..."
+                                required
+                                minlength="10"
+                                maxlength="500"
+                                id="comment-textarea"></textarea>
+                            <div class="char-count">
+                                <span id="char-count">0</span>/500 ký tự
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <a href="${pageContext.request.contextPath}/my-bookings" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
+                                <i class="fas fa-paper-plane"></i> Gửi đánh giá
+                            </button>
+                        </div>
+                    </form>
+                </c:otherwise>
+            </c:choose>
         </div>
-
         <jsp:include page="../common/footer.jsp" />
-
         <script>
             // Star rating functionality
             const stars = document.querySelectorAll('.star');
@@ -341,83 +357,73 @@
             const submitBtn = document.getElementById('submit-btn');
             const commentTextarea = document.getElementById('comment-textarea');
             const charCount = document.getElementById('char-count');
-            
             let selectedRating = 0;
-            
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    const rating = parseInt(this.getAttribute('data-rating'));
-                    selectedRating = rating;
-                    ratingInput.value = rating;
-                    
-                    // Update star display
-                    stars.forEach((s, index) => {
-                        if (index < rating) {
-                            s.classList.add('filled');
-                        } else {
-                            s.classList.remove('filled');
-                        }
+            if (stars && ratingInput && ratingText) {
+                stars.forEach(star => {
+                    star.addEventListener('click', function () {
+                        const rating = parseInt(this.getAttribute('data-rating'));
+                        selectedRating = rating;
+                        ratingInput.value = rating;
+                        stars.forEach((s, index) => {
+                            if (index < rating) {
+                                s.classList.add('filled');
+                            } else {
+                                s.classList.remove('filled');
+                            }
+                        });
+                        const ratingLabels = ['', 'Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Tuyệt vời'];
+                        ratingText.textContent = ratingLabels[rating];
+                        checkFormValidity();
                     });
-                    
-                    // Update rating text
-                    const ratingLabels = ['', 'Rất tệ', 'Tệ', 'Bình thường', 'Tốt', 'Tuyệt vời'];
-                    ratingText.textContent = ratingLabels[rating];
-                    
+                    star.addEventListener('mouseenter', function () {
+                        const rating = parseInt(this.getAttribute('data-rating'));
+                        stars.forEach((s, index) => {
+                            if (index < rating) {
+                                s.classList.add('active');
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
+                    });
+                    star.addEventListener('mouseleave', function () {
+                        stars.forEach(s => s.classList.remove('active'));
+                    });
+                });
+            }
+            if (commentTextarea && charCount) {
+                commentTextarea.addEventListener('input', function () {
+                    const length = this.value.length;
+                    charCount.textContent = length;
+                    if (length < 10) {
+                        charCount.style.color = '#dc2626';
+                    } else {
+                        charCount.style.color = '#6b7280';
+                    }
                     checkFormValidity();
                 });
-                
-                star.addEventListener('mouseenter', function() {
-                    const rating = parseInt(this.getAttribute('data-rating'));
-                    stars.forEach((s, index) => {
-                        if (index < rating) {
-                            s.classList.add('active');
-                        } else {
-                            s.classList.remove('active');
-                        }
-                    });
-                });
-                
-                star.addEventListener('mouseleave', function() {
-                    stars.forEach(s => s.classList.remove('active'));
-                });
-            });
-            
-            // Character count for comment
-            commentTextarea.addEventListener('input', function() {
-                const length = this.value.length;
-                charCount.textContent = length;
-                
-                if (length < 10) {
-                    charCount.style.color = '#dc2626';
-                } else {
-                    charCount.style.color = '#6b7280';
-                }
-                
-                checkFormValidity();
-            });
-            
-            // Check form validity
+            }
             function checkFormValidity() {
-                const commentLength = commentTextarea.value.trim().length;
+                if (!submitBtn) return;
+                const commentLength = commentTextarea ? commentTextarea.value.trim().length : 0;
                 const isValid = selectedRating > 0 && commentLength >= 10;
                 submitBtn.disabled = !isValid;
             }
-            
-            // Form validation
-            document.querySelector('form').addEventListener('submit', function(e) {
-                if (selectedRating === 0) {
-                    e.preventDefault();
-                    alert('Vui lòng chọn điểm đánh giá!');
-                    return;
-                }
-                
-                const comment = commentTextarea.value.trim();
-                if (comment.length < 10) {
-                    e.preventDefault();
-                    alert('Nội dung đánh giá phải có ít nhất 10 ký tự!');
-                    return;
-                }
-            });
+            const reviewForm = document.querySelector('.review-form form, form.review-form');
+            if (reviewForm) {
+                reviewForm.addEventListener('submit', function (e) {
+                    if (selectedRating === 0) {
+                        e.preventDefault();
+                        alert('Vui lòng chọn điểm đánh giá!');
+                        return;
+                    }
+                    const comment = commentTextarea.value.trim();
+                    if (comment.length < 10) {
+                        e.preventDefault();
+                        alert('Nội dung đánh giá phải có ít nhất 10 ký tự!');
+                        return;
+                    }
+                });
+            }
         </script>
     </body>
 </html> 

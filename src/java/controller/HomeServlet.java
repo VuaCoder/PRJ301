@@ -93,8 +93,8 @@ public class HomeServlet extends HttpServlet {
         String requestedWith = request.getHeader("X-Requested-With");
         String location = request.getParameter("location");
         String money = request.getParameter("money");
-        String checkIn = request.getParameter("check_in");
-        String checkOut = request.getParameter("check_out");
+        String checkIn = request.getParameter("check-in");
+        String checkOut = request.getParameter("check-out");
         String guestsParam = request.getParameter("guests");
         
         if (requestedWith != null && requestedWith.equals("XMLHttpRequest")) {
@@ -107,16 +107,13 @@ public class HomeServlet extends HttpServlet {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     Date checkInDate = sdf.parse(checkIn);
                     Date checkOutDate = sdf.parse(checkOut);
-                    
-                    // Kiểm tra ngày hợp lệ
-                    if (checkInDate.before(checkOutDate)) {
-                        // Lọc phòng theo availability
-                        allRooms = roomDAO.getAvailableRooms(checkInDate, checkOutDate);
-                        System.out.println("=== Availability Check ===");
-                        System.out.println("Check-in: " + checkInDate);
-                        System.out.println("Check-out: " + checkOutDate);
-                        System.out.println("Available rooms: " + allRooms.size());
-                    }
+
+                    // Luôn gọi hàm lọc phòng, bất kể ngày vào lớn hơn hay nhỏ hơn ngày ra
+                    allRooms = roomDAO.getAvailableRooms(checkInDate, checkOutDate);
+                    System.out.println("=== Availability Check (Always) ===");
+                    System.out.println("Check-in: " + checkInDate);
+                    System.out.println("Check-out: " + checkOutDate);
+                    System.out.println("Available rooms: " + allRooms.size());
                 } catch (Exception e) {
                     System.out.println("Error parsing dates: " + e.getMessage());
                 }

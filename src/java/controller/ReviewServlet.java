@@ -72,6 +72,14 @@ public class ReviewServlet extends HttpServlet {
             //     return;
             // }
             
+            // Kiểm tra đã đánh giá chưa
+            boolean hasReviewed = reviewService.hasReviewForBooking(bookingId);
+            request.setAttribute("hasReviewed", hasReviewed);
+            if (hasReviewed) {
+                model.Review review = reviewService.getReviewByBookingId(bookingId);
+                request.setAttribute("review", review);
+            }
+            
             request.setAttribute("booking", booking);
             request.getRequestDispatcher("view/customer/review-form.jsp").forward(request, response);
             
@@ -136,7 +144,7 @@ public class ReviewServlet extends HttpServlet {
             boolean success = reviewService.createReview(bookingId, rating, comment);
             
             if (success) {
-                response.sendRedirect("my-bookings?message=review-success");
+                response.sendRedirect("review?bookingId=" + bookingId + "&success=1");
             } else {
                 request.setAttribute("error", "Có lỗi xảy ra khi tạo đánh giá. Có thể bạn đã đánh giá rồi hoặc bảng Review chưa được tạo.");
                 request.getRequestDispatcher("view/common/error.jsp").forward(request, response);

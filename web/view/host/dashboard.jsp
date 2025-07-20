@@ -82,7 +82,7 @@
                         <i class="fas fa-star text-2xl text-yellow-600 mr-4"></i>
                         <div>
                             <h3 class="font-semibold text-gray-800">Xem đánh giá</h3>
-                            <p class="text-sm text-gray-600">Xem đánh giá của khách hàng</p>
+                            <p class="text-sm text-gray-600">Xem tất cả đánh giá của khách hàng</p>
                         </div>
                     </a>
                 </div>

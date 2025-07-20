@@ -323,24 +323,39 @@ public class RoomDAO extends genericDAO<Room> {
     public List<Room> getAvailableRooms(java.util.Date checkin, java.util.Date checkout) {
         EntityManager em = getEntityManager();
         try {
-            // Query để lấy phòng có sẵn trong khoảng thời gian
-            // Kiểm tra xem có booking nào trùng với khoảng thời gian này không
-            return em.createQuery("""
-                SELECT DISTINCT r FROM Room r 
-                WHERE r.status = 'Available' 
-                AND r.approvalStatus = 'Approved'
-                AND NOT EXISTS (
-                    SELECT b FROM Booking b 
-                    WHERE b.roomId = r
-                    AND b.status IN ('Pending', 'Confirmed')
-                    AND (
-                        (b.checkinDate < :checkout AND b.checkoutDate > :checkin)
-                    )
-                )
-                """, Room.class)
-                .setParameter("checkin", checkin)
-                .setParameter("checkout", checkout)
-                .getResultList();
+            List<Room> allRooms = em.createQuery(
+                "SELECT r FROM Room r WHERE r.status = 'Available' AND r.approvalStatus = 'Approved'",
+                Room.class
+            ).getResultList();
+
+            dao.BookingDAO bookingDAO = new dao.BookingDAO();
+            List<Room> result = new ArrayList<>();
+            java.util.Date today = new java.util.Date();
+            for (Room room : allRooms) {
+                List<model.Booking> bookings = bookingDAO.getBookingsByRoomId(room.getRoomId());
+                if (bookings.isEmpty()) {
+                    result.add(room);
+                    continue;
+                }
+                java.util.Date lastCheckout = null;
+                for (model.Booking b : bookings) {
+                    if (b.getCheckoutDate() != null) {
+                        if (lastCheckout == null || b.getCheckoutDate().after(lastCheckout)) {
+                            lastCheckout = b.getCheckoutDate();
+                        }
+                    }
+                }
+                // Nếu ngày hiện tại đã qua ngày check-out cuối cùng, cập nhật trạng thái phòng thành 'Available'
+                if (lastCheckout != null && today.after(lastCheckout) && !"Available".equals(room.getStatus())) {
+                    updateRoomStatus(room.getRoomId(), "Available");
+                    room.setStatus("Available");
+                }
+                // Nếu ngày check-in của user lớn hơn ngày check-out cuối cùng => phòng rảnh
+                if (lastCheckout == null || checkin.after(lastCheckout)) {
+                    result.add(room);
+                }
+            }
+            return result;
         } finally {
             em.close();
         }

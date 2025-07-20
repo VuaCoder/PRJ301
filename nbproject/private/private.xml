@@ -3,9 +3,30 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/RoomServlet.java</file>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/CreatePaymentServlet.java</file>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/WebhookServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/LoginGoogleServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/ChatBotServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/customer/review-form.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/QRPaymentServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/model/Review.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/AuthServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/auth/login.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/dao/RoomDAO.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/MyBookingsServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/dao/ReviewDAO.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/HostReviewServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/home.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/common/room-list.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/host/room-reviews.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/ReviewServlet.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/result.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/service/ReviewService.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/common/room-detail.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/customer/booking-form.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/dao/AIChatLogDAO.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/css/style_home.css</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/service/ChatBotService.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/chatBotElement.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/host/all-reviews.jsp</file>
             <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/host/dashboard.jsp</file>
         </group>
     </open-files>

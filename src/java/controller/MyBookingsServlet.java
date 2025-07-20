@@ -48,8 +48,25 @@ public class MyBookingsServlet extends HttpServlet {
             // Lấy danh sách booking của customer
             List<model.Booking> bookings = bookingService.getBookingsByCustomerId(customer.getCustomerId());
             System.out.println("Found " + bookings.size() + " bookings");
-            
-            request.setAttribute("bookings", bookings);
+
+            // Phân trang
+            int pageSize = 5;
+            int page = 1;
+            String pageParam = request.getParameter("page");
+            if (pageParam != null) {
+                try {
+                    page = Integer.parseInt(pageParam);
+                } catch (NumberFormatException ignored) {}
+            }
+            int totalBookings = bookings.size();
+            int totalPages = (int) Math.ceil((double) totalBookings / pageSize);
+            int fromIndex = (page - 1) * pageSize;
+            int toIndex = Math.min(fromIndex + pageSize, totalBookings);
+            List<model.Booking> bookingsPage = bookings.subList(Math.max(0, fromIndex), Math.max(0, toIndex));
+
+            request.setAttribute("bookings", bookingsPage);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
             request.getRequestDispatcher("view/customer/my-bookings.jsp").forward(request, response);
             
         } catch (Exception e) {

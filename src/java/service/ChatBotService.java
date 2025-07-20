@@ -1,599 +1,486 @@
-//package service;
-//
-//    import com.google.gson.JsonArray;
-//    import com.google.gson.JsonObject;
-//    import com.google.gson.JsonParser;
-//    import java.io.*;
-//    import java.net.HttpURLConnection;
-//    import java.net.URL;
-//    import java.sql.Connection;
-//    import java.sql.PreparedStatement;
-//    import java.sql.ResultSet;
-//    import java.util.regex.Matcher;
-//    import java.util.regex.Pattern;
-//    import util.DBConnection;
-//
-//    public class ChatBotService {
-//
-//        private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-//        private static final String GROQ_API_KEY = "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";
-//
-//        public JsonObject processChatRequest(String userMessage, boolean showMore) throws Exception {
-//            if (userMessage.equalsIgnoreCase("Không, cảm ơn")) {
-//        JsonObject response = new JsonObject();
-//        response.addProperty("success", true);
-//        response.addProperty("message", "Cảm ơn bạn đã sử dụng dịch vụ! Nếu cần hỗ trợ thêm, hãy nhắn cho tôi bất kỳ lúc nào.");
-//        return response;
-//    }
-//
-//            System.out.println("Step 1: Getting filtered rooms with AI SQL...");
-//            String propertyContext = getFilteredRoomsWithAI(userMessage, showMore);
-//            System.out.println("Property context: " + propertyContext);
-//
-//            System.out.println("Step 2: Creating system prompt...");
-//            String systemPrompt = createSystemPrompt(propertyContext);
-//
-//            if ("KHÔNG_CÓ_PHÒNG".equals(systemPrompt)) {
-//                JsonObject jsonResponse = new JsonObject();
-//                jsonResponse.addProperty("success", true);
-//                jsonResponse.addProperty("message", "Xin lỗi, hiện không có phòng phù hợp với yêu cầu của bạn.");
-//                System.out.println("Không có phòng phù hợp - kết thúc sớm.");
-//                return jsonResponse;
-//            }
-//
-//            System.out.println("Step 3: Calling Groq API...");
-//            String aiResponse = callGroqAPI(systemPrompt, userMessage);
-//            System.out.println("AI Response: " + aiResponse);
-//
-//            try {
-//                logChatHistory(userMessage, aiResponse);
-//            } catch (Exception logError) {
-//                System.err.println("Failed to log chat history (non-critical): " + logError.getMessage());
-//            }
-//
-//            JsonObject jsonResponse = new JsonObject();
-//            jsonResponse.addProperty("success", true);
-//            jsonResponse.addProperty("message", aiResponse);
-//            return jsonResponse;
-//        }
-//
-//        private String getFilteredRoomsWithAI(String userMessage, boolean showMore) throws Exception {
-//            System.out.println("=== getFilteredRoomsWithAI ===");
-//            System.out.println("User message: " + userMessage);
-//            System.out.println("Show more: " + showMore);
-//System.out.println("Attempting database connection...");
-//
-//            StringBuilder context = new StringBuilder();
-//
-//            try (Connection conn = DBConnection.getConnection()) {
-//                System.out.println("Database connected successfully");
-//
-//                String aiGeneratedSQL = generateSQLWithAI(userMessage, showMore);
-//                System.out.println("AI Generated SQL: " + aiGeneratedSQL);
-//
-//                PreparedStatement stmt = conn.prepareStatement(aiGeneratedSQL);
-//                ResultSet rs = stmt.executeQuery();
-//
-//                int count = 0;
-//                while (rs.next()) {
-//                    count++;
-//                    String title = rs.getString("title");
-//                    double price = rs.getDouble("price");
-//                    int capacity = rs.getInt("capacity");
-//                    String description = rs.getString("description");
-//                    String imagesJson = rs.getString("images");
-//
-//                    String firstImage = extractFirstImage(imagesJson);
-//
-//                    context.append(String.format("""
-//                        <div class='message bot-message' style='margin-bottom:20px;'>
-//                            <strong>🏠 Phòng %s:</strong> ,.0f đ/đêm - %d người<br>
-//                            📌 %s<br>
-//                            <img src='%s' alt='Ảnh phòng' style='width:100%%; max-height:160px; object-fit:cover; border-radius:10px; margin-top:5px;'>
-//                        </div>
-//                        """, title, price, capacity, description, firstImage));
-//                }
-//
-//                System.out.println("Found " + count + " rooms");
-//
-//                if (count == 0) {
-//                    System.out.println("No rooms found, returning KHÔNG_CÓ_PHÒNG directly");
-//                    return "KHÔNG_CÓ_PHÒNG";
-//                }
-//
-//
-//            } catch (Exception e) {
-//                System.err.println("Database error: " + e.getMessage());
-//                e.printStackTrace();
-//                System.out.println("Falling back to original method...");
-//                return getFilteredRoomsOriginal(userMessage, showMore);
-//            }
-//
-//            System.out.println("Context: " + context.toString());
-//            return context.toString();
-//        }
-//
-//    private String extractFirstImage(String json) {
-//        if (json == null || json.isBlank()) return "https://via.placeholder.com/300x180.png?text=No+Image";
-//        try {
-//            JsonArray arr = JsonParser.parseString(json).getAsJsonArray();
-//            if (arr.size() > 0) return arr.get(0).getAsString();
-//        } catch (Exception e) {
-//            System.err.println("Error parsing image JSON: " + e.getMessage());
-//        }
-//        return "https://via.placeholder.com/300x180.png?text=No+Image";
-//    }
-//
-//
-//
-//
-//        private String generateSQLWithAI(String userMessage, boolean showMore) throws IOException {
-//System.out.println("Generating SQL with AI...");
-//
-//            String sqlPrompt = createSQLGenerationPrompt(userMessage, showMore);
-//            String aiResponse = callGroqAPIForSQL(sqlPrompt);
-//
-//            String sql = extractSQLFromResponse(aiResponse);
-//            sql = validateAndSanitizeSQL(sql);
-//
-//            return sql;
-//        }
-//
-//        private String createSQLGenerationPrompt(String userMessage, boolean showMore) {
-//            int limit = showMore ? 8 : 3;
-//
-//
-//            return String.format("""
-//                 Bạn là chuyên gia SQL. Dựa vào yêu cầu của khách hàng, hãy tạo câu SQL để tìm phòng phù hợp.
-//
-//                    SCHEMA DATABASE:
-//                    - Room(room_id, property_id, title, description, capacity, price, images, status)
-//                    - Property(property_id, host_id, name, description, address, city, ...)
-//
-//                    YÊU CẦU KHÁCH HÀNG: "%s"
-//
-//                    QUY TẮC TẠO SQL:
-//                    1. Chỉ lấy phòng có status = 'Available'
-//                    2. JOIN Room r với Property p ON r.property_id = p.property_id
-//                    3. Nếu người dùng yêu cầu thành phố (VD: 'Nha Trang'), lọc theo p.city LIKE '%%...%%'
-//                    4. SELECT các cột: r.title, r.price, r.capacity, r.description, p.city
-//                    5. Sắp xếp theo giá từ thấp đến cao
-//                    6. Giới hạn %d kết quả (dùng TOP %d cho SQL Server)
-//
-//                    PHÂN TÍCH NGÔN NGỮ TỰ NHIÊN:
-//                    - \"đơn/single\": description LIKE N'%%đơn%%'
-//                    - \"đôi/double\": description LIKE N'%%đôi%%'
-//                    - \"vip\": description LIKE N'%%VIP%%'
-//                    - \"view\": description LIKE N'%%view%%'
-//                    - \"dưới X triệu\": price <= X*1000000
-//                    - \"dưới X nghìn/k\": price <= X*1000
-//                    - \"từ X tới Y\": price BETWEEN X AND Y
-//                    - \"X người\": capacity >= X
-//                    - \"rẻ/giá rẻ\": ORDER BY price ASC
-//                    - \"đắt/cao cấp\": ORDER BY price DESC
-//
-//                    CHỈ TRẢ VỀ CÂU SQL, KHÔNG GIẢI THÍCH.
-//                """, userMessage, limit, limit);
-//        }
-//
-//         private String getFilteredRoomsOriginal(String userMessage, boolean showMore) throws Exception {
-//            StringBuilder context = new StringBuilder();
-//            String fallbackCity = extractCityFromMessage(userMessage);
-//
-//            try (Connection conn = DBConnection.getConnection()) {
-//                String sql = buildDynamicQuery(userMessage, showMore);
-//                System.out.println("Fallback SQL: " + sql);
-//
-//                PreparedStatement stmt = conn.prepareStatement(sql);
-//                ResultSet rs = stmt.executeQuery();
-//
-//                context.append("Danh sách phòng có sẵn:\n");
-//                int count = 0;
-//                while (rs.next()) {
-//                    count++;
-//String title = rs.getString("title");
-//                    double price = rs.getDouble("price");
-//                    int capacity = rs.getInt("capacity");
-//                    String description = rs.getString("description");
-//
-//                    context.append(String.format(
-//                            "- Phòng %s: %,.0f đ/đêm - %d người - %s\n",
-//                            title, price, capacity, description
-//                    ));
-//                }
-//
-//                if (count == 0) {
-//                    // Nếu không có phòng theo yêu cầu, thử lấy 3 phòng bất kỳ tại thành phố đó
-//                    String top3sql = "SELECT TOP 3 r.title, r.price, r.capacity, r.description " +
-//                                     "FROM Room r JOIN Property p ON r.property_id = p.property_id " +
-//                                     "WHERE r.status = 'Available' AND p.city LIKE ? ORDER BY r.price ASC";
-//
-//                    PreparedStatement top3stmt = conn.prepareStatement(top3sql);
-//                    top3stmt.setString(1, "%" + fallbackCity + "%");
-//                    ResultSet top3rs = top3stmt.executeQuery();
-//
-//                    int fallbackCount = 0;
-//                    while (top3rs.next()) {
-//                        fallbackCount++;
-//                        String title = top3rs.getString("title");
-//                        double price = top3rs.getDouble("price");
-//                        int capacity = top3rs.getInt("capacity");
-//                        String description = top3rs.getString("description");
-//
-//                        context.append(String.format(
-//                                "- Phòng %s: %,.0f đ/đêm - %d người - %s\n",
-//                                title, price, capacity, description
-//                        ));
-//                    }
-//
-//                    if (fallbackCount == 0) {
-//                        context.append(String.format("Hiện tại không còn phòng nào khả dụng ở %s.\n", fallbackCity));
-//                    }
-//                }
-//
-//            } catch (Exception e) {
-//                System.err.println("Fallback error: " + e.getMessage());
-//                context.append("Hiện tại chưa có phòng tại thành phố bạn mong muốn");
-//
-//            }
-//
-//            return context.toString();
-//        }
-//
-//        private String extractCityFromMessage(String message) {
-//            message = message.toLowerCase();
-//            if (message.contains("nha trang")) return "Nha Trang";
-//            if (message.contains("đà lạt") || message.contains("da lat")) return "Đà Lạt";
-//            if (message.contains("hà nội")) return "Hà Nội";
-//            if (message.contains("thanh hóa") || message.contains("thanh hoa")) return "Thanh Hóa";
-//            return ""; // fallback nếu không phát hiện được thành phố
-//        }
-//        private String callGroqAPIForSQL(String prompt) throws IOException {
-//            URL url = new URL(GROQ_API_URL);
-//HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//            conn.setConnectTimeout(10000);
-//            conn.setReadTimeout(30000);
-//
-//            conn.setRequestMethod("POST");
-//            conn.setRequestProperty("Authorization", "Bearer " + GROQ_API_KEY);
-//            conn.setRequestProperty("Content-Type", "application/json");
-//            conn.setDoOutput(true);
-//
-//            JsonObject request = new JsonObject();
-//            request.addProperty("model", "llama3-8b-8192");
-//            request.addProperty("max_tokens", 300);
-//            request.addProperty("temperature", 0.1);
-//
-//            JsonArray messages = new JsonArray();
-//
-//            JsonObject userMessage = new JsonObject();
-//            userMessage.addProperty("role", "user");
-//            userMessage.addProperty("content", prompt);
-//            messages.add(userMessage);
-//
-//            request.add("messages", messages);
-//
-//            try (OutputStream os = conn.getOutputStream()) {
-//                byte[] input = request.toString().getBytes("utf-8");
-//                os.write(input, 0, input.length);
-//            }
-//
-//            int responseCode = conn.getResponseCode();
-//            if (responseCode != 200) {
-//                throw new IOException("SQL AI API call failed with code " + responseCode);
-//            }
-//
-//            StringBuilder response = new StringBuilder();
-//            try (BufferedReader br = new BufferedReader(
-//                    new InputStreamReader(conn.getInputStream(), "utf-8"))) {
-//                String responseLine;
-//                while ((responseLine = br.readLine()) != null) {
-//                    response.append(responseLine.trim());
-//                }
-//            }
-//
-//            JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-//            JsonArray choices = jsonResponse.getAsJsonArray("choices");
-//            if (choices != null && choices.size() > 0) {
-//                JsonObject firstChoice = choices.get(0).getAsJsonObject();
-//                JsonObject message = firstChoice.getAsJsonObject("message");
-//                return message.get("content").getAsString();
-//            }
-//
-//            throw new IOException("Failed to get SQL from AI");
-//        }
-//
-//        private String extractSQLFromResponse(String aiResponse) {
-//            String sql = aiResponse.replaceAll("```sql", "").replaceAll("```", "").trim();
-//
-//            String[] lines = sql.split("\n");
-//            StringBuilder cleanSQL = new StringBuilder();
-//
-//            for (String line : lines) {
-//                line = line.trim();
-//                if (line.toUpperCase().startsWith("SELECT") || 
-//                    line.toUpperCase().startsWith("FROM") ||
-//                    line.toUpperCase().startsWith("WHERE") ||
-//                    line.toUpperCase().startsWith("AND") ||
-//                    line.toUpperCase().startsWith("OR") ||
-//line.toUpperCase().startsWith("ORDER") ||
-//                    line.toUpperCase().startsWith("TOP") ||
-//                    cleanSQL.length() > 0) {
-//                    cleanSQL.append(line).append(" ");
-//                }
-//            }
-//
-//            return cleanSQL.toString().trim();
-//        }
-//
-//           private String validateAndSanitizeSQL(String sql) {
-//            String[] forbiddenKeywords = {"DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "CREATE", "EXEC", "--", "/*", "*/"};
-//
-//            String upperSQL = sql.toUpperCase();
-//            for (String keyword : forbiddenKeywords) {
-//                if (upperSQL.contains(keyword)) {
-//                    System.err.println("[SECURITY WARNING] Forbidden keyword detected in SQL: " + keyword);
-//                    return "SELECT TOP 3 r.title, r.capacity, r.price, r.description, p.city " +
-//                           "FROM Room r JOIN Property p ON r.property_id = p.property_id " +
-//                           "WHERE r.status = 'Available' ORDER BY r.price ASC";
-//                }
-//            }
-//
-//            if (!upperSQL.trim().startsWith("SELECT")) {
-//                throw new IllegalArgumentException("Invalid SQL query generated by AI (must start with SELECT)");
-//            }
-//
-//            return sql;
-//        }
-//
-//         private String buildDynamicQuery(String userMessage, boolean showMore) {
-//            StringBuilder sql = new StringBuilder();
-//
-//            sql.append("SELECT ");
-//            sql.append(showMore ? "TOP 8 " : "TOP 3 ");
-//            sql.append("r.title, r.capacity, r.price, r.description, p.city ");
-//            sql.append("FROM Room r JOIN Property p ON r.property_id = p.property_id ");
-//            sql.append("WHERE r.status = 'Available' ");
-//
-//            String message = userMessage.toLowerCase();
-//
-//            // Nếu người dùng nói đến tên thành phố
-//         if (message.contains("nha trang")) {
-//        sql.append("AND LOWER(p.city) LIKE '%nha trang%' ");
-//    } else if (message.contains("đà lạt") || message.contains("da lat")) {
-//        sql.append("AND LOWER(p.city) LIKE '%da lat%' ");
-//    } else if (message.contains("hà nội") || message.contains("ha noi")) {
-//        sql.append("AND LOWER(p.city) LIKE '%ha noi%' ");
-//    } else if (message.contains("thanh hóa") || message.contains("thanh hoa")) {
-//        sql.append("AND LOWER(p.city) LIKE '%thanh hoa%' ");
-//    } else if (message.contains("hồ chí minh") || message.contains("ho chi minh") || message.contains("sai gon") || message.contains("sài gòn")) {
-//        sql.append("AND LOWER(p.city) LIKE '%ho chi minh%' ");
-//    }else if (message.contains("đà nẵng") || message.contains("da nang")) {
-//        sql.append("AND LOWER(p.city) LIKE '%da nang%' ");
-//    }
-//         
-//         
-//
-//            // Loại phòng - dựa trên mô tả trong description
-//            if (message.contains("suite")) {
-//sql.append("AND r.description LIKE N'%suite%' ");
-//            } else if (message.contains("đơn") || message.contains("don") || message.contains("single")) {
-//                sql.append("AND r.description LIKE N'%single%' ");
-//            } else if (message.contains("đôi") || message.contains("doi") || message.contains("double")) {
-//                sql.append("AND r.description LIKE N'%double%' ");
-//            }
-//
-//            String priceCondition = extractPriceRange(userMessage);
-//            if (!priceCondition.isEmpty()) {
-//                sql.append("AND " + priceCondition + " ");
-//            }
-//
-//            int capacity = extractCapacity(userMessage);
-//            if (capacity > 0) {
-//                sql.append("AND r.capacity >= " + capacity + " ");
-//            }
-//
-//            // Nếu người dùng hỏi phòng rẻ nhất hoặc có từ khóa liên quan
-//            if (message.contains("rẻ nhất") || message.contains("thấp nhất") || message.contains("giá thấp")) {
-//                sql.append("ORDER BY r.price ASC");
-//            } else if (message.contains("đắt nhất") || message.contains("cao cấp nhất")) {
-//                sql.append("ORDER BY r.price DESC");
-//            } else {
-//                sql.append("ORDER BY r.price ASC");
-//            }
-//
-//            return sql.toString();
-//        }
-//
-//
-//        private String extractPriceRange(String message) {
-//            message = message.toLowerCase();
-//
-//            try {
-//                if (message.matches(".*dưới\\s*\\d+\\s*triệu.*")) {
-//                    Pattern pattern = Pattern.compile("dưới\\s*(\\d+)\\s*triệu");
-//                    Matcher matcher = pattern.matcher(message);
-//                    if (matcher.find()) {
-//                        long maxPrice = Long.parseLong(matcher.group(1)) * 1000000;
-//                        return "price <= " + maxPrice;
-//                    }
-//                }
-//
-//                if (message.matches(".*dưới\\s*\\d+\\s*[k|nghìn].*")) {
-//                    Pattern pattern = Pattern.compile("dưới\\s*(\\d+)\\s*(?:k|nghìn)");
-//                    Matcher matcher = pattern.matcher(message);
-//                    if (matcher.find()) {
-//                        long maxPrice = Long.parseLong(matcher.group(1)) * 1000;
-//                        return "price <= " + maxPrice;
-//                    }
-//                }
-//
-//                if (message.matches(".*từ\\s*\\d+.*tới\\s*\\d+.*")) {
-//                    Pattern pattern = Pattern.compile("từ\\s*(\\d+).*?tới\\s*(\\d+)");
-//                    Matcher matcher = pattern.matcher(message);
-//                    if (matcher.find()) {
-//                        long minPrice = Long.parseLong(matcher.group(1)) * 1000;
-//                        long maxPrice = Long.parseLong(matcher.group(2)) * 1000;
-//                        return "price BETWEEN " + minPrice + " AND " + maxPrice;
-//                    }
-//}
-//            } catch (NumberFormatException e) {
-//                System.err.println("Error parsing price: " + e.getMessage());
-//            }
-//
-//            return "";
-//        }
-//
-//        private int extractCapacity(String message) {
-//            Pattern pattern = Pattern.compile("(\\d+)\\s*người");
-//            Matcher matcher = pattern.matcher(message);
-//            if (matcher.find()) {
-//                try {
-//                    return Integer.parseInt(matcher.group(1));
-//                } catch (NumberFormatException e) {
-//                    System.err.println("Error parsing capacity: " + e.getMessage());
-//                }
-//            }
-//            return 0;
-//        }
-//
-//        private void logChatHistory(String userInput, String botResponse) throws Exception {
-//            try (Connection conn = DBConnection.getConnection()) {
-//                String sql = "INSERT INTO AIChatLog (user_id, question, answer, timestamp) VALUES (?, ?, ?, GETDATE())";
-//                PreparedStatement stmt = conn.prepareStatement(sql);
-//                stmt.setInt(1, 1); // Replace with actual user_id
-//                stmt.setString(2, userInput);
-//                stmt.setString(3, botResponse);
-//                stmt.executeUpdate();
-//            } catch (Exception e) {
-//                System.err.println("Error logging chat: " + e.getMessage());
-//            }
-//        }
-//
-//       private String createSystemPrompt(String propertyContext) {
-//            if (propertyContext.contains("KHÔNG_CÓ_PHÒNG")) {
-//                return "KHÔNG_CÓ_PHÒNG";
-//            }
-//
-//            return String.format("""
-//                Bạn là một trợ lý ảo chuyên hỗ trợ tra cứu khách sạn. Dưới đây là danh sách phòng khả dụng lấy trực tiếp từ cơ sở dữ liệu. TUYỆT ĐỐI KHÔNG bịa đặt hay tạo ra thông tin không có. Nếu không có phòng phù hợp, hãy trả lời rõ ràng là không có.
-//
-//                NHIỆM VỤ:
-//                1. Phân tích yêu cầu khách hàng về loại phòng, số người, giá, địa điểm
-//                2. Nếu chỉ có một tiêu chí như 'phòng rẻ nhất ở Nha Trang' thì chỉ cần gợi ý 1–2 phòng thỏa mãn đúng điều kiện đó
-//                3. Ngược lại, đề xuất 3–5 phòng phù hợp nhất trong danh sách bên dưới
-//                4. Mỗi phòng trình bày gồm: tên phòng, giá/đêm, mô tả ngắn gọn đặc điểm nổi bật
-//                5. Nếu có nhiều phòng giống nhau, chọn phòng rẻ hơn trước
-//                6. Kết thúc bằng: "Bạn có muốn xem thêm lựa chọn khác không?"
-//
-//                QUY TẮC TRẢ LỜI:
-//                - Ngôn ngữ: tiếng Việt, lịch sự và thân thiện
-//                - Thông tin ngắn gọn, chính xác, không thêm thắt
-//                - Luôn hiển thị giá cụ thể theo định dạng ###,000 đ/đêm
-//                - Dữ liệu đầu vào nằm trong danh sách bên dưới
-//
-//                %s
-//
-//                Ví dụ cách trình bày:
-//"Dạ, có một số phòng phù hợp với yêu cầu của bạn:
-//
-//                🛏️ Pine View Double Room: 450,000 đ/đêm
-//                - Phòng đôi nhìn ra rừng thông, có giường queen
-//
-//                🛏️ Garden View Single Room: 300,000 đ/đêm
-//                - Phòng đơn nhìn ra vườn, yên tĩnh
-//
-//                🛏️ Family Suite: 800,000 đ/đêm
-//                - Phù hợp cho gia đình, có bếp nhỏ
-//
-//                Bạn có muốn xem thêm lựa chọn khác không?"
-//            """, propertyContext);
-//        }
-//
-//
-//       private String callGroqAPI(String systemPrompt, String userMessage) throws IOException {
-//        System.out.println("➡️ Bắt đầu gọi Groq API...");
-//
-//        URL url = new URL(GROQ_API_URL);
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//        // Cài đặt timeout mạnh hơn
-//        conn.setConnectTimeout(10000);  // 10 giây kết nối
-//        conn.setReadTimeout(20000);     // 20 giây phản hồi
-//
-//        conn.setRequestMethod("POST");
-//        conn.setRequestProperty("Authorization", "Bearer " + GROQ_API_KEY);
-//        conn.setRequestProperty("Content-Type", "application/json");
-//        conn.setDoOutput(true);
-//
-//        JsonObject request = new JsonObject();
-//        request.addProperty("model", "llama3-8b-8192");
-//        request.addProperty("max_tokens", 400);
-//        request.addProperty("temperature", 0.7);
-//
-//        JsonArray messages = new JsonArray();
-//
-//        JsonObject systemMessage = new JsonObject();
-//        systemMessage.addProperty("role", "system");
-//        systemMessage.addProperty("content", systemPrompt);
-//        messages.add(systemMessage);
-//
-//        JsonObject userMessageObj = new JsonObject();
-//        userMessageObj.addProperty("role", "user");
-//        userMessageObj.addProperty("content", userMessage);
-//        messages.add(userMessageObj);
-//
-//        request.add("messages", messages);
-//
-//        System.out.println("➡️ Gửi request đến Groq...");
-//        try (OutputStream os = conn.getOutputStream()) {
-//            byte[] input = request.toString().getBytes("utf-8");
-//            os.write(input, 0, input.length);
-//        }
-//
-//        int responseCode = conn.getResponseCode();
-//        System.out.println("✅ Response Code từ Groq: " + responseCode);
-//
-//        if (responseCode != 200) {
-//            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"));
-//            StringBuilder errorResponse = new StringBuilder();
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                errorResponse.append(line.trim());
-//            }
-//            System.err.println("❌ API lỗi: " + errorResponse);
-//            throw new IOException("Groq API trả về lỗi: " + responseCode);
-//        }
-//
-//        StringBuilder response = new StringBuilder();
-//try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                response.append(line.trim());
-//            }
-//        }
-//
-//        System.out.println("✅ Nhận được phản hồi JSON từ Groq");
-//
-//        try {
-//
-//            JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-//            JsonArray choices = jsonResponse.getAsJsonArray("choices");
-//
-//            if (choices == null || choices.size() == 0) {
-//                System.err.println("❗ Groq trả về phản hồi rỗng.");
-//                return "Xin lỗi, hiện tôi không thể đưa ra gợi ý phù hợp. Vui lòng thử lại sau.";
-//            }
-//
-//            JsonObject firstChoice = choices.get(0).getAsJsonObject();
-//            JsonObject message = firstChoice.getAsJsonObject("message");
-//            return message.get("content").getAsString();
-//
-//        } catch (Exception e) {
-//            System.err.println("❗ Lỗi khi phân tích phản hồi từ Groq: " + e.getMessage());
-//            return "Xin lỗi, tôi đang gặp sự cố xử lý phản hồi. Vui lòng thử lại sau.";
-//        }
-//    }
-//
-//    }
+package service;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dao.AIChatLogDAO;
+import dao.RoomDAO;
+import model.Room;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ChatBotService {
+
+    private final RoomDAO roomDAO = new RoomDAO();
+    private final AIChatLogDAO chatLogDAO = new AIChatLogDAO();
+
+    public JsonObject processChatRequest(String userMessage, boolean showMore) throws Exception {
+        System.out.println("🤖 Processing message: " + userMessage + " | showMore: " + showMore);
+        
+        // ✅ FIXED: Handle negative response
+        if (userMessage.toLowerCase().matches(".*không.*cảm ơn.*|.*không.*thanks.*|.*no.*thank.*")) {
+            return createSuccessResponse(
+                "Cảm ơn bạn đã sử dụng dịch vụ! 😊\n\n" +
+                "💡 **Mẹo nhỏ**: Bạn có thể hỏi tôi:\n" +
+                "• \"Phòng giá rẻ cho 2 người\"\n" +
+                "• \"Phòng ở Đà Nẵng dưới 1 triệu\"\n" +
+                "• \"Phòng từ ngày 25/12 đến 27/12\"\n\n" +
+                "Tôi luôn sẵn sàng hỗ trợ bạn! 🏨✨"
+            );
+        }
+
+        // Parse user requirements with improved extraction
+        ParsedInfo info = extractInfoFromMessage(userMessage);
+        
+        // ✅ IMPROVED: Better date validation
+        LocalDate today = LocalDate.now();
+        if (info.checkinDate == null) {
+            info.checkinDate = Date.valueOf(today.plusDays(1));
+        }
+        if (info.checkoutDate == null) {
+            info.checkoutDate = Date.valueOf(today.plusDays(2));
+        }
+
+        // Validate dates
+        if (info.checkoutDate.before(info.checkinDate) || info.checkoutDate.equals(info.checkinDate)) {
+            return createErrorResponse(
+                "❌ **Ngày không hợp lệ**\n\n" +
+                "🗓️ Ngày trả phòng phải **sau** ngày nhận phòng ít nhất 1 ngày.\n\n" +
+                "**Ví dụ đúng**: \"Phòng từ 25/12 đến 27/12\"\n" +
+                "**Thử lại**: Nhập lại với ngày hợp lệ nhé! 😊"
+            );
+        }
+
+        // ✅ FIXED: Check date not in the past
+        if (info.checkinDate.before(Date.valueOf(today))) {
+            return createErrorResponse(
+                "⏰ **Ngày đã qua**\n\n" +
+                "📅 Không thể đặt phòng cho ngày trong quá khứ.\n\n" +
+                "**Hôm nay**: " + today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                "**Gợi ý**: Thử \"phòng từ ngày mai\" hoặc chọn ngày cụ thể! 😊"
+            );
+        }
+
+        // Get filtered rooms with proper availability check
+        String roomsHtml = getFilteredRoomsWithAvailability(
+            userMessage, showMore, info.guests, info.checkinDate, info.checkoutDate, info.priceCategory
+        );
+        
+        if ("KHONG_CO_PHONG".equals(roomsHtml)) {
+            String noRoomMessage = createNoRoomFoundMessage(info);
+            return createSuccessResponse(noRoomMessage);
+        }
+
+        // Create AI-like response
+        String aiResponse = createSmartResponse(userMessage, roomsHtml, info);
+
+        // ✅ IMPROVED: Better error handling for chat log
+        try {
+            chatLogDAO.saveChatLog(getCurrentUserId(), userMessage, aiResponse);
+        } catch (Exception e) {
+            System.err.println("⚠️ Warning: Could not save chat log - " + e.getMessage());
+            // Continue without failing the main request
+        }
+
+        return createSuccessResponse(aiResponse);
+    }
+
+    /**
+     * ✅ IMPROVED: Get rooms with comprehensive filtering
+     */
+    private String getFilteredRoomsWithAvailability(String userMessage, boolean showMore, 
+                                                   int guests, Date checkinDate, Date checkoutDate, String priceCategory) {
+        try {
+            String city = extractCityFromMessage(userMessage);
+            
+            // Get available rooms from DAO
+            List<Room> rooms = roomDAO.getAvailableRooms(city, guests, checkinDate, checkoutDate);
+
+            // ✅ IMPROVED: Additional filtering
+            if (priceCategory != null && !priceCategory.isEmpty()) {
+                rooms.removeIf(room -> !matchPriceFilter(room.getPrice(), priceCategory));
+            }
+
+            // Type filtering
+            String roomType = extractRoomTypeFromMessage(userMessage);
+            if (roomType != null && !roomType.isEmpty()) {
+                rooms.removeIf(room -> !matchRoomType(room.getType(), roomType));
+            }
+
+            // Limit results if not showing more
+            if (!showMore && rooms.size() > 3) {
+                rooms = rooms.subList(0, 3);
+            }
+
+            if (rooms.isEmpty()) {
+                return "KHONG_CO_PHONG";
+            }
+
+            return formatRoomsAsHtml(rooms, checkinDate, checkoutDate);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error in getFilteredRoomsWithAvailability: " + e.getMessage());
+            e.printStackTrace();
+            return "KHONG_CO_PHONG";
+        }
+    }
+
+    /**
+     * ✅ IMPROVED: Better room formatting with pricing
+     */
+    private String formatRoomsAsHtml(List<Room> rooms, Date checkinDate, Date checkoutDate) {
+        StringBuilder html = new StringBuilder();
+        
+        // Calculate number of nights
+        long diffInMs = checkoutDate.getTime() - checkinDate.getTime();
+        int nights = (int) (diffInMs / (1000 * 60 * 60 * 24));
+        
+        for (int i = 0; i < rooms.size(); i++) {
+            Room room = rooms.get(i);
+            String image = extractFirstImage(room.getImages());
+            BigDecimal totalPrice = room.getPrice().multiply(BigDecimal.valueOf(nights));
+            
+          html.append(String.format("""
+    <div class='room-suggestion' style='cursor: pointer;' onclick="window.location.href='detail?id=%d'">
+        <div style='display: flex; gap: 12px;'>
+            <img src='%s' alt='%s' style='width: 85px; height: 65px; object-fit: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid #ddd;'>
+            <div style='flex: 1; min-width: 0;'>
+                <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;'>
+                    <strong style='color: #007bff; font-size: 15px; line-height: 1.3;'>🏨 %s</strong>
+                    <span style='color: #dc3545; font-weight: bold; font-size: 13px; white-space: nowrap;'>⭐ %s</span>
+                </div>
+                <div style='margin-bottom: 8px;'>
+                    <span style='color: #28a745; font-weight: bold; font-size: 16px;'>%,.0f₫</span>
+                    <span style='color: #6c757d; font-size: 11px;'>/đêm • %d khách</span>
+                </div>
+                <div style='color: #666; font-size: 12px; line-height: 1.4; margin-bottom: 6px;'>%s</div>
+                <div style='background: linear-gradient(45deg, #e8f5e8, #f0f8ff); padding: 6px 8px; border-radius: 6px; font-size: 12px;'>
+                    <strong style='color: #155724;'>💰 Tổng %d đêm: %,.0f₫</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+""", 
+room.getRoomId(),  // <-- roomId để tạo URL
+image, 
+room.getTitle(),
+room.getTitle(),
+room.getType() != null ? room.getType() : "Standard",
+room.getPrice(),
+room.getCapacity(),
+truncateDescription(room.getDescription(), 50),
+nights,
+totalPrice
+));
+
+        }
+        
+        return html.toString();
+    }
+
+    /**
+     * ✅ IMPROVED: Smarter response generation
+     */
+    private String createSmartResponse(String userMessage, String roomsHtml, ParsedInfo info) {
+        String greeting = getContextualGreeting(userMessage, info);
+        
+        long nights = (info.checkoutDate.getTime() - info.checkinDate.getTime()) / (1000 * 60 * 60 * 24);
+        
+        String summary = String.format(
+            "🎯 **Tìm thấy phòng phù hợp**\n" +
+            "👥 %d khách • 📅 %d đêm (%s ➜ %s)\n\n",
+            info.guests,
+            nights,
+            formatVietnameseDate(info.checkinDate),
+            formatVietnameseDate(info.checkoutDate)
+        );
+        
+     
+            
+        String question = "🤔 Bạn có muốn **xem thêm** phòng khác không?";
+        
+        return greeting + summary + roomsHtml  + question;
+    }
+
+    /**
+     * ✅ NEW: Create no room found message
+     */
+    private String createNoRoomFoundMessage(ParsedInfo info) {
+        return String.format(
+            "😔 **Không tìm thấy phòng phù hợp**\n\n" +
+            "🔍 **Yêu cầu của bạn**:\n" +
+            "👥 %d khách\n" +
+            "📅 %s ➜ %s\n" +
+            "💰 %s\n\n" +
+            "💡 **Gợi ý khác**:\n" +
+            "• 📅 Thử ngày linh hoạt hơn\n" +
+            "• 👥 Giảm số khách hoặc tách phòng\n" +
+            "• 💰 Mở rộng ngân sách\n" +
+            "• 🗺️ Xem khu vực lân cận\n\n" +
+           
+            info.guests,
+            formatVietnameseDate(info.checkinDate),
+            formatVietnameseDate(info.checkoutDate),
+            info.priceCategory != null ? getPriceCategoryDisplay(info.priceCategory) : "Mọi mức giá"
+        );
+    }
+
+    // ====================== HELPER METHODS ============================
+
+    private String getContextualGreeting(String message, ParsedInfo info) {
+        String msg = message.toLowerCase();
+        if (msg.contains("cấp tốc") || msg.contains("gấp") || msg.contains("urgent")) {
+            return "⚡ **Booking cấp tốc!** ";
+        } else if (msg.contains("gia đình") || msg.contains("family")) {
+            return "👨‍👩‍👧‍👦 **Kỳ nghỉ gia đình** ";
+        } else if (msg.contains("couple") || msg.contains("cặp đôi") || msg.contains("honeymoon")) {
+            return "💕 **Nghỉ dưỡng lãng mạn** ";
+        } else if (msg.contains("business") || msg.contains("công tác") || msg.contains("doanh nhân")) {
+            return "💼 **Chuyến công tác** ";
+        } else if (info.guests >= 5) {
+            return "👥 **Nhóm đông người** ";
+        }
+        return "🏨 ";
+    }
+
+    private String formatVietnameseDate(Date date) {
+        LocalDate localDate = date.toLocalDate();
+        return localDate.format(DateTimeFormatter.ofPattern("dd/MM"));
+    }
+
+    private String truncateDescription(String desc, int maxLength) {
+        if (desc == null) return "Phòng đẹp, tiện nghi đầy đủ";
+        if (desc.length() <= maxLength) return desc;
+        return desc.substring(0, maxLength) + "...";
+    }
+
+    private String getPriceCategoryDisplay(String category) {
+        return switch (category.toLowerCase()) {
+            case "gia re" -> "Dưới 500K";
+            case "trung binh thap" -> "500K - 1TR";
+            case "trung binh cao" -> "1TR - 2TR";
+            case "mr beast" -> "Trên 2TR";
+            default -> "Mọi mức giá";
+        };
+    }
+
+    /**
+     * ✅ NEW: Extract room type from message
+     */
+    private String extractRoomTypeFromMessage(String message) {
+        if (message == null) return null;
+        message = message.toLowerCase();
+        
+        if (message.contains("deluxe")) return "Deluxe";
+        if (message.contains("suite") || message.contains("suit")) return "Suite";
+        if (message.contains("standard") || message.contains("tiêu chuẩn")) return "Standard";
+        if (message.contains("family") || message.contains("gia đình")) return "Family";
+        if (message.contains("business") || message.contains("công tác")) return "Business";
+        if (message.contains("honeymoon") || message.contains("tình yêu")) return "Honeymoon";
+        if (message.contains("studio")) return "Studio";
+        if (message.contains("view biển") || message.contains("sea view")) return "SeaView";
+        
+        return null;
+    }
+
+    /**
+     * ✅ NEW: Match room type
+     */
+    private boolean matchRoomType(String roomType, String requestedType) {
+        if (roomType == null || requestedType == null) return true;
+        return roomType.toLowerCase().contains(requestedType.toLowerCase()) ||
+               requestedType.toLowerCase().contains(roomType.toLowerCase());
+    }
+
+    private int getCurrentUserId() {
+        // TODO: Get from session or JWT token
+        return 1; // Default user for now
+    }
+
+    private JsonObject createSuccessResponse(String message) {
+        JsonObject response = new JsonObject();
+        response.addProperty("success", true);
+        response.addProperty("message", message);
+        return response;
+    }
+
+    private JsonObject createErrorResponse(String message) {
+        JsonObject response = new JsonObject();
+        response.addProperty("success", true); // Still success to show message
+        response.addProperty("message", message);
+        return response;
+    }
+
+    private String extractFirstImage(String images) {
+        if (images == null || images.trim().isEmpty()) {
+            return "https://via.placeholder.com/300x200?text=No+Image";
+        }
+        
+        try {
+            JsonArray imageArray = JsonParser.parseString(images).getAsJsonArray();
+            if (imageArray.size() > 0) {
+                String imagePath = imageArray.get(0).getAsString().replace("\"", "").trim();
+                if (!imagePath.startsWith("http")) {
+                    imagePath = "img/" + imagePath;
+                }
+                return imagePath;
+            }
+        } catch (Exception e) {
+            // Fallback: treat as simple string
+            String[] parts = images.split(",");
+            if (parts.length > 0) {
+                String imagePath = parts[0].trim().replace("\"", "").replace("[", "").replace("]", "");
+                if (!imagePath.startsWith("http")) {
+                    imagePath = "img/" + imagePath;
+                }
+                return imagePath;
+            }
+        }
+        
+        return "https://via.placeholder.com/300x200?text=No+Image";
+    }
+
+    private String extractCityFromMessage(String message) {
+        if (message == null) return "";
+        message = message.toLowerCase().trim();
+        
+        // Vietnamese city detection with more variations
+        if (message.matches(".*nha\\s*trang.*")) return "Nha Trang";
+        if (message.matches(".*đà\\s*nẵng.*|.*da\\s*nang.*")) return "Đà Nẵng";
+        if (message.matches(".*đà\\s*lạt.*|.*da\\s*lat.*|.*dalat.*")) return "Đà Lạt";
+        if (message.matches(".*hà\\s*nội.*|.*ha\\s*noi.*|.*hanoi.*")) return "Hà Nội";
+        if (message.matches(".*hồ\\s*chí\\s*minh.*|.*ho\\s*chi\\s*minh.*|.*saigon.*|.*sài\\s*gòn.*|.*tphcm.*")) return "Hồ Chí Minh";
+        if (message.matches(".*cần\\s*thơ.*|.*can\\s*tho.*")) return "Cần Thơ";
+        if (message.matches(".*vũng\\s*tàu.*|.*vung\\s*tau.*")) return "Vũng Tàu";
+        
+        return ""; // Empty string means search all cities
+    }
+
+    // ✅ IMPROVED: Better info extraction with more patterns
+    private ParsedInfo extractInfoFromMessage(String message) {
+        ParsedInfo info = new ParsedInfo();
+        if (message == null) return info;
+        
+        String originalMessage = message;
+        message = message.toLowerCase();
+
+        // Extract guest count with multiple patterns
+        Pattern[] guestPatterns = {
+            Pattern.compile("(?:cho|cần|phòng)?\\s*(\\d{1,2})\\s*(?:người|khách|ng|guest)"),
+            Pattern.compile("(\\d{1,2})\\s*(?:pax|adult)"),
+            Pattern.compile("(?:couple|cặp\\s*đôi)"), // Special case for couples
+            Pattern.compile("(?:family|gia\\s*đình)"), // Special case for family
+            Pattern.compile("(?:nhóm|group)\\s*(\\d{1,2})")
+        };
+        
+        for (Pattern pattern : guestPatterns) {
+            Matcher matcher = pattern.matcher(message);
+            if (matcher.find()) {
+                if (pattern.pattern().contains("couple") || pattern.pattern().contains("cặp")) {
+                    info.guests = 2;
+                    break;
+                } else if (pattern.pattern().contains("family") || pattern.pattern().contains("gia")) {
+                    info.guests = 4; // Default family size
+                    break;
+                } else {
+                    try {
+                        int guests = Integer.parseInt(matcher.group(1));
+                        if (guests > 0 && guests <= 20) {
+                            info.guests = guests;
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        // Continue to next pattern
+                    }
+                }
+            }
+        }
+
+        // Extract price category with better keywords
+        if (message.matches(".*(?:giá\\s*rẻ|gia\\s*re|tiết\\s*kiệm|budget|cheap|dưới\\s*500).*")) {
+            info.priceCategory = "gia re";
+        } else if (message.matches(".*(?:trung\\s*bình.*thấp|500k|1tr|mid.*low|medium.*low).*")) {
+            info.priceCategory = "trung binh thap";
+        } else if (message.matches(".*(?:trung\\s*bình.*cao|1tr.*2tr|mid.*high|medium.*high).*")) {
+            info.priceCategory = "trung binh cao";
+        } else if (message.matches(".*(?:cao\\s*cấp|sang\\s*trọng|luxury|premium|trên\\s*2tr|expensive).*")) {
+            info.priceCategory = "mr beast";
+        }
+
+        // Extract dates with multiple formats
+        info.checkinDate = extractDateFromMessage(originalMessage, "từ|from|check.*in");
+        info.checkoutDate = extractDateFromMessage(originalMessage, "đến|to|until|check.*out");
+
+        return info;
+    }
+
+    private Date extractDateFromMessage(String message, String keywords) {
+        try {
+            // Multiple date patterns
+            Pattern[] datePatterns = {
+                Pattern.compile("(?:" + keywords + ")\\s*(\\d{1,2})[/-](\\d{1,2})(?:[/-](\\d{2,4}))?"),
+                Pattern.compile("(?:" + keywords + ")\\s*ngày\\s*(\\d{1,2})\\s*tháng\\s*(\\d{1,2})(?:\\s*năm\\s*(\\d{2,4}))?"),
+                Pattern.compile("(?:" + keywords + ")\\s*(\\d{1,2})-(\\d{1,2})(?:-(\\d{2,4}))?")
+            };
+            
+            for (Pattern pattern : datePatterns) {
+                Matcher matcher = pattern.matcher(message);
+                if (matcher.find()) {
+                    int day = Integer.parseInt(matcher.group(1));
+                    int month = Integer.parseInt(matcher.group(2));
+                    int year = matcher.group(3) != null ? 
+                        Integer.parseInt(matcher.group(3)) : 
+                        LocalDate.now().getYear();
+                    
+                    // Handle 2-digit year
+                    if (year < 100) {
+                        year += 2000;
+                    }
+                    
+                    // Validate date
+                    if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+                        try {
+                            LocalDate date = LocalDate.of(year, month, day);
+                            return Date.valueOf(date);
+                        } catch (Exception e) {
+                            // Invalid date, continue
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Date parsing error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private boolean matchPriceFilter(BigDecimal price, String category) {
+        if (price == null || category == null) return true;
+        
+        BigDecimal fiveHundredK = new BigDecimal("500000");
+        BigDecimal oneMillion = new BigDecimal("1000000");
+        BigDecimal twoMillion = new BigDecimal("2000000");
+        
+        return switch (category.toLowerCase()) {
+            case "gia re" -> price.compareTo(fiveHundredK) < 0;
+            case "trung binh thap" -> price.compareTo(fiveHundredK) >= 0 && price.compareTo(oneMillion) <= 0;
+            case "trung binh cao" -> price.compareTo(oneMillion) > 0 && price.compareTo(twoMillion) <= 0;
+            case "mr beast" -> price.compareTo(twoMillion) > 0;
+            default -> true;
+        };
+    }
+
+    // ====================== INFO CLASS ============================
+    private static class ParsedInfo {
+        int guests = 1;
+        Date checkinDate = null;
+        Date checkoutDate = null;
+        String priceCategory = null;
+    }
+}

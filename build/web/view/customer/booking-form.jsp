@@ -291,10 +291,9 @@
                     let checkin = parseDMY(checkinStr);
                     let checkout = parseDMY(checkoutStr);
                     if (checkin && checkout && !isNaN(checkin) && !isNaN(checkout)) {
-                        nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
-                        if (nights <= 0)
-                            nights = 1;
-                        total = nights * pricePerNight;
+                        nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
+                        if (nights <= 0) nights = '-';
+                        else total = nights * pricePerNight;
                     }
                 }
                 document.getElementById('nights').textContent = (nights !== '-' ? nights + ' đêm' : '-');
@@ -311,13 +310,20 @@
 
                 // Validate form
                 const form = document.getElementById('bookingForm');
-
                 form.addEventListener('submit', function (e) {
+                    let checkinStr = document.getElementById('checkin').value;
+                    let checkoutStr = document.getElementById('checkout').value;
+                    let d1 = parseDMY(checkinStr);
+                    let d2 = parseDMY(checkoutStr);
+                    if (!d1 || !d2 || d2 <= d1) {
+                        e.preventDefault();
+                        alert('Ngày trả phòng phải sau ngày nhận phòng. Vui lòng chọn lại!');
+                        return;
+                    }
                     if (!confirm('Bạn có chắc chắn muốn đặt phòng này?')) {
                         e.preventDefault();
                         return;
                     }
-
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
                 });

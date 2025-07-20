@@ -185,7 +185,7 @@
                                 <div class="reviewer-info">
                                     <div class="reviewer-avatar">
                                         <c:choose>
-                                            <c:when test="${not empty review.bookingId.customerId.fullName}">
+                                            <c:when test="${not empty review.bookingId and not empty review.bookingId.customerId and not empty review.bookingId.customerId.fullName}">
                                                 ${fn:substring(review.bookingId.customerId.fullName, 0, 1)}
                                             </c:when>
                                             <c:otherwise>U</c:otherwise>
@@ -194,7 +194,7 @@
                                     <div class="reviewer-details">
                                         <h4>
                                             <c:choose>
-                                                <c:when test="${not empty review.bookingId.customerId.fullName}">
+                                                <c:when test="${not empty review.bookingId and not empty review.bookingId.customerId and not empty review.bookingId.customerId.fullName}">
                                                     ${review.bookingId.customerId.fullName}
                                                 </c:when>
                                                 <c:otherwise>Unknown User</c:otherwise>

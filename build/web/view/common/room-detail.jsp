@@ -185,11 +185,13 @@
             <div class="booking-form-container">
                 <h3><i class="fas fa-calendar-alt"></i> Đặt phòng</h3>
                 <% if (user == null) { %>
-                    <div class="login-notice" style="background: #fef3c7; color: #d97706; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fbbf24;">
+                    <div class="login-notice" style="background: #fef3c7; color: #d97706; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fbbf24; text-align:center;">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Vui lòng đăng nhập để đặt phòng</strong>
+                        <strong> Vui lòng đăng nhập để đặt phòng</strong>
                         <br>
                         <small>Bạn cần đăng nhập trước khi có thể đặt phòng</small>
+                        <br>
+                        <a href="<%=request.getContextPath()%>/view/auth/login.jsp" class="lux-btn lux-btn-primary lux-btn-large" style="margin-top:12px;display:inline-block;">Đăng nhập</a>
                     </div>
                 <% } %>
                 <% if (canBook) { %>
@@ -261,19 +263,19 @@
                 const checkin = document.getElementById('checkin').value;
                 const checkout = document.getElementById('checkout').value;
                 const guests = document.getElementById('guests').value;
-                
                 if (!checkin || !checkout || !guests) {
                     e.preventDefault();
                     alert('Vui lòng điền đầy đủ thông tin đặt phòng.');
                     return;
                 }
-                
-                if (new Date(checkout) <= new Date(checkin)) {
+                // Chuẩn hóa kiểm tra ngày
+                const d1 = parseDMY(checkin);
+                const d2 = parseDMY(checkout);
+                if (!d1 || !d2 || d2 <= d1) {
                     e.preventDefault();
-                    alert('Ngày trả phòng phải sau ngày nhận phòng.');
+                    alert('Ngày trả phòng phải sau ngày nhận phòng. Vui lòng chọn lại!');
                     return;
                 }
-                
                 bookBtn.disabled = true;
                 bookBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...';
             });
@@ -324,16 +326,14 @@ function updateNightsSummary() {
         let d1 = parseDMY(checkin);
         let d2 = parseDMY(checkout);
         if (d1 && d2 && !isNaN(d1) && !isNaN(d2)) {
-            nights = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24));
-            if (nights <= 0) nights = 1;
+            nights = (d2 - d1) / (1000 * 60 * 60 * 24);
+            if (nights <= 0) nights = '-';
         }
     }
     document.getElementById('nights-summary').textContent = (nights !== '-' ? nights + ' đêm' : '-');
 }
-
 document.getElementById('checkin').addEventListener('change', updateNightsSummary);
 document.getElementById('checkout').addEventListener('change', updateNightsSummary);
-// Gọi khi load trang
 updateNightsSummary();
 </script>
 <jsp:include page="footer.jsp"/>

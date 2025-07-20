@@ -116,6 +116,22 @@ public class BookingService {
     }
 
     /**
+     * Lấy booking mới nhất của customer cho room (theo createdAt giảm dần)
+     */
+    public Booking getLatestBookingByCustomerAndRoom(int customerId, int roomId) {
+        List<Booking> bookings = bookingDAO.getBookingsByCustomerId(customerId);
+        Booking latest = null;
+        for (Booking b : bookings) {
+            if (b.getRoomId().getRoomId() == roomId) {
+                if (latest == null || b.getCreatedAt().after(latest.getCreatedAt())) {
+                    latest = b;
+                }
+            }
+        }
+        return latest;
+    }
+
+    /**
      * Cập nhật trạng thái booking
      */
     public boolean updateBookingStatus(int bookingId, String newStatus) {

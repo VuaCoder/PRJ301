@@ -30,7 +30,16 @@ public class QRPaymentServlet extends HttpServlet {
                 return;
             }
 
+            String checkin = request.getParameter("checkin");
+            String checkout = request.getParameter("checkout");
+            String guests = request.getParameter("guests");
+            String totalPrice = request.getParameter("totalPrice");
+
             request.setAttribute("room", room);
+            request.setAttribute("checkin", checkin);
+            request.setAttribute("checkout", checkout);
+            request.setAttribute("guests", guests);
+            request.setAttribute("totalPrice", totalPrice);
             request.getRequestDispatcher("qr_payment.jsp").forward(request, response);
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "roomId không hợp lệ");

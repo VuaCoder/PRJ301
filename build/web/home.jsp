@@ -94,13 +94,14 @@
                                 <option value="mr beast">Trên 2.000.000 đồng</option>
                             </select>
                         </div>
+                        <!-- Thay input ngày vào/ngày ra sang type="text" để flatpickr hoạt động -->
                         <div class="option-field">
                             <label for="check-in">Ngày Vào / Check In</label>
-                            <input type="date" id="check-in" name="check_in" placeholder="Chọn ngày">
+                            <input type="text" id="check-in" name="check_in" placeholder="Chọn ngày">
                         </div>
                         <div class="option-field">
                             <label for="check-out">Ngày Ra / Check Out</label>
-                            <input type="date" id="check-out" name="check_out" placeholder="Chọn ngày">
+                            <input type="text" id="check-out" name="check_out" placeholder="Chọn ngày">
                         </div>
                         <div class="option-field">
                             <label for="guests">Số lượng khách / Guest</label>
@@ -599,14 +600,6 @@ document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
     opacity: 1;
     background: #2563eb !important;
 }
-.property-listing {
-    margin-top: 2%;
-    margin-left: 0;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    padding: 0;
-}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -707,7 +700,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
+const checkinPicker = flatpickr("#check-in", {
+    dateFormat: "d/m/Y",
+    minDate: "today",
+    onChange: function(selectedDates, dateStr, instance) {
+        if (selectedDates.length) {
+            checkoutPicker.set('minDate', selectedDates[0]);
+        }
+    }
+});
+const checkoutPicker = flatpickr("#check-out", {
+    dateFormat: "d/m/Y",
+    minDate: "today"
+});
 // Xử lý search theo thời gian thực
 document.addEventListener('DOMContentLoaded', function() {
     const checkInInput = document.getElementById('check-in');

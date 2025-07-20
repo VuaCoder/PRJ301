@@ -3,7 +3,9 @@
 <%@page import="model.UserAccount"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="service.ReviewService" %>
 <%
+    ReviewService reviewService = new ReviewService();
     UserAccount user = (UserAccount) session.getAttribute("user");
     if (user == null) {
         response.sendRedirect(request.getContextPath() + "/view/auth/login.jsp");
@@ -336,9 +338,14 @@
                                     </a>
                                     
                                     <c:if test="${booking.status == 'Confirmed'}">
+                                        <c:set var="hasReviewed" value="${reviewService.hasReviewForBooking(booking.bookingId)}" scope="page" />
                                         <a href="${pageContext.request.contextPath}/review?bookingId=${booking.bookingId}" 
                                            class="action-btn btn-primary">
-                                            <i class="fas fa-star"></i> Đánh giá
+                                            <i class="fas fa-star"></i> 
+                                            <c:choose>
+                                                <c:when test="${hasReviewed}">Xem đánh giá cũ</c:when>
+                                                <c:otherwise>Đánh giá</c:otherwise>
+                                            </c:choose>
                                         </a>
                                     </c:if>
                                 </div>
@@ -348,7 +355,62 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        
+        <c:if test="${totalPages > 1}">
+            <style>
+                .pagination-numbers {
+                    display: flex;
+                    justify-content: center;
+                    gap: 12px;
+                    margin: 40px 0 0 0;
+                }
+                .page-btn {
+                    min-width: 44px;
+                    height: 44px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    font-weight: 700;
+                    font-size: 1.15rem;
+                    background: #f3f4f6;
+                    color: #374151;
+                    border: none;
+                    cursor: pointer;
+                    transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+                    text-decoration: none;
+                    box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+                    margin: 0 2px;
+                }
+                .page-btn.active {
+                    background: linear-gradient(135deg, #2563eb 60%, #1d4ed8 100%);
+                    color: #fff;
+                    box-shadow: 0 4px 16px rgba(37,99,235,0.13);
+                    transform: scale(1.12);
+                }
+                .page-btn:hover:not(.active) {
+                    background: #dbeafe;
+                    color: #2563eb;
+                    box-shadow: 0 2px 12px rgba(37,99,235,0.10);
+                    transform: scale(1.07);
+                }
+            </style>
+            <div class="pagination-numbers">
+                <c:if test="${currentPage > 1}">
+                    <a href="my-bookings?page=${currentPage - 1}" class="page-btn">&laquo;</a>
+                </c:if>
+                <c:forEach var="i" begin="1" end="${totalPages}">
+                    <a href="my-bookings?page=${i}" class="page-btn${i == currentPage ? ' active' : ''}">${i}</a>
+                </c:forEach>
+                <c:if test="${currentPage < totalPages}">
+                    <a href="my-bookings?page=${currentPage + 1}" class="page-btn">&raquo;</a>
+                </c:if>
+            </div>
+        </c:if>
         <jsp:include page="../common/footer.jsp" />
+        <style>
+            footer, .footer, #footer, .footer-admin, .footer_admin {
+                margin-top: 60px !important;
+            }
+        </style>
     </body>
 </html> 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import model.Booking;
 
 @WebServlet(name = "BookingServlet", urlPatterns = {"/booking"})
 public class BookingServlet extends HttpServlet {
@@ -245,8 +246,22 @@ public class BookingServlet extends HttpServlet {
             boolean success = bookingService.createBooking(roomIdInt, customer.getCustomerId(), checkinDate, checkoutDate, guestsInt, totalPrice);
 
             if (success) {
-                // Redirect đến trang thành công
-                response.sendRedirect("thankyou?bookingId=" + roomIdInt);
+                // Cập nhật trạng thái booking thành Confirmed (nếu cần)
+                // Tìm bookingId vừa tạo (giả sử có hàm lấy booking mới nhất của customer cho phòng này)
+                Booking latestBooking = bookingService.getLatestBookingByCustomerAndRoom(customer.getCustomerId(), roomIdInt);
+                if (latestBooking != null) {
+                    bookingService.updateBookingStatus(latestBooking.getBookingId(), "Confirmed");
+                }
+                // Chuyển hướng sang QRPaymentServlet, truyền đủ tham số, encode giá trị nếu cần
+                String redirectUrl = String.format("qr-payment?roomId=%d&checkin=%s&checkout=%s&guests=%d&totalPrice=%s",
+                    roomIdInt,
+                    java.net.URLEncoder.encode(checkin, "UTF-8"),
+                    java.net.URLEncoder.encode(checkout, "UTF-8"),
+                    guestsInt,
+                    java.net.URLEncoder.encode(totalPrice.toString(), "UTF-8")
+                );
+                response.sendRedirect(redirectUrl);
+                return;
             } else {
                 request.setAttribute("error", "Không thể tạo booking. Vui lòng thử lại.");
                 request.getRequestDispatcher("view/common/error.jsp").forward(request, response);

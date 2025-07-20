@@ -23,12 +23,33 @@ public class SearchServlet extends HttpServlet {
 
         // Part 2 search (from the main form: location, check-in, check-out, guests)
         String location = request.getParameter("location");
-        String checkIn = request.getParameter("check_in"); // Not used in current searchRooms method, but good to have
-        String checkOut = request.getParameter("check_out"); // Not used in current searchRooms method, but good to have
+        String checkIn = request.getParameter("check_in");
+        String checkOut = request.getParameter("check_out");
         String guestsParam = request.getParameter("guests");
 
-        // Prioritize the main search form if location and guests are provided
-        if (location != null && !location.trim().isEmpty() && guestsParam != null && !guestsParam.trim().isEmpty()) {
+        // Nếu có check_in và check_out, lọc phòng theo ngày
+        if (checkIn != null && !checkIn.trim().isEmpty() && checkOut != null && !checkOut.trim().isEmpty()) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date checkInDate = sdf.parse(checkIn);
+                java.util.Date checkOutDate = sdf.parse(checkOut);
+                searchResults = roomDAO.getAvailableRooms(checkInDate, checkOutDate);
+                // Có thể lọc thêm theo location, guests nếu muốn
+                if (location != null && !location.isEmpty()) {
+                    searchResults.removeIf(r -> r.getCity() == null || !r.getCity().toLowerCase().contains(location.toLowerCase()));
+                }
+                if (guestsParam != null && !guestsParam.isEmpty()) {
+                    try {
+                        int guests = Integer.parseInt(guestsParam);
+                        searchResults.removeIf(r -> r.getCapacity() < guests);
+                    } catch (NumberFormatException ignored) {}
+                }
+                searchType = "dateSearch";
+            } catch (Exception e) {
+                searchResults = List.of();
+                searchType = "invalidDate";
+            }
+        } else if (location != null && !location.trim().isEmpty() && guestsParam != null && !guestsParam.trim().isEmpty()) {
             try {
                 int guests = Integer.parseInt(guestsParam);
                 searchResults = roomDAO.searchRooms(location.trim(), guests);
