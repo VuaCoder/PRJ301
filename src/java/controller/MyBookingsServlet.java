@@ -60,9 +60,12 @@ public class MyBookingsServlet extends HttpServlet {
             }
             int totalBookings = bookings.size();
             int totalPages = (int) Math.ceil((double) totalBookings / pageSize);
+            // Đảm bảo page nằm trong khoảng hợp lệ
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
             int fromIndex = (page - 1) * pageSize;
             int toIndex = Math.min(fromIndex + pageSize, totalBookings);
-            List<model.Booking> bookingsPage = bookings.subList(Math.max(0, fromIndex), Math.max(0, toIndex));
+            List<model.Booking> bookingsPage = (fromIndex < toIndex) ? bookings.subList(fromIndex, toIndex) : java.util.Collections.emptyList();
 
             request.setAttribute("bookings", bookingsPage);
             request.setAttribute("currentPage", page);

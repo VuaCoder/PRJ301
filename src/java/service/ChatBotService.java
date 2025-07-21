@@ -69,7 +69,7 @@ public class ChatBotService {
 
         // Get filtered rooms with proper availability check
         String roomsHtml = getFilteredRoomsWithAvailability(
-            userMessage, showMore, info.guests, info.checkinDate, info.checkoutDate, info.priceCategory
+            userMessage, showMore, info
         );
         
         if ("KHONG_CO_PHONG".equals(roomsHtml)) {
@@ -95,41 +95,87 @@ public class ChatBotService {
      * ✅ IMPROVED: Get rooms with comprehensive filtering
      */
     private String getFilteredRoomsWithAvailability(String userMessage, boolean showMore, 
-                                                   int guests, Date checkinDate, Date checkoutDate, String priceCategory) {
+                                               ParsedInfo info) {
+    try {
+        String city = extractCityFromMessage(userMessage);
+        System.out.println("🔍 DEBUG - Extracted city: '" + city + "'");
+        System.out.println("🔍 DEBUG - Guests: " + info.guests + ", Checkin: " + info.checkinDate + ", Checkout: " + info.checkoutDate);
+        
+        // ✅ IMPROVED: Thêm debug log và error handling
+        List<Room> rooms;
+        
+        // Try the main method first
         try {
-            String city = extractCityFromMessage(userMessage);
-            
-            // Get available rooms from DAO
-            List<Room> rooms = roomDAO.getAvailableRooms(city, guests, checkinDate, checkoutDate);
-
-            // ✅ IMPROVED: Additional filtering
-            if (priceCategory != null && !priceCategory.isEmpty()) {
-                rooms.removeIf(room -> !matchPriceFilter(room.getPrice(), priceCategory));
-            }
-
-            // Type filtering
-            String roomType = extractRoomTypeFromMessage(userMessage);
-            if (roomType != null && !roomType.isEmpty()) {
-                rooms.removeIf(room -> !matchRoomType(room.getType(), roomType));
-            }
-
-            // Limit results if not showing more
-            if (!showMore && rooms.size() > 3) {
-                rooms = rooms.subList(0, 3);
-            }
-
-            if (rooms.isEmpty()) {
-                return "KHONG_CO_PHONG";
-            }
-
-            return formatRoomsAsHtml(rooms, checkinDate, checkoutDate);
-            
+            rooms = roomDAO.getAvailableRoomss(city, info.guests, info.checkinDate, info.checkoutDate, info.priceCategory);
+            System.out.println("🔍 DEBUG - Found " + rooms.size() + " rooms with main method");
         } catch (Exception e) {
-            System.err.println("❌ Error in getFilteredRoomsWithAvailability: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("❌ Main method failed, trying simple method: " + e.getMessage());
+            // Fallback to simple method
+            rooms = roomDAO.getAvailableRoomsSimple(city, info.guests, info.checkinDate, info.checkoutDate);
+            System.out.println("🔍 DEBUG - Found " + rooms.size() + " rooms with simple method");
+        }
+
+        // ✅ DEBUG: Log a sample room if available
+        if (!rooms.isEmpty()) {
+            Room sample = rooms.get(0);
+            System.out.println("🔍 DEBUG - Sample room: " + sample.getTitle() + 
+                " | City: " + (sample.getPropertyId() != null ? sample.getPropertyId().getCity() : "NULL"));
+        }
+
+        // Additional filtering (keep existing logic
+        if (info.priceCategory != null && !info.priceCategory.isEmpty()) {
+            // Thêm lọc khoảng giá chính xác nếu có
+if (info.minPrice != null && info.maxPrice != null) {
+    int before = rooms.size();
+    rooms.removeIf(room -> room.getPrice().compareTo(info.minPrice) < 0 || room.getPrice().compareTo(info.maxPrice) > 0);
+    System.out.println("🔍 DEBUG - After min-max price filter: " + rooms.size() + " (was " + before + ")");
+}
+
+            int beforeFilter = rooms.size();
+           rooms.removeIf(room -> !matchPriceFilter(room.getPrice(), info.priceCategory));
+            System.out.println("🔍 DEBUG - After price filter: " + rooms.size() + " (was " + beforeFilter + ")");
+        }
+
+        // Type filtering
+        String roomType = extractRoomTypeFromMessage(userMessage);
+        if (roomType != null && !roomType.isEmpty()) {
+            int beforeFilter = rooms.size();
+            rooms.removeIf(room -> !matchRoomType(room.getType(), roomType));
+            System.out.println("🔍 DEBUG - After type filter: " + rooms.size() + " (was " + beforeFilter + ")");
+        }
+
+        // Limit results if not showing more
+        if (!showMore && rooms.size() > 3) {
+            rooms = rooms.subList(0, 3);
+            System.out.println("🔍 DEBUG - Limited to 3 rooms for display");
+        }
+
+        if (rooms.isEmpty()) {
+            System.out.println("❌ DEBUG - No rooms found after all filters");
             return "KHONG_CO_PHONG";
         }
+
+        return formatRoomsAsHtml(rooms, info.checkinDate, info.checkoutDate);
+        
+    } catch (Exception e) {
+        System.err.println("❌ Error in getFilteredRoomsWithAvailability: " + e.getMessage());
+        e.printStackTrace();
+        
+        // ✅ FALLBACK: Try to get any available rooms
+        try {
+            System.out.println("🔄 Trying fallback query...");
+            List<Room> fallbackRooms = roomDAO.getLatestRooms(5);
+            if (!fallbackRooms.isEmpty()) {
+                return formatRoomsAsHtml(fallbackRooms.subList(0, Math.min(3, fallbackRooms.size())), 
+                                       info.checkinDate, info.checkoutDate);
+            }
+        } catch (Exception fallbackError) {
+            System.err.println("❌ Even fallback failed: " + fallbackError.getMessage());
+        }
+        
+        return "KHONG_CO_PHONG";
     }
+}
 
     /**
      * ✅ IMPROVED: Better room formatting with pricing
@@ -146,7 +192,7 @@ public class ChatBotService {
             String image = extractFirstImage(room.getImages());
             BigDecimal totalPrice = room.getPrice().multiply(BigDecimal.valueOf(nights));
             
-          html.append(String.format("""
+         html.append(String.format("""
     <div class='room-suggestion' style='cursor: pointer;' onclick="window.location.href='detail?id=%d'">
         <div style='display: flex; gap: 12px;'>
             <img src='%s' alt='%s' style='width: 85px; height: 65px; object-fit: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid #ddd;'>
@@ -165,18 +211,18 @@ public class ChatBotService {
                 </div>
             </div>
         </div>
-    </div>
-""", 
-room.getRoomId(),  // <-- roomId để tạo URL
-image, 
-room.getTitle(),
-room.getTitle(),
-room.getType() != null ? room.getType() : "Standard",
-room.getPrice(),
-room.getCapacity(),
-truncateDescription(room.getDescription(), 50),
-nights,
-totalPrice
+    </div> 
+""",
+    room.getRoomId(),
+    image,
+    room.getTitle(),
+    room.getTitle(),
+    room.getType() != null ? room.getType() : "Standard",
+    room.getPrice().doubleValue(), // ✅ sửa chỗ này
+    room.getCapacity(),
+    truncateDescription(room.getDescription(), 50),
+    nights,
+    totalPrice.doubleValue() // ✅ sửa chỗ này
 ));
 
         }
@@ -211,25 +257,26 @@ totalPrice
     /**
      * ✅ NEW: Create no room found message
      */
-    private String createNoRoomFoundMessage(ParsedInfo info) {
-        return String.format(
-            "😔 **Không tìm thấy phòng phù hợp**\n\n" +
-            "🔍 **Yêu cầu của bạn**:\n" +
-            "👥 %d khách\n" +
-            "📅 %s ➜ %s\n" +
-            "💰 %s\n\n" +
-            "💡 **Gợi ý khác**:\n" +
-            "• 📅 Thử ngày linh hoạt hơn\n" +
-            "• 👥 Giảm số khách hoặc tách phòng\n" +
-            "• 💰 Mở rộng ngân sách\n" +
-            "• 🗺️ Xem khu vực lân cận\n\n" +
-           
-            info.guests,
-            formatVietnameseDate(info.checkinDate),
-            formatVietnameseDate(info.checkoutDate),
-            info.priceCategory != null ? getPriceCategoryDisplay(info.priceCategory) : "Mọi mức giá"
-        );
-    }
+private String createNoRoomFoundMessage(ParsedInfo info) {
+    String priceText = info.priceCategory != null ? getPriceCategoryDisplay(info.priceCategory) : "Mọi mức giá";
+    
+    return String.format(
+        "😔 **Không tìm thấy phòng phù hợp**\n\n" +
+        "🔍 **Yêu cầu của bạn**:\n" +
+        "👥 %d khách\n" +
+        "📅 %s ➜ %s\n" +
+        "💰 %s\n\n" +
+        "💡 **Gợi ý khác**:\n" +
+        "• 📅 Thử ngày linh hoạt hơn\n" +
+        "• 👥 Giảm số khách hoặc tách phòng\n" +
+        "• 💰 Mở rộng ngân sách\n" +
+        "• 🗺️ Xem khu vực lân cận\n\n",
+        info.guests,
+        formatVietnameseDate(info.checkinDate),
+        formatVietnameseDate(info.checkoutDate),
+        priceText
+    );
+}
 
     // ====================== HELPER METHODS ============================
 
@@ -346,63 +393,142 @@ totalPrice
         return "https://via.placeholder.com/300x200?text=No+Image";
     }
 
-    private String extractCityFromMessage(String message) {
-        if (message == null) return "";
-        message = message.toLowerCase().trim();
-        
-        // Vietnamese city detection with more variations
-        if (message.matches(".*nha\\s*trang.*")) return "Nha Trang";
-        if (message.matches(".*đà\\s*nẵng.*|.*da\\s*nang.*")) return "Đà Nẵng";
-        if (message.matches(".*đà\\s*lạt.*|.*da\\s*lat.*|.*dalat.*")) return "Đà Lạt";
-        if (message.matches(".*hà\\s*nội.*|.*ha\\s*noi.*|.*hanoi.*")) return "Hà Nội";
-        if (message.matches(".*hồ\\s*chí\\s*minh.*|.*ho\\s*chi\\s*minh.*|.*saigon.*|.*sài\\s*gòn.*|.*tphcm.*")) return "Hồ Chí Minh";
-        if (message.matches(".*cần\\s*thơ.*|.*can\\s*tho.*")) return "Cần Thơ";
-        if (message.matches(".*vũng\\s*tàu.*|.*vung\\s*tau.*")) return "Vũng Tàu";
-        
-        return ""; // Empty string means search all cities
+   private String extractCityFromMessage(String message) {
+    if (message == null) {
+        System.out.println("🔍 DEBUG - Message is null, returning empty city");
+        return "";
     }
+    
+    String originalMessage = message;
+    message = message.toLowerCase().trim();
+    System.out.println("🔍 DEBUG - Processing message for city: '" + originalMessage + "'");
+    
+    // Vietnamese city detection with more variations
+    String[] cityPatterns = {
+        "nha\\s*trang", "Nha Trang",
+        "đà\\s*nẵng|da\\s*nang", "Đà Nẵng", 
+        "đà\\s*lạt|da\\s*lat|dalat", "Đà Lạt",
+        "hà\\s*nội|ha\\s*noi|hanoi", "Hà Nội",
+        "hồ\\s*chí\\s*minh|ho\\s*chi\\s*minh|saigon|sài\\s*gòn|tphcm", "Hồ Chí Minh",
+        "cần\\s*thơ|can\\s*tho", "Cần Thơ",
+        "vũng\\s*tàu|vung\\s*tau", "Vũng Tàu"
+    };
+    
+    for (int i = 0; i < cityPatterns.length; i += 2) {
+        if (message.matches(".*" + cityPatterns[i] + ".*")) {
+            String detectedCity = cityPatterns[i + 1];
+            System.out.println("🔍 DEBUG - Detected city: '" + detectedCity + "'");
+            return detectedCity;
+        }
+    }
+    
+    System.out.println("🔍 DEBUG - No city detected, searching all cities");
+    return ""; // Empty string means search all cities
+}
 
     // ✅ IMPROVED: Better info extraction with more patterns
     private ParsedInfo extractInfoFromMessage(String message) {
-        ParsedInfo info = new ParsedInfo();
-        if (message == null) return info;
-        
-        String originalMessage = message;
-        message = message.toLowerCase();
+    ParsedInfo info = new ParsedInfo();
+    if (message == null) return info;
 
-        // Extract guest count with multiple patterns
-        Pattern[] guestPatterns = {
-            Pattern.compile("(?:cho|cần|phòng)?\\s*(\\d{1,2})\\s*(?:người|khách|ng|guest)"),
-            Pattern.compile("(\\d{1,2})\\s*(?:pax|adult)"),
-            Pattern.compile("(?:couple|cặp\\s*đôi)"), // Special case for couples
-            Pattern.compile("(?:family|gia\\s*đình)"), // Special case for family
-            Pattern.compile("(?:nhóm|group)\\s*(\\d{1,2})")
-        };
-        
-        for (Pattern pattern : guestPatterns) {
-            Matcher matcher = pattern.matcher(message);
-            if (matcher.find()) {
-                if (pattern.pattern().contains("couple") || pattern.pattern().contains("cặp")) {
-                    info.guests = 2;
-                    break;
-                } else if (pattern.pattern().contains("family") || pattern.pattern().contains("gia")) {
-                    info.guests = 4; // Default family size
-                    break;
-                } else {
-                    try {
-                        int guests = Integer.parseInt(matcher.group(1));
-                        if (guests > 0 && guests <= 20) {
-                            info.guests = guests;
-                            break;
-                        }
-                    } catch (NumberFormatException e) {
-                        // Continue to next pattern
+    String originalMessage = message;
+    message = message.toLowerCase();
+
+    // ===== 1. Extract số khách =====
+    Pattern[] guestPatterns = {
+        Pattern.compile("(?:cho|cần|phòng)?\\s*(\\d{1,2})\\s*(?:người|khách|ng|guest)"),
+        Pattern.compile("(\\d{1,2})\\s*(?:pax|adult)"),
+        Pattern.compile("(?:couple|cặp\\s*đôi)"),
+        Pattern.compile("(?:family|gia\\s*đình)"),
+        Pattern.compile("(?:nhóm|group)\\s*(\\d{1,2})")
+    };
+
+    for (Pattern pattern : guestPatterns) {
+        Matcher matcher = pattern.matcher(message);
+        if (matcher.find()) {
+            if (pattern.pattern().contains("couple") || pattern.pattern().contains("cặp")) {
+                info.guests = 2;
+                break;
+            } else if (pattern.pattern().contains("family") || pattern.pattern().contains("gia")) {
+                info.guests = 4;
+                break;
+            } else {
+                try {
+                    int guests = Integer.parseInt(matcher.group(1));
+                    if (guests > 0 && guests <= 20) {
+                        info.guests = guests;
+                        break;
                     }
-                }
+                } catch (NumberFormatException ignored) {}
             }
         }
+    }
 
-        // Extract price category with better keywords
+    // ===== 2. Extract khoảng giá =====
+    Pattern priceRangePattern = Pattern.compile("từ\\s*(\\d+(?:\\.\\d+)?)(k|tr)?\\s*(?:đến|tới|->|-)\\s*(\\d+(?:\\.\\d+)?)(k|tr)?");
+    Matcher rangeMatcher = priceRangePattern.matcher(message);
+    
+if (rangeMatcher.find()) {
+    try {
+        double from = Double.parseDouble(rangeMatcher.group(1));
+        String fromUnit = rangeMatcher.group(2) != null ? rangeMatcher.group(2) : "k";
+        double to = Double.parseDouble(rangeMatcher.group(3));
+        String toUnit = rangeMatcher.group(4) != null ? rangeMatcher.group(4) : "k";
+
+        BigDecimal fromPrice = BigDecimal.valueOf(fromUnit.contains("tr") ? from * 1_000_000 : from * 1_000);
+        BigDecimal toPrice = BigDecimal.valueOf(toUnit.contains("tr") ? to * 1_000_000 : to * 1_000);
+
+        info.minPrice = fromPrice;
+        info.maxPrice = toPrice;
+
+        // Optional: gán category dựa trên toPrice
+        if (toPrice.compareTo(new BigDecimal("500000")) < 0) {
+            info.priceCategory = "gia re";
+        } else if (toPrice.compareTo(new BigDecimal("1000000")) <= 0) {
+            info.priceCategory = "trung binh thap";
+        } else if (toPrice.compareTo(new BigDecimal("2000000")) <= 0) {
+            info.priceCategory = "trung binh cao";
+        } else {
+            info.priceCategory = "mr beast";
+        }
+
+        System.out.println("🔍 Detected price range: " + fromPrice + " -> " + toPrice);
+    } catch (Exception e) {
+        System.err.println("⚠️ Parse price range failed: " + e.getMessage());
+    }
+}
+
+     else {
+        // ===== 3. Extract giá đơn lẻ như "800k", "1.2tr" =====
+        Pattern singlePricePattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(k|tr)");
+        Matcher priceMatcher = singlePricePattern.matcher(message);
+        if (priceMatcher.find()) {
+            try {
+                double val = Double.parseDouble(priceMatcher.group(1));
+                String unit = priceMatcher.group(2);
+               BigDecimal price = BigDecimal.valueOf(unit.contains("tr") ? val * 1_000_000 : val * 1_000);
+                info.maxPrice = price;
+
+                if (price.compareTo(new BigDecimal("500000")) < 0) {
+    info.priceCategory = "gia re";
+} else if (price.compareTo(new BigDecimal("1000000")) <= 0) {
+    info.priceCategory = "trung binh thap";
+} else if (price.compareTo(new BigDecimal("2000000")) <= 0) {
+    info.priceCategory = "trung binh cao";
+} else {
+    info.priceCategory = "mr beast";
+}
+
+
+                System.out.println("🔍 Detected price: " + price);
+            } catch (Exception e) {
+                System.err.println("⚠️ Parse price failed: " + e.getMessage());
+            }
+        }
+    }
+
+    // ===== 4. Backup keyword mapping cho category =====
+    if (info.priceCategory == null) {
         if (message.matches(".*(?:giá\\s*rẻ|gia\\s*re|tiết\\s*kiệm|budget|cheap|dưới\\s*500).*")) {
             info.priceCategory = "gia re";
         } else if (message.matches(".*(?:trung\\s*bình.*thấp|500k|1tr|mid.*low|medium.*low).*")) {
@@ -412,14 +538,14 @@ totalPrice
         } else if (message.matches(".*(?:cao\\s*cấp|sang\\s*trọng|luxury|premium|trên\\s*2tr|expensive).*")) {
             info.priceCategory = "mr beast";
         }
-
-        // Extract dates with multiple formats
-        info.checkinDate = extractDateFromMessage(originalMessage, "từ|from|check.*in");
-        info.checkoutDate = extractDateFromMessage(originalMessage, "đến|to|until|check.*out");
-
-        return info;
     }
 
+    // ===== 5. Extract ngày nhận/trả =====
+    info.checkinDate = extractDateFromMessage(originalMessage, "từ|from|check.*in");
+    info.checkoutDate = extractDateFromMessage(originalMessage, "đến|to|until|check.*out");
+
+    return info;
+}
     private Date extractDateFromMessage(String message, String keywords) {
         try {
             // Multiple date patterns
@@ -462,6 +588,7 @@ totalPrice
 
     private boolean matchPriceFilter(BigDecimal price, String category) {
         if (price == null || category == null) return true;
+
         
         BigDecimal fiveHundredK = new BigDecimal("500000");
         BigDecimal oneMillion = new BigDecimal("1000000");
@@ -478,9 +605,12 @@ totalPrice
 
     // ====================== INFO CLASS ============================
     private static class ParsedInfo {
-        int guests = 1;
-        Date checkinDate = null;
-        Date checkoutDate = null;
-        String priceCategory = null;
-    }
+    int guests = 1;
+    Date checkinDate = null;
+    Date checkoutDate = null;
+    String priceCategory = null;
+    BigDecimal minPrice;
+    BigDecimal maxPrice;
+}
+
 }

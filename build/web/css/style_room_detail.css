@@ -171,6 +171,8 @@ body {
 .booking-form .form-group {
     flex: 1 1 0;
     min-width: 0;
+    /* Đảm bảo các trường còn lại giãn đều */
+    width: 100%;
 }
 .booking-form label {
     font-weight: 700;

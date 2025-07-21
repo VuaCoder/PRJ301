@@ -1,9 +1,11 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import model.Room;
 
 public class RoomDAO extends genericDAO<Room> {
@@ -316,7 +318,7 @@ public class RoomDAO extends genericDAO<Room> {
             em.close();
         }
     }
-    
+
     /**
      * Lấy danh sách phòng có sẵn theo thời gian (không trùng với booking)
      */
@@ -324,8 +326,8 @@ public class RoomDAO extends genericDAO<Room> {
         EntityManager em = getEntityManager();
         try {
             List<Room> allRooms = em.createQuery(
-                "SELECT r FROM Room r WHERE r.status = 'Available' AND r.approvalStatus = 'Approved'",
-                Room.class
+                    "SELECT r FROM Room r WHERE r.status = 'Available' AND r.approvalStatus = 'Approved'",
+                    Room.class
             ).getResultList();
 
             dao.BookingDAO bookingDAO = new dao.BookingDAO();
@@ -360,7 +362,7 @@ public class RoomDAO extends genericDAO<Room> {
             em.close();
         }
     }
-    
+
     /**
      * Cập nhật status phòng thành Unavailable khi được đặt
      */
@@ -387,7 +389,7 @@ public class RoomDAO extends genericDAO<Room> {
             em.close();
         }
     }
-    
+
     /**
      * Kiểm tra xem phòng có available trong khoảng thời gian không
      */
@@ -400,14 +402,119 @@ public class RoomDAO extends genericDAO<Room> {
                 AND b.status IN ('Pending', 'Confirmed')
                 AND (b.checkinDate < :checkout AND b.checkoutDate > :checkin)
                 """, Long.class)
-                .setParameter("roomId", roomId)
-                .setParameter("checkin", checkin)
-                .setParameter("checkout", checkout)
-                .getSingleResult();
-            
+                    .setParameter("roomId", roomId)
+                    .setParameter("checkin", checkin)
+                    .setParameter("checkout", checkout)
+                    .getSingleResult();
+
             return count == 0;
         } finally {
             em.close();
         }
+    }
+
+    public List<Room> getAvailableRoomss(String city, int guests, Date checkin, Date checkout, String priceCategory) {
+        EntityManager em = getEntityManager();
+        try {
+            // Khởi tạo JPQL cơ bản
+            StringBuilder jpql = new StringBuilder("SELECT r FROM Room r WHERE r.status = 'Available' ");
+
+            // City (nếu có)
+            if (city != null && !city.trim().isEmpty()) {
+                jpql.append("AND LOWER(r.city) LIKE :city ");
+            }
+
+            // Capacity
+            jpql.append("AND r.capacity >= :guests ");
+
+            // Check phòng không bị đặt trùng
+            jpql.append("AND r.roomId NOT IN (")
+                    .append("SELECT b.room.roomId FROM Booking b ")
+                    .append("WHERE b.checkinDate < :checkout AND b.checkoutDate > :checkin")
+                    .append(") ");
+
+            // Price category (tuỳ chọn)
+            if (priceCategory != null && !priceCategory.trim().isEmpty()) {
+                switch (priceCategory.toLowerCase()) {
+                    case "gia re":
+                        jpql.append("AND r.price < 500000 ");
+                        break;
+                    case "trung binh thap":
+                        jpql.append("AND r.price >= 500000 AND r.price <= 1000000 ");
+                        break;
+                    case "trung binh cao":
+                        jpql.append("AND r.price > 1000000 AND r.price <= 2000000 ");
+                        break;
+                    case "mr beast":
+                        jpql.append("AND r.price > 2000000 ");
+                        break;
+                }
+            }
+
+            TypedQuery<Room> query = em.createQuery(jpql.toString(), Room.class);
+            query.setParameter("guests", guests);
+            query.setParameter("checkin", checkin);
+            query.setParameter("checkout", checkout);
+
+            if (city != null && !city.trim().isEmpty()) {
+                query.setParameter("city", "%" + city.toLowerCase() + "%");
+            }
+
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Room> getAvailableRoomsSimple(String city, int guests, Date checkin, Date checkout) {
+
+        EntityManager em = getEntityManager();
+
+        try {
+            String jpql = """
+            SELECT DISTINCT r FROM Room r 
+            JOIN FETCH r.propertyId p
+            WHERE r.status = 'Available' 
+            AND r.approvalStatus = 'Approved'
+            AND r.capacity >= :guests
+        """;
+
+            // Add city filter if provided
+            if (city != null && !city.trim().isEmpty()) {
+
+                jpql += " AND LOWER(p.city) LIKE :city";
+
+            }
+
+            // Add availability check
+            jpql += """
+
+             AND NOT EXISTS (
+                SELECT b FROM Booking b 
+                WHERE b.roomId = r
+                AND b.status IN ('Pending', 'Confirmed')
+                AND (b.checkinDate < :checkout AND b.checkoutDate > :checkin)
+            )
+
+        """;
+
+            TypedQuery<Room> query = em.createQuery(jpql, Room.class);
+            query.setParameter("guests", guests);
+            query.setParameter("checkin", checkin);
+            query.setParameter("checkout", checkout);
+            if (city != null && !city.trim().isEmpty()) {
+
+                query.setParameter("city", "%" + city.toLowerCase() + "%");
+
+            }
+
+            return query.getResultList();
+
+        } finally {
+
+            em.close();
+
+        }
+
     }
 }

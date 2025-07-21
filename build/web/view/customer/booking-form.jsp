@@ -234,11 +234,6 @@
                         <label for="customerEmail">Email</label>
                         <input type="email" id="customerEmail" value="${user.email}" readonly>
                     </div>
-
-                    <div class="form-group">
-                        <label for="customerPhone">Số điện thoại</label>
-                        <input type="tel" id="customerPhone" value="${user.phone}" readonly>
-                    </div>
                 </div>
 
                 <div class="price-summary">

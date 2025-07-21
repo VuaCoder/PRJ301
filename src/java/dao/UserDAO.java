@@ -54,42 +54,43 @@ public class UserDAO extends genericDAO<UserAccount> {
             em.close();
         }
     }
-public UserAccount findByEmail(String email) {
-    EntityManager em = getEntityManager();
-    try {
-        TypedQuery<UserAccount> query = em.createQuery(
-                "SELECT u FROM UserAccount u WHERE u.email = :email", UserAccount.class);
-        query.setParameter("email", email);
-        return query.getSingleResult();
-    } catch (NoResultException e) {
-        return null;
-    } finally {
-        em.close();
-    }
-}
 
-public void createGoogleUser(String email, String fullName) {
-    EntityManager em = getEntityManager();
-    try {
-        Role role = em.find(Role.class, 1); // 1 = customer
-        UserAccount user = new UserAccount();
-        user.setEmail(email);
-        user.setFullName(fullName);
-        user.setPassword(""); // Không có password
-        user.setRoleId(role);
-
-        em.getTransaction().begin();
-        em.persist(user);
-        em.getTransaction().commit();
-    } catch (Exception e) {
-        e.printStackTrace();
-        if (em.getTransaction().isActive()) {
-            em.getTransaction().rollback();
+    public UserAccount findByEmail(String email) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<UserAccount> query = em.createQuery(
+                    "SELECT u FROM UserAccount u WHERE u.email = :email", UserAccount.class);
+            query.setParameter("email", email);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
         }
-    } finally {
-        em.close();
     }
-}
+
+    public void createGoogleUser(String email, String fullName) {
+        EntityManager em = getEntityManager();
+        try {
+            Role role = em.find(Role.class, 1); // 1 = customer
+            UserAccount user = new UserAccount();
+            user.setEmail(email);
+            user.setFullName(fullName);
+            user.setPassword(""); // Không có password
+            user.setRoleId(role);
+
+            em.getTransaction().begin();
+            em.persist(user);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+        } finally {
+            em.close();
+        }
+    }
 
     // Lấy host_id từ user_id (nếu có)
     public int getHostIdByUserId(int userId) {
@@ -114,6 +115,31 @@ public void createGoogleUser(String email, String fullName) {
             TypedQuery<UserAccount> query = em.createQuery(
                     "SELECT u FROM UserAccount u", UserAccount.class);
             return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long countAllUsers() {
+        EntityManager em = getEntityManager();
+        return em.createQuery("SELECT COUNT(u) FROM UserAccount u", Long.class)
+                .getSingleResult();
+    }
+
+    public long countActiveUsers() {
+        EntityManager em = getEntityManager();
+        try {
+            Long count = em.createQuery(
+                    "SELECT COUNT(u) FROM UserAccount u "
+                    + "WHERE UPPER(TRIM(u.status)) = 'ACTIVE'", Long.class)
+                    .getSingleResult();
+
+            System.out.println("[DEBUG] countActiveUsers() -> " + count);
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            System.err.println("[ERROR] countActiveUsers(): " + e.getMessage());
+            e.printStackTrace();
+            return 0L;
         } finally {
             em.close();
         }

@@ -4,92 +4,184 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import model.Role;
+
 import model.UserAccount;
 import service.AdminService;
 
 /**
- * Admin Dashboard: thống kê user + badge pending host/room.
+ * Admin Dashboard: thống kê + tab Customer/Host có phân trang.
  */
 @WebServlet(name = "AdminDashboardServlet", urlPatterns = {"/admin/dashboard"})
 public class AdminDashboardServlet extends HttpServlet {
 
     private final AdminService adminService = new AdminService();
 
+    // Số dòng mỗi trang cho bảng Customer / Host
+    private static final int PAGE_SIZE = 10;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // kiểm tra đăng nhập
+        // ==== 1. Kiểm tra đăng nhập & quyền ====
         HttpSession session = request.getSession(false);
         UserAccount currentUser = (session != null) ? (UserAccount) session.getAttribute("user") : null;
         if (currentUser == null) {
             response.sendRedirect(request.getContextPath() + "/view/auth/login.jsp");
             return;
         }
-        // (khuyến nghị) kiểm tra quyền admin:
-        if (currentUser.getRoleId() == null || currentUser.getRoleId().getRoleId() != 3) {
+        if (currentUser.getRoleId() == null || currentUser.getRoleId().getRoleId() != 3) { // 3 = admin
             response.sendRedirect(request.getContextPath() + "/home");
             return;
         }
 
-        // load user list
-        List<UserAccount> users = adminService.getAllUsers();
-        request.setAttribute("users", users);
+        // ==== 2. Lấy tham số tab + page ====
+        String tab = request.getParameter("tab");
+        if (tab == null || (!"host".equals(tab) && !"customer".equals(tab))) {
+            tab = "customer"; // mặc định
+        }
 
+        int currentPage = 1;
+        try {
+            currentPage = Integer.parseInt(request.getParameter("page"));
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+        } catch (NumberFormatException ignore) {
+        }
+
+        // ==== 3. Load toàn bộ user từ DB ====
+        List<UserAccount> allUsers = adminService.getAllUsers();
+
+        // ==== 4. Tách Customer & Host ====
+        List<UserAccount> allCustomers = new ArrayList<>();
+        List<UserAccount> allHosts = new ArrayList<>();
+        for (UserAccount u : allUsers) {
+            if (u.getRoleId() == null) {
+                continue;
+            }
+            int rid = u.getRoleId().getRoleId();
+            if (rid == 1) {
+                allCustomers.add(u);
+            } else if (rid == 2) {
+                allHosts.add(u);
+            }
+        }
+
+        int totalCustomerCount = allCustomers.size();
+        int totalHostCount = allHosts.size();
+
+        // ==== 5. Tính tổng trang cho cả 2 loại (để dùng trong badge/pagination) ====
+        int totalCustomerPages = (int) Math.ceil((double) totalCustomerCount / PAGE_SIZE);
+        int totalHostPages = (int) Math.ceil((double) totalHostCount / PAGE_SIZE);
+
+        // ==== 6. Chọn danh sách đang active theo tab ====
+        List<UserAccount> targetList;
+        int totalPagesForActiveTab;
+        if ("host".equals(tab)) {
+            targetList = allHosts;
+            totalPagesForActiveTab = totalHostPages;
+        } else {
+            targetList = allCustomers;
+            totalPagesForActiveTab = totalCustomerPages;
+        }
+
+        // Nếu không có dữ liệu -> totalPages = 0. Giữ currentPage = 1 để JSP không bị lỗi.
+        if (totalPagesForActiveTab == 0) {
+            currentPage = 1;
+        } else if (currentPage > totalPagesForActiveTab) {
+            currentPage = totalPagesForActiveTab;
+        }
+
+        // ==== 7. Cắt list theo trang ====
+        List<UserAccount> pagedList;
+        if (targetList.isEmpty()) {
+            pagedList = targetList; // empty
+        } else {
+            int from = (currentPage - 1) * PAGE_SIZE;
+            if (from >= targetList.size()) {
+                from = 0; // fallback
+            }
+            int to = Math.min(from + PAGE_SIZE, targetList.size());
+            pagedList = targetList.subList(from, to);
+        }
+
+        // ==== 8. Đặt attribute list tương ứng tab ====
+        if ("host".equals(tab)) {
+            request.setAttribute("hosts", pagedList);
+        } else {
+            request.setAttribute("customers", pagedList);
+        }
+
+        // Các attribute tổng (dùng cho badge & stats)
+        request.setAttribute("tab", tab);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalCustomerCount", totalCustomerCount);
+        request.setAttribute("totalHostCount", totalHostCount);
+        request.setAttribute("totalCustomerPages", totalCustomerPages);
+        request.setAttribute("totalHostPages", totalHostPages);
+
+        // ==== 9. Các số thống kê phần card ====
+        long totalAccounts = adminService.countAllUsers();
+        long activeUsers = adminService.countActiveUsers();
         long pendingHostCount = adminService.countPendingHosts();
         long pendingRoomsCount = adminService.countPendingRooms();
+        long allRoomsCount = adminService.countAllRooms();
+
+        request.setAttribute("totalAccounts", totalAccounts);
+        request.setAttribute("activeUsers", activeUsers);
         request.setAttribute("pendingHostCount", pendingHostCount);
         request.setAttribute("pendingRoomsCount", pendingRoomsCount);
+        request.setAttribute("allRoomsCount", allRoomsCount);
 
-        // forward
+        // ==== 10. Forward ====
         request.getRequestDispatcher("/view/admin/dashboard.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
         String action = request.getParameter("action");
-
+        String tab = request.getParameter("tab");
+        String page = request.getParameter("page");
         int id = Integer.parseInt(request.getParameter("id"));
+
         UserAccount user = adminService.getUserById(id);
-
-        if (action == null) {
-            response.sendRedirect(request.getContextPath() + "/view/admin/dashboard.jsp");
-            return;
+        if (tab == null) {
+            tab = "customer";
+        }
+        if (page == null) {
+            page = "1";
         }
 
-        switch (action) {
-            case "updateStatus":
-                String status = request.getParameter("status");
-                if (user != null) {
-                    user.setStatus(status);
-                    adminService.updateUser(user);
-                }
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                break;
-            case "updateRole":
-                int roleId = Integer.parseInt(request.getParameter("roleId"));
-                adminService.updateNewRole(id, roleId);
-                //Cai lai session user khi bi doi role
-                UserAccount sessionUser = (UserAccount) request.getSession().getAttribute("user");
-                if (sessionUser != null && sessionUser.getUserId() == id) {
-                    // load lại user từ DB
-                    UserAccount fresh = adminService.getUserById(id);
-                    request.getSession().setAttribute("user", fresh);
-                }
+        if ("delete".equals(action)) {
 
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                break;
+            adminService.deleteUser(id);
+        } else if ("updateStatus".equals(action)) {
 
-            default:
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                break;
+            String status = request.getParameter("status");
+            if (user != null) {
+                user.setStatus(status);
+                adminService.updateUser(user);
+            }
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        } else if ("updateRole".equals(action)) {
+            int roleId = Integer.parseInt(request.getParameter("roleId"));
+            adminService.updateNewRole(id, roleId);
+            HttpSession session = request.getSession();
+            UserAccount sessionUser = (UserAccount) session.getAttribute("user");
+            if (sessionUser != null && sessionUser.getUserId() == id) {
+                session.setAttribute("user", adminService.getUserById(id));
+            }
         }
+
+        response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package dao;
 
+import DTO.RoomStat;
+import dto.BookingHistory;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -105,6 +107,39 @@ public class BookingDAO extends genericDAO<Booking> {
             em.getTransaction().rollback();
             e.printStackTrace();
             return false;
+        } finally {
+            em.close();
+        }
+    }
+    //Get Room Stat By Status
+
+    public List<RoomStat> getRoomStatsByHost(int hostId) {
+        EntityManager em = getEntityManager();
+
+        String jpql = "SELECT new dto.RoomStat(r.roomId, r.title, SUM(b.totalPrice), COUNT(b), MAX(b.createdAt), AVG(rv.rating)) "
+                + "FROM Booking b JOIN b.roomId r LEFT JOIN b.reviewList rv "
+                + "WHERE r.propertyId.hostId.hostId = :hostId "
+                + "GROUP BY r.roomId, r.title";
+        return em.createQuery(jpql, RoomStat.class)
+                .setParameter("hostId", hostId)
+                .getResultList();
+    }
+
+    public List<BookingHistory> getBookingHistoryByCustomer(int customerId) {
+        EntityManager em = getEntityManager();
+        try {
+            String jpql = "SELECT new dto.BookingHistory("
+                    + "r.title, b.checkinDate, b.checkoutDate, b.totalPrice, rv.comment, rv.rating) "
+                    + "FROM Booking b "
+                    + "JOIN b.roomId r "
+                    + "LEFT JOIN b.reviewList rv "
+                    + // LEFT JOIN để booking không có review vẫn hiển thị
+                    "WHERE b.customerId.customerId = :customerId "
+                    + "ORDER BY b.checkinDate DESC";
+
+            return em.createQuery(jpql, BookingHistory.class)
+                    .setParameter("customerId", customerId)
+                    .getResultList();
         } finally {
             em.close();
         }

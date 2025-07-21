@@ -38,6 +38,10 @@ public class AdminPendingServlet extends HttpServlet {
 
         String action = nvl(request.getParameter("action"), "list");
         String type = nvl(request.getParameter("type"), "host"); // default host
+        int page = parseIntSafe(request.getParameter("page"));
+        if (page < 1) {
+            page = 1;
+        }
 
         switch (action) {
             case "approve":
@@ -45,6 +49,31 @@ public class AdminPendingServlet extends HttpServlet {
                 // Với approve/reject qua GET (nếu bạn dùng link <a>); forward sang doPost xử lý.
                 doPost(request, response);
                 return;
+
+            case "delete":
+                // chỉ hỗ trợ xóa room
+                if ("room".equals(type) || "allRooms".equals(type)) {
+                    int id = parseIntSafe(request.getParameter("id"));
+                    if (id > 0) {
+                        try {
+                            adminService.deleteRoom(id);
+                            request.getSession().setAttribute("adminPendingMsg", "Deleted room #" + id);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            request.getSession().setAttribute("adminPendingMsg", "Failed to delete room #" + id);
+                        }
+                    } else {
+                        request.getSession().setAttribute("adminPendingMsg", "Invalid room id.");
+                    }
+
+                    // quay về tab allRooms (vì xóa thường làm ở đó) – GIỮ page nếu bạn muốn
+                    redirectList("allRooms", page, request, response);
+                    return;
+                } else {
+                    request.getSession().setAttribute("adminPendingMsg", "Delete not supported for this type.");
+                    redirectList(type, page, request, response);
+                    return;
+                }
 
             case "list":
             default:
@@ -68,11 +97,15 @@ public class AdminPendingServlet extends HttpServlet {
         String action = request.getParameter("action");
         String type = nvl(request.getParameter("type"), "host");
         int id = parseIntSafe(request.getParameter("id"));
+        int page = parseIntSafe(request.getParameter("page"));
+        if (page < 1) {
+            page = 1;
+        }
 
         if (id <= 0) {
             // ID sai -> quay lại list cùng type với thông báo
             request.getSession().setAttribute("adminPendingMsg", "Invalid ID.");
-            redirectList(type, request, response);
+            redirectList(type, page, request, response);
             return;
         }
 
@@ -90,13 +123,20 @@ public class AdminPendingServlet extends HttpServlet {
             } else {
                 adminService.rejectRoom(id);
             }
+        } else if ("allRooms".equals(type) && "delete".equals(action)) {
+            try {
+                adminService.deleteRoom(id);
+                request.getSession().setAttribute("adminPendingMsg", "Deleted room #" + id);
+            } catch (Exception e) {
+                request.getSession().setAttribute("adminPendingMsg", "Failed to delete room #" + id);
+            }
         }
 
         // Thông báo nhẹ
         request.getSession().setAttribute("adminPendingMsg",
                 (approve ? "Approved " : "Rejected ") + type + " #" + id);
 
-        redirectList(type, request, response);
+        redirectList(type, page, request, response);
     }
 
     /* --------------------------------------------------
@@ -147,17 +187,42 @@ public class AdminPendingServlet extends HttpServlet {
             request.setAttribute("currentPage", page);
 
         } else if ("allRooms".equals(type)) {
-            int totalPages = (int) Math.ceil(allRoomsCount / (double) pageSize);
-            if (totalPages == 0) {
-                totalPages = 1;
-            }
-            if (page > totalPages) {
-                page = totalPages;
+            String filter = nvl(request.getParameter("filter"), "All");
+            if (page < 1) {
+                page = 1;
             }
 
-            request.setAttribute("allRooms", adminService.getAllRoomsPaginated(page, pageSize));
-            request.setAttribute("totalPages", totalPages);
+            List<Room> list;
+            long total;
+            switch (filter) {
+                case "Pending":
+                    list = adminService.getRoomsByStatus("Pending", page, pageSize);
+                    total = adminService.countRoomsByStatus("Pending");
+                    break;
+                case "Approved":
+                    list = adminService.getRoomsByStatus("Approved", page, pageSize);
+                    total = adminService.countRoomsByStatus("Approved");
+                    break;
+                case "Rejected":
+                    list = adminService.getRoomsByStatus("Rejected", page, pageSize);
+                    total = adminService.countRoomsByStatus("Rejected");
+                    break;
+                default:
+                    list = adminService.getAllRoomsPaginated(page, pageSize);
+                    total = adminService.countAllRooms();
+            }
+
+            int totalPages = (int) Math.ceil(total / (double) pageSize);
+
+            request.setAttribute("allRooms", list);
+            request.setAttribute("countAll", adminService.countAllRooms());
+            request.setAttribute("countPending", adminService.countRoomsByStatus("Pending"));
+            request.setAttribute("countApproved", adminService.countRoomsByStatus("Approved"));
+            request.setAttribute("countRejected", adminService.countRoomsByStatus("Rejected"));
+            request.setAttribute("filter", filter);
             request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+
         }
 
         request.setAttribute("type", type);
@@ -168,13 +233,18 @@ public class AdminPendingServlet extends HttpServlet {
      */
     private void forwardPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/view/admin/pending-management.jsp").forward(request, response);
+        String type = (String) request.getAttribute("type");
+        if ("allRooms".equals(type)) {
+            request.getRequestDispatcher("/view/admin/all-rooms.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("/view/admin/pending-management.jsp").forward(request, response);
+        }
     }
 
     /**
      * Redirect về danh sách để tránh submit lại form.
      */
-    private void redirectList(String type, HttpServletRequest request, HttpServletResponse response)
+    private void redirectList(String type, int page, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendRedirect(request.getContextPath() + "/admin-pending?action=list&type=" + type);
     }

@@ -356,53 +356,22 @@
             </c:choose>
         </div>
         <c:if test="${totalPages > 1}">
-            <style>
-                .pagination-numbers {
-                    display: flex;
-                    justify-content: center;
-                    gap: 12px;
-                    margin: 40px 0 0 0;
-                }
-                .page-btn {
-                    min-width: 44px;
-                    height: 44px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                    font-weight: 700;
-                    font-size: 1.15rem;
-                    background: #f3f4f6;
-                    color: #374151;
-                    border: none;
-                    cursor: pointer;
-                    transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
-                    text-decoration: none;
-                    box-shadow: 0 2px 8px rgba(59,130,246,0.07);
-                    margin: 0 2px;
-                }
-                .page-btn.active {
-                    background: linear-gradient(135deg, #2563eb 60%, #1d4ed8 100%);
-                    color: #fff;
-                    box-shadow: 0 4px 16px rgba(37,99,235,0.13);
-                    transform: scale(1.12);
-                }
-                .page-btn:hover:not(.active) {
-                    background: #dbeafe;
-                    color: #2563eb;
-                    box-shadow: 0 2px 12px rgba(37,99,235,0.10);
-                    transform: scale(1.07);
-                }
-            </style>
-            <div class="pagination-numbers">
+            <div class="pagination" style="display:flex;gap:8px;margin:24px 0;justify-content:center;">
                 <c:if test="${currentPage > 1}">
-                    <a href="my-bookings?page=${currentPage - 1}" class="page-btn">&laquo;</a>
+                    <a href="my-bookings?page=${currentPage - 1}" style="padding:6px 12px;border-radius:4px;border:1px solid #ddd;">&laquo; Trước</a>
                 </c:if>
                 <c:forEach var="i" begin="1" end="${totalPages}">
-                    <a href="my-bookings?page=${i}" class="page-btn${i == currentPage ? ' active' : ''}">${i}</a>
+                    <c:choose>
+                        <c:when test="${i == currentPage}">
+                            <span style="background:#2563eb;color:#fff;border:1px solid #2563eb;padding:6px 12px;border-radius:4px;">${i}</span>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="my-bookings?page=${i}" style="padding:6px 12px;border-radius:4px;border:1px solid #ddd;">${i}</a>
+                        </c:otherwise>
+                    </c:choose>
                 </c:forEach>
                 <c:if test="${currentPage < totalPages}">
-                    <a href="my-bookings?page=${currentPage + 1}" class="page-btn">&raquo;</a>
+                    <a href="my-bookings?page=${currentPage + 1}" style="padding:6px 12px;border-radius:4px;border:1px solid #ddd;">Sau &raquo;</a>
                 </c:if>
             </div>
         </c:if>

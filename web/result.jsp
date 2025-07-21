@@ -645,81 +645,66 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div id="room-list"></div>
-                    <div id="pagination" style="display:flex;justify-content:center;gap:8px;margin:24px 0;"></div>
+                    <c:forEach var="room" items="${searchResults}" varStatus="status">
+                        <div class="room-card">
+                            <div class="room-layout">
+                                <!-- Hình ảnh bên trái -->
+                                <div class="room-image">
+                                    <c:choose>
+                                        <c:when test="${not empty room.images}">
+                                            <c:set var="imgArr" value="${fn:split(room.images, ',')}" />
+                                            <c:set var="imgRaw" value="${imgArr[0]}" />
+                                            <img src="${imgRaw}" alt="Room Image">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="image-placeholder">
+                                                <i class="fas fa-bed"></i>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                
+                                <!-- Thông tin bên phải -->
+                                <div class="room-info">
+                                    <div class="room-header">
+                                        <h3>${room.title}</h3>
+                                        <span class="price">
+                                            <fmt:formatNumber value="${room.price}" type="number" maxFractionDigits="0" groupingUsed="true"/> VNĐ
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="room-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-users"></i>
+                                            <span><strong>Sức chứa:</strong> ${room.capacity} khách</span>
+                                        </div>
+                                        <c:if test="${room.propertyId != null}">
+                                            <div class="detail-item">
+                                                <i class="fas fa-home"></i>
+                                                <span><strong>Property:</strong> ${room.propertyId.name}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <span><strong>Thành phố:</strong> ${room.propertyId.city}</span>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                    
+                                    <div class="room-actions">
+                                        <a href="${pageContext.request.contextPath}/detail?id=${room.roomId}" class="btn">
+                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                    
                     <div class="back-button">
                         <a href="${pageContext.request.contextPath}/home" class="btn-secondary">
                             <i class="fas fa-arrow-left"></i> Quay lại trang chủ
                         </a>
                     </div>
-                    <script>
-                        const rooms = [
-                            <c:forEach var="room" items="${searchResults}" varStatus="status">
-                                {
-                                    title: `${room.title}`,
-                                    price: `${room.price}`,
-                                    roomId: `${room.roomId}`,
-                                    capacity: `${room.capacity}`,
-                                    images: "${room.images}",
-                                    property: `${room.propertyId != null ? room.propertyId.name : ''}`,
-                                    city: `${room.propertyId != null ? room.propertyId.city : ''}`
-                                }<c:if test="${!status.last}">,</c:if>
-                            </c:forEach>
-                        ];
-                        const pageSize = 5;
-                        let currentPage = 1;
-                        function renderRooms(page) {
-                            const start = (page-1)*pageSize;
-                            const end = Math.min(start+pageSize, rooms.length);
-                            let html = '';
-                            for(let i=start;i<end;i++) {
-                                const room = rooms[i];
-                                let img = '';
-                                if(room.images && room.images.length > 0) {
-                                    const imgArr = room.images.split(',');
-                                    img = `<img src='${imgArr[0]}' alt='Room Image'>`;
-                                } else {
-                                    img = `<div class='image-placeholder'><i class='fas fa-bed'></i></div>`;
-                                }
-                                html += `
-                                <div class='room-card'>
-                                    <div class='room-layout'>
-                                        <div class='room-image'>${img}</div>
-                                        <div class='room-info'>
-                                            <div class='room-header'>
-                                                <h3>${room.title}</h3>
-                                                <span class='price'>${Number(room.price).toLocaleString()} VNĐ</span>
-                                            </div>
-                                            <div class='room-details'>
-                                                <div class='detail-item'><i class='fas fa-users'></i><span><strong>Sức chứa:</strong> ${room.capacity} khách</span></div>
-                                                ${room.property ? `<div class='detail-item'><i class='fas fa-home'></i><span><strong>Property:</strong> ${room.property}</span></div>` : ''}
-                                                ${room.city ? `<div class='detail-item'><i class='fas fa-map-marker-alt'></i><span><strong>Thành phố:</strong> ${room.city}</span></div>` : ''}
-                                            </div>
-                                            <div class='room-actions'>
-                                                <a href='${pageContext.request.contextPath}/detail?id=${room.roomId}' class='btn'><i class='fas fa-eye'></i> Xem chi tiết</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>`;
-                            }
-                            document.getElementById('room-list').innerHTML = html;
-                        }
-                        function renderPagination() {
-                            const totalPages = Math.ceil(rooms.length/pageSize);
-                            let html = '';
-                            for(let i=1;i<=totalPages;i++) {
-                                html += `<span class='dot' style='display:inline-block;width:14px;height:14px;border-radius:50%;background:${i===currentPage?'#2563eb':'#e5e7eb'};margin:0 4px;cursor:pointer;' onclick='goToPage(${i})'></span>`;
-                            }
-                            document.getElementById('pagination').innerHTML = html;
-                        }
-                        function goToPage(page) {
-                            currentPage = page;
-                            renderRooms(page);
-                            renderPagination();
-                        }
-                        renderRooms(currentPage);
-                        renderPagination();
-                    </script>
                 </c:otherwise>
             </c:choose>
         </div>
