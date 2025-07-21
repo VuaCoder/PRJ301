@@ -302,7 +302,7 @@
 
             <!-- Danh sách đánh giá -->
             <div class="reviews-header">
-                <h2><i class="fas fa-star"></i> Đánh giá của khách hàng</h2>
+                <h2><i class="fas fa-star"></i> Đánh giá từ khách hàng</h2>
                 <p>Xem tất cả đánh giá về phòng ${room.title}</p>
             </div>
 
