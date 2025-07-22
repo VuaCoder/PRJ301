@@ -8,35 +8,17 @@
 <%
     UserAccount user = (UserAccount) session.getAttribute("user");
     boolean isHost = user != null && user.getRoleId() != null && "host".equalsIgnoreCase(user.getRoleId().getRoleName());
+    String uri = request.getRequestURI();
+    boolean isHome = uri.endsWith("/home") || uri.endsWith("/home.jsp");
 %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_home.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_header.css" />
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-.account-container { position: relative; }
-.account-interface {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 60px;
-    background: #fff;
-    z-index: 9999;
-    min-width: 180px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    border-radius: 8px;
-}
-.account-interface.active {
-    display: block;
-}
-.account-menu { list-style: none; margin: 0; padding: 0; }
-.account-menu li { padding: 10px 16px; cursor: pointer; }
-.account-menu li a { color: #333; text-decoration: none; display: block; }
-</style>
-<div class="header">
+<div class="header<%= isHome ? " is-home-header" : "" %>">
     <div class="main-header">
         
         <div class="main-header-logo">
-            <a href="${pageContext.request.contextPath}/home"><img src="${pageContext.request.contextPath}/img/logo.png"></a>
+            <a href="${pageContext.request.contextPath}/home"><img class="site-logo" src="${pageContext.request.contextPath}/img/logo.png"></a>
         </div>
         <div class="main-header-option">
             <ul>
@@ -54,8 +36,8 @@
             <label for="toggle-account-menu" class="hamburger-label">
                 <img src="${pageContext.request.contextPath}/img/hamburger-lines.png" alt="hamburger" class="hamburger" id="menuButton">
             </label>
-            <a href="#"><img src="${pageContext.request.contextPath}/img/user.png" alt="avatar" class="avatar" id="menuButton"></a>
-            <div id="menuDropdown" class="account-interface">
+            <a href="#"><img src="<%= (user != null && user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) ? user.getAvatarUrl() : (request.getContextPath() + "/img/user.png") %>" alt="avatar" class="avatar" id="menuButton" style="left: 55px;top: 7px;"></a>
+            <div id="menuDropdown" class="account-interface" >
                 <ul class="account-menu">
                     <% if (user != null) { %>
                         <li style="font-weight: 600; color: #333; padding: 12px 16px; border-bottom: 1px solid #eee;">
@@ -91,6 +73,15 @@
                         </li>
                         <% } %>
                         
+                        <% if (isGuest || isHost) { %>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/view/auth/edit-profile.jsp" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                                <i class="fas fa-user-edit" style="margin-right: 8px; width: 16px;"></i> 
+                                Edit Profile
+                            </a>
+                        </li>
+                        <% } %>
+                        
                         <li>
                             <a href="${pageContext.request.contextPath}/logout" style="display: block; padding: 12px 16px; color: #dc2626; text-decoration: none; transition: background-color 0.2s;">
                                 <i class="fas fa-sign-out-alt" style="margin-right: 8px; width: 16px;"></i> 
@@ -119,13 +110,31 @@
 <script>
     const menuButton = document.getElementById("menuButton");
     const menuDropdown = document.getElementById("menuDropdown");
+    let fadeTimeout = null;
     menuButton?.addEventListener("click", (e) => {
         e.stopPropagation();
-        menuDropdown?.classList.toggle("active");
+        if (menuDropdown.classList.contains("active")) {
+            menuDropdown.classList.remove("active");
+            menuDropdown.classList.add("fade-out");
+            clearTimeout(fadeTimeout);
+            fadeTimeout = setTimeout(() => {
+                menuDropdown.classList.remove("fade-out");
+            }, 350);
+        } else {
+            menuDropdown.classList.add("active");
+            menuDropdown.classList.remove("fade-out");
+        }
     });
     document.addEventListener("click", (e) => {
         if (!menuButton?.contains(e.target) && !menuDropdown?.contains(e.target)) {
-            menuDropdown?.classList.remove("active");
+            if (menuDropdown.classList.contains("active")) {
+                menuDropdown.classList.remove("active");
+                menuDropdown.classList.add("fade-out");
+                clearTimeout(fadeTimeout);
+                fadeTimeout = setTimeout(() => {
+                    menuDropdown.classList.remove("fade-out");
+                }, 350);
+            }
         }
     });
 </script>

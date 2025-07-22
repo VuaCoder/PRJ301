@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex items-center justify-center bg-gray-100" style="position: relative; z-index: 1000;">
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 via-blue-100 to-white" style="position: relative; z-index: 1000;">
 
     <%-- Hiển thị thông báo thành công nếu có --%>
     <%
@@ -78,44 +78,63 @@
         <hr class="border-gray-300 mb-5" />
 
         <div class="mb-4">
-            <label for="email" class="text-xs font-semibold text-gray-700 mb-1 block">Email</label>
-            <input type="email" name="email" id="email" required
-                   value="<%= email %>"
-                   class="w-full border rounded-full px-4 py-2 text-xs font-semibold text-gray-900"
-                   placeholder="Enter your email">
+            <label for="email" class="text-xs font-semibold text-gray-700 mb-1 block">Email hoặc Tên đăng nhập</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-user"></i></span>
+                <input type="text" name="email" id="email" required
+                       value="<%= email %>"
+                       class="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition outline-none shadow-sm"
+                       placeholder="Nhập email hoặc tên đăng nhập">
+            </div>
         </div>
 
         <div class="mb-4">
-            <label for="password" class="text-xs font-semibold text-gray-700 mb-1 block">Password</label>
-            <input type="password" name="password" id="password" required
-                   value="<%= password %>"
-                   class="w-full border rounded-full px-4 py-2 text-xs font-semibold text-gray-900"
-                   placeholder="Enter your password">
+            <label for="password" class="text-xs font-semibold text-gray-700 mb-1 block">Mật khẩu</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-lock"></i></span>
+                <input type="password" name="password" id="password" required
+                       value="<%= password %>"
+                       class="w-full border border-gray-300 rounded-full pl-10 pr-10 py-2 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition outline-none shadow-sm"
+                       placeholder="Nhập mật khẩu">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" onclick="togglePassword('password', this)"><i class="fas fa-eye"></i></span>
+            </div>
         </div>
 
         <div class="mb-4 flex items-center">
-            <input type="checkbox" name="remember" id="remember" class="mr-2">
-            <label for="remember" class="text-xs text-gray-700">Remember me</label>
+            <input type="checkbox" name="remember" id="remember" class="mr-2 accent-blue-500">
+            <label for="remember" class="text-xs text-gray-700">Ghi nhớ đăng nhập</label>
         </div>
 
         <button type="submit"
-                class="bg-gray-500 text-white px-6 py-2 rounded-full text-xs font-semibold w-full">
-            Login
-        </button>
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold w-full shadow-md transition">Đăng nhập</button>
 
         <div class="mt-4 text-center">
             <a href="<%= googleLoginUrl %>"
-               class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full text-xs font-semibold inline-block w-full">
+               class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full text-sm font-semibold inline-block w-full shadow-md transition">
                 <i class="fab fa-google mr-2"></i> Đăng nhập bằng Google
             </a>
         </div>
 
         <div class="text-center mt-4 text-sm">
             <span>Chưa có tài khoản? </span>
-            <a href="${pageContext.request.contextPath}/view/auth/register.jsp" class="text-blue-600 hover:underline">Đăng ký ngay</a>
+            <a href="${pageContext.request.contextPath}/view/auth/register.jsp" class="text-blue-600 hover:underline font-semibold">Đăng ký ngay</a>
         </div>
 
     </form>
 
+    <script>
+function togglePassword(inputId, el) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        el.querySelector('i').classList.remove('fa-eye');
+        el.querySelector('i').classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        el.querySelector('i').classList.remove('fa-eye-slash');
+        el.querySelector('i').classList.add('fa-eye');
+    }
+}
+</script>
 </body>
 </html>

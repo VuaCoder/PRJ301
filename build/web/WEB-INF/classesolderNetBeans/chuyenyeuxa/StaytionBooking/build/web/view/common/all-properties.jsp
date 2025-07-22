@@ -9,7 +9,7 @@
         <meta charset="UTF-8">
         <title>Tất cả tài sản</title>
         <link rel="stylesheet" href="css/style_result.css">
-        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
@@ -35,9 +35,6 @@
                                         <h3>${room.title}</h3>
                                         <p class="room-city"><i class="fa-solid fa-location-dot"></i> ${room.city}</p>
                                         <p class="room-desc">${room.description}</p>
-                                        <p class="room-price">
-                                            <fmt:formatNumber value="${room.price}" type="number" maxFractionDigits="0" groupingUsed="true"/> VNĐ
-                                        </p>
                                         <a href="detail?id=${room.roomId}" class="btn btn-primary">Xem chi tiết</a>
                                     </div>
                                 </div>
@@ -116,9 +113,14 @@
     font-size: 0.98rem;
     margin: 0 0 2px 0;
     font-weight: 400;
+    max-height: 4em;
     line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    min-height: 4em;
 }
 .room-price {
     font-size: 1.08rem;
@@ -133,7 +135,7 @@
     display: inline-block;
     padding: 10px 24px;
     border-radius: 8px;
-    background: #2563eb;
+    background: #209CEE;
     color: #fff;
     font-weight: 600;
     text-decoration: none;
@@ -141,15 +143,15 @@
     transition: background 0.2s;
 }
 .btn:hover {
-    background: #1a2340;
+    background: #003B95;
 }
 .btn-secondary {
-    background: #888;
+    background: #209CEE;
     color: #fff;
     margin-top: 0;
 }
 .btn-secondary:hover {
-    background: #222;
+    background: #003B95;
 }
 .error {
     background: #fef2f2;

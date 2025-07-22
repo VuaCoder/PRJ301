@@ -144,4 +144,28 @@ public class BookingDAO extends genericDAO<Booking> {
             em.close();
         }
     }
+
+    // Đếm tổng số booking toàn hệ thống
+    public long countAllBookings() {
+        EntityManager em = getEntityManager();
+        try {
+            String jpql = "SELECT COUNT(b) FROM Booking b";
+            TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Tính tổng doanh thu toàn hệ thống (chỉ booking đã hoàn tất)
+    public java.math.BigDecimal getTotalRevenue() {
+        EntityManager em = getEntityManager();
+        try {
+            String jpql = "SELECT COALESCE(SUM(b.totalPrice), 0) FROM Booking b WHERE b.status = 'Confirmed'";
+            TypedQuery<java.math.BigDecimal> query = em.createQuery(jpql, java.math.BigDecimal.class);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }

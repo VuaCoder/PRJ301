@@ -129,12 +129,16 @@ public class AdminDashboardServlet extends HttpServlet {
         long pendingHostCount = adminService.countPendingHosts();
         long pendingRoomsCount = adminService.countPendingRooms();
         long allRoomsCount = adminService.countAllRooms();
+        long totalBookings = adminService.countAllBookings();
+        java.math.BigDecimal totalRevenue = adminService.getTotalRevenue();
 
         request.setAttribute("totalAccounts", totalAccounts);
         request.setAttribute("activeUsers", activeUsers);
         request.setAttribute("pendingHostCount", pendingHostCount);
         request.setAttribute("pendingRoomsCount", pendingRoomsCount);
         request.setAttribute("allRoomsCount", allRoomsCount);
+        request.setAttribute("totalBookings", totalBookings);
+        request.setAttribute("totalRevenue", totalRevenue);
 
         // ==== 10. Forward ====
         request.getRequestDispatcher("/view/admin/dashboard.jsp").forward(request, response);
@@ -150,7 +154,14 @@ public class AdminDashboardServlet extends HttpServlet {
         String action = request.getParameter("action");
         String tab = request.getParameter("tab");
         String page = request.getParameter("page");
-        int id = Integer.parseInt(request.getParameter("id"));
+        String idParam = request.getParameter("id");
+        int id = -1;
+        try {
+            id = Integer.parseInt(idParam);
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + (tab != null ? tab : "customer") + "&page=" + (page != null ? page : "1"));
+            return;
+        }
 
         UserAccount user = adminService.getUserById(id);
         if (tab == null) {
@@ -161,16 +172,17 @@ public class AdminDashboardServlet extends HttpServlet {
         }
 
         if ("delete".equals(action)) {
-
             adminService.deleteUser(id);
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
+            return;
         } else if ("updateStatus".equals(action)) {
-
             String status = request.getParameter("status");
             if (user != null) {
                 user.setStatus(status);
                 adminService.updateUser(user);
             }
-            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
+            return;
         } else if ("updateRole".equals(action)) {
             int roleId = Integer.parseInt(request.getParameter("roleId"));
             adminService.updateNewRole(id, roleId);
@@ -179,8 +191,11 @@ public class AdminDashboardServlet extends HttpServlet {
             if (sessionUser != null && sessionUser.getUserId() == id) {
                 session.setAttribute("user", adminService.getUserById(id));
             }
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
+            return;
         }
 
+        // fallback
         response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
     }
 

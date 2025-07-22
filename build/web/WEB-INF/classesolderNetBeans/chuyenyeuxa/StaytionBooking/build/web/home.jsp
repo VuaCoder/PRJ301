@@ -26,17 +26,17 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
         <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     </head>
-    <body>
+    <body class="is-home">
         <jsp:include page="view/common/header.jsp"/>
         <div class="header">
             <div class="main-header">
                 <div class="main-image">
-                    <img src="img/forest.jpg" alt="forest">
+                    <img src="https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg" alt="bar">
                 </div>
             </div>
             <div class="header-bottom">
                 <div class="search-header">
-                    <h1>FIND</h1>
+                    <h1 style="color: white">FIND</h1>
                     <div class="search-header-option">
                         <ul>
                             <li><a href="${pageContext.request.contextPath}/results?type=Room">Rooms</a></li>
@@ -143,12 +143,12 @@
                 <div class="lastest-selection-header">
                     <h1>Các tài sản hiện có</h1>
                 </div>
-                <div class="property-listing swiper property-swiper" style="position:relative;">
+                <div class="property-listing swiper property-swiper" style="position:relative; margin-left: 4%">
                     <div class="swiper-nav-blur left"></div>
                     <div class="swiper-nav-blur right"></div>
-                    <div class="swiper-wrapper">
+                    <div class="swiper-wrapper" >
                         <c:forEach var="room" items="${latestRooms}">
-                            <div class="home-room-card swiper-slide" onclick="window.location.href = 'detail?id=${room.roomId}'">
+                            <div class="home-room-card swiper-slide" onclick="window.location.href = 'detail?id=${room.roomId}'" >
                                 <c:set var="imgArr" value="${fn:split(room.images, ',')}" />
                                 <c:set var="imgRaw" value="${imgArr[0]}" />
                                 <img src="${imgRaw}" style="width:100%;height:180px;object-fit:cover;display:block;border-top-left-radius:16px;border-top-right-radius:16px;margin:0;padding:0;" alt="Room Image">
@@ -158,9 +158,9 @@
                                 </div>
                             </div>
                         </c:forEach>
-                        <div class="swiper-slide show-all-slide home-room-card" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;background:#f7fafc;border:2px dashed #2d7dd2;" onclick="window.location.href = '${pageContext.request.contextPath}/results?showAll=true'">
+                        <div class="swiper-slide show-all-slide home-room-card" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;background:#f7fafc;border:2px dashed #fff;" onclick="window.location.href = '${pageContext.request.contextPath}/results?showAll=true'">
                             <div style="flex:1;display:flex;align-items:center;justify-content:center;width:100%;">
-                                <i class="fas fa-arrow-right" style="font-size:2.8rem;color:#2d7dd2;"></i>
+                                <i class="fas fa-arrow-right" style="font-size:2.8rem;color: #fff;;"></i>
                             </div>
                             <div class="home-room-info p-4" style="text-align:center;background:none;box-shadow:none;">
                                 <h4 style="font-size:1.1rem;font-weight:700;">Xem thêm</h4>
@@ -348,108 +348,6 @@
                     });
                 });
             </script>
-            <style>
-                .home-room-card {
-                    background: #f5f6f8;
-                    border-radius: 16px;
-                    box-shadow: 0 2px 12px #0001;
-                    overflow: hidden;
-                    transition: box-shadow 0.2s, transform 0.2s;
-                    cursor: pointer;
-                    display: flex;
-                    flex-direction: column;
-                    min-width: 260px;
-                    max-width: 320px;
-                    margin: 0 auto;
-                }
-                .home-room-card:hover {
-                    box-shadow: 0 6px 24px #0002;
-                    transform: translateY(-6px) scale(1.03);
-                }
-                .home-room-img-carousel {
-                    width: 100%;
-                    height: 180px;
-                    position: relative;
-                    background: #e6e6e6;
-                    border-top-left-radius: 16px;
-                    border-top-right-radius: 16px;
-                    overflow: hidden;
-                }
-                .swiper-slide img {
-                    width: 100%;
-                    height: 180px;
-                    object-fit: cover;
-                    display: block;
-                }
-                .home-room-info {
-                    background: #fff;
-                    border-bottom-left-radius: 16px;
-                    border-bottom-right-radius: 16px;
-                    min-height: 90px;
-                    padding: 18px 18px 14px 18px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: flex-start;
-                    gap: 4px;
-                }
-                .home-room-info h4 {
-                    font-size: 1.1rem;
-                    font-weight: 700;
-                    color: #222;
-                    margin: 0 0 2px 0;
-                    line-height: 1.3;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    min-height: 2.6em;
-                    max-height: 2.6em;
-                    word-break: break-word;
-                }
-                .home-room-info p {
-                    color: #888;
-                    font-size: 0.97rem;
-                    margin: 0 0 2px 0;
-                    font-weight: 400;
-                    line-height: 1.2;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .home-room-info .room-price {
-                    font-size: 1.08rem;
-                    font-weight: 600;
-                    color: #2563eb;
-                    margin-top: 4px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .swiper-pagination {
-                    position: absolute;
-                    bottom: 8px;
-                    left: 0;
-                    width: 100%;
-                    text-align: center;
-                    z-index: 10;
-                    display: block !important;
-                }
-                .swiper-pagination-bullet {
-                    background: #222 !important;
-                    opacity: 0.5;
-                    width: 10px;
-                    height: 10px;
-                    margin: 0 3px !important;
-                    border-radius: 50%;
-                    display: inline-block;
-                    transition: opacity 0.2s;
-                }
-                .swiper-pagination-bullet-active {
-                    opacity: 1;
-                    background: #2563eb !important;
-                }
-            </style>
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
                     document.querySelectorAll('[class^="swiper swiper-room-"]').forEach((swiperEl) => {

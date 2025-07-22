@@ -16,13 +16,13 @@ public class UserDAO extends genericDAO<UserAccount> {
         super(UserAccount.class);
     }
 
-    // Đăng nhập: check email + password
-    public UserAccount checkLogin(String email, String password) {
+    // Đăng nhập: check email hoặc tên + password
+    public UserAccount checkLogin(String emailOrName, String password) {
         EntityManager em = getEntityManager();
         try {
             TypedQuery<UserAccount> query = em.createQuery(
-                    "SELECT u FROM UserAccount u WHERE u.email = :email AND u.password = :password", UserAccount.class);
-            query.setParameter("email", email);
+                "SELECT u FROM UserAccount u WHERE (u.email = :input OR u.fullName = :input) AND u.password = :password", UserAccount.class);
+            query.setParameter("input", emailOrName);
             query.setParameter("password", password);
             List<UserAccount> users = query.getResultList();
             if (users.isEmpty()) {

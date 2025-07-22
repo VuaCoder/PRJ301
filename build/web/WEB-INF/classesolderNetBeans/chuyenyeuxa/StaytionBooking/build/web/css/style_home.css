@@ -93,7 +93,7 @@ body {
 
 .account-menu li {
     padding: 8px 0;
-    color: #444;
+    color: white;
     font-size: 16px;
     cursor: pointer;
     transition: font-weight 0.3s ease;
@@ -130,7 +130,7 @@ img {
 
 .main-header-option a {
     text-decoration: none;
-    color: black;
+    color: white;
     transition: font-weight 0.3s ease;
     font-weight: 400;
 }
@@ -140,7 +140,7 @@ img {
 }
 
 #become-a-host {
-    background-color: #484848;
+    background-color: #003B95;
     color: white;
     padding: 13px 40px;
     border-radius: 20px;
@@ -174,7 +174,7 @@ img {
     top: 0;
     left: 0;
     width: 100%;
-    height: 550px;
+    height: 400px;
     z-index: -1;
     /* ẩn đằng sau chữ, giúp không che chữ đằng sau*/
     overflow: hidden;
@@ -186,7 +186,7 @@ img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.3;
+    opacity: 0.6;
 }
 
 .header-bottom {
@@ -220,7 +220,7 @@ img {
 .search-header h1 {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #484848;
+    color: white;
     letter-spacing: 2px;
     margin-bottom: 0.5rem;
     text-align: center;
@@ -234,7 +234,7 @@ img {
 .search-header-option a {
     position: relative;
     text-decoration: none;
-    color: black;
+    color: white;
     transition: font-weight 0.3s ease;
     font-weight: 400;
 }
@@ -248,7 +248,7 @@ img {
     width: 0;
     height: 2px;
     /* chiều cao của gạch chân */
-    background-color: black;
+    background-color: white;
     transition: width 0.3s ease;
 }
 
@@ -347,7 +347,7 @@ img {
 }
 
 .second {
-    margin-top: 35%;
+    margin-top: 23%;
 }
 
 .lastest-selection-header {
@@ -624,7 +624,6 @@ img.home-room-img {
 /* Browser-section */
 .browser-section {
     position: relative;
-    background-color: #fff;
     border-radius: 12px;
     padding: 40px 60px;
     width: 100%;
@@ -632,8 +631,23 @@ img.home-room-img {
     display: flex;
     align-items: center;
     height: 615px;
+    animation: brower-section both;
+    animation-timeline: view(1% 0%);
 }
-
+@keyframes brower-section{
+    from{
+       filter: saturate(0) contrast(4) brightness(.1) blur(2px);
+       opacity:0;
+       scale:.95;
+       translate: 0 4rem;
+    }
+    to{
+        filter:none;
+        opacity:1;
+        scale:1;
+        translate: 0 0;
+    }
+}
 .browser-section .image-box {
     position: absolute;
     top: 20px;
@@ -1627,3 +1641,179 @@ a {
 .property-swiper .swiper-button-prev:hover {
     background: rgba(0,0,0,0.18);
 }
+.back-to-top-btn {
+    position: fixed;
+    bottom: 36px;
+    right: 36px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #2d7dd2 0%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    box-shadow: 0 4px 16px rgba(45,125,210,0.18);
+    font-size: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: background 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
+}
+.back-to-top-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #2d7dd2 100%);
+    box-shadow: 0 8px 32px rgba(45,125,210,0.25);
+    opacity: 1;
+    transform: translateY(-4px) scale(1.08);
+}
+.back-to-top-btn-vertical {
+    position: fixed;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 9999;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: background 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s;
+}
+.back-to-top-btn-vertical:hover {
+    background: #222;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    opacity: 1;
+    transform: translateY(-54%) scale(1.08);
+}
+/* ==== SCROLLBAR ĐẸP ==== */
+body::-webkit-scrollbar {
+    width: 10px;
+    background: #f3f6fa;
+}
+body::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #b3d8fd 0%, #2d7dd2 100%);
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #2d7dd2 0%, #2563eb 100%);
+}
+body::-webkit-scrollbar-track {
+    background: #f3f6fa;
+    border-radius: 8px;
+}
+
+/* Firefox */
+body {
+    scrollbar-width: thin;
+    scrollbar-color: #2d7dd2 #f3f6fa;
+}
+.home-room-card {
+                    background: #f5f6f8;
+                    border-radius: 16px;
+                    box-shadow: 0 2px 12px #0001;
+                    overflow: hidden;
+                    transition: box-shadow 0.2s, transform 0.2s;
+                    cursor: pointer;
+                    display: flex;
+                    flex-direction: column;
+                    min-width: 260px;
+                    max-width: 320px;
+                    margin: 0 auto;
+                }
+                .home-room-card:hover {
+                    box-shadow: 0 6px 24px #0002;
+                    transform: translateY(-6px) scale(1.03);
+                }
+                .home-room-img-carousel {
+                    width: 100%;
+                    height: 180px;
+                    position: relative;
+                    background: #e6e6e6;
+                    border-top-left-radius: 16px;
+                    border-top-right-radius: 16px;
+                    overflow: hidden;
+                }
+                .swiper-slide img {
+                    width: 100%;
+                    height: 180px;
+                    object-fit: cover;
+                    display: block;
+                }
+                .home-room-info {
+                    background: #fff;
+                    border-bottom-left-radius: 16px;
+                    border-bottom-right-radius: 16px;
+                    min-height: 90px;
+                    padding: 18px 18px 14px 18px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    gap: 4px;
+                }
+                .home-room-info h4 {
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    color: #222;
+                    margin: 0 0 2px 0;
+                    line-height: 1.3;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    min-height: 2.6em;
+                    max-height: 2.6em;
+                    word-break: break-word;
+                }
+                .home-room-info p {
+                    color: #888;
+                    font-size: 0.97rem;
+                    margin: 0 0 2px 0;
+                    font-weight: 400;
+                    line-height: 1.2;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .home-room-info .room-price {
+                    font-size: 1.08rem;
+                    font-weight: 600;
+                    color: #2563eb;
+                    margin-top: 4px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .swiper-pagination {
+                    position: absolute;
+                    bottom: 8px;
+                    left: 0;
+                    width: 100%;
+                    text-align: center;
+                    z-index: 10;
+                    display: block !important;
+                }
+                .swiper-pagination-bullet {
+                    background: #222 !important;
+                    opacity: 0.5;
+                    width: 10px;
+                    height: 10px;
+                    margin: 0 3px !important;
+                    border-radius: 50%;
+                    display: inline-block;
+                    transition: opacity 0.2s;
+                }
+                .swiper-pagination-bullet-active {
+                    opacity: 1;
+                    background: #000 !important;
+                }

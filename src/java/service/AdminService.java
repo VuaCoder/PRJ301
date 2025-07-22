@@ -107,6 +107,13 @@ public class AdminService {
         return bookingDAO.getBookingHistoryByCustomer(customerId);
     }
 
+    public long countAllBookings() {
+        return bookingDAO.countAllBookings();
+    }
+    public java.math.BigDecimal getTotalRevenue() {
+        return bookingDAO.getTotalRevenue();
+    }
+
     /* ---------------- ROOMS BY STATUS ---------------- */
     public List<RoomStat> getRoomStatsByHost(int hostId) {
         return bookingDAO.getRoomStatsByHost(hostId);

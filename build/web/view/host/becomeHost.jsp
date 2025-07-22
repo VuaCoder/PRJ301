@@ -13,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Become a Host - Staytion</title>
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_home.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>

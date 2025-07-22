@@ -8,24 +8,21 @@
         <meta charset="UTF-8" />
         <title>Host Dashboard - Staytion</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-            />
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
+        <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
             />
         <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
         <style>
             /* Đảm bảo pagination hiển thị */
-            .swiper-pagination {
+            .swiper-pagination { 
                 position: relative !important;
                 bottom: 0 !important;
                 z-index: 10 !important;
             }
 
             .swiper-pagination-bullet {
+                
                 background: #000 !important;
                 opacity: 0.5 !important;
                 transition: all 0.3s ease !important;

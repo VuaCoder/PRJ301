@@ -7,6 +7,7 @@
 <html>
 <head>
     <title>Room Detail</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style_header.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style_room_detail.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,8 +18,8 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
     <style>
-        body { background: #f5f6fa; }
         
         .booking-form-container {
             background: #fff;
@@ -57,7 +58,7 @@
             border: 2px solid #e5e7eb;
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.2s;
+            transition: border-color ease 0.3s;
         }
         
         .booking-form input:focus, .booking-form select:focus {
@@ -70,6 +71,7 @@
             margin-top: 10px;
         }
     </style>
+    
 </head>
 <body>
 <jsp:include page="header.jsp"/>

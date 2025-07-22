@@ -14,7 +14,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
 
-    <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <body class="bg-gradient-to-br from-blue-200 via-blue-100 to-white min-h-screen flex items-center justify-center">
 
         <form id="signupForm" class="bg-white rounded-lg shadow-md border border-gray-200 p-6 w-[360px]"
               action="${pageContext.request.contextPath}/register" method="post">
@@ -32,34 +32,58 @@
             <hr class="border-gray-300 mb-5" />
 
             <div class="mb-4">
-                <label for="fullName" class="text-xs font-semibold text-gray-700 mb-1 block">Full Name</label>
-                <input type="text" name="fullName" id="fullName" required
-                       class="w-full border rounded-full px-4 py-2 text-xs font-semibold text-gray-900"
-                       placeholder="Enter your name">
+                <label for="fullName" class="text-xs font-semibold text-gray-700 mb-1 block">Họ và tên</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-user"></i></span>
+                    <input type="text" name="fullName" id="fullName" required
+                           class="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition outline-none shadow-sm"
+                           placeholder="Nhập họ và tên">
+                </div>
             </div>
 
             <div class="mb-4">
                 <label for="email" class="text-xs font-semibold text-gray-700 mb-1 block">Email</label>
-                <input type="email" name="email" id="emailReg" required
-                       class="w-full border rounded-full px-4 py-2 text-xs font-semibold text-gray-900"
-                       placeholder="Enter your email">
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-envelope"></i></span>
+                    <input type="email" name="email" id="emailReg" required
+                           class="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition outline-none shadow-sm"
+                           placeholder="Nhập email">
+                </div>
             </div>
 
             <div class="mb-4">
-                <label for="password" class="text-xs font-semibold text-gray-700 mb-1 block">Password</label>
-                <input type="password" name="password" id="passwordReg" required
-                       class="w-full border rounded-full px-4 py-2 text-xs font-semibold text-gray-900"
-                       placeholder="Enter password">
+                <label for="password" class="text-xs font-semibold text-gray-700 mb-1 block">Mật khẩu</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" id="passwordReg" required
+                           class="w-full border border-gray-300 rounded-full pl-10 pr-10 py-2 text-sm font-semibold text-gray-900 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition outline-none shadow-sm"
+                           placeholder="Nhập mật khẩu">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer" onclick="togglePassword('passwordReg', this)"><i class="fas fa-eye"></i></span>
+                </div>
             </div>
 
             <button type="submit"
-                    class="bg-gray-500 text-white px-6 py-2 rounded-full text-xs font-semibold w-full">Register</button>
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-sm font-semibold w-full shadow-md transition">Đăng ký</button>
             <div class="text-center mt-4 text-sm">
-    <span>Bạn đã có tài khoản? </span>
-<a href="${pageContext.request.contextPath}/view/auth/login.jsp" class="text-blue-600 hover:underline">Đăng nhập</a>
-</div>
+                <span>Bạn đã có tài khoản? </span>
+                <a href="${pageContext.request.contextPath}/view/auth/login.jsp" class="text-blue-600 hover:underline font-semibold">Đăng nhập</a>
+            </div>
 
         </form>
 
     </body>
+    <script>
+function togglePassword(inputId, el) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        el.querySelector('i').classList.remove('fa-eye');
+        el.querySelector('i').classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        el.querySelector('i').classList.remove('fa-eye-slash');
+        el.querySelector('i').classList.add('fa-eye');
+    }
+}
+</script>
 </html>

@@ -37,7 +37,7 @@ img {
 
 .main-header-option a {
     text-decoration: none;
-    color: black;
+    color: white;
     transition: font-weight 0.3s ease;
     font-weight: 400;
 }
@@ -81,11 +81,13 @@ img {
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block;
+    margin: 0 !important;
 }
-
 .account-interface {
     opacity: 0;
     transform: translateY(-10px);
@@ -169,4 +171,49 @@ img {
     border-radius: .5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
     padding: 1.5rem;
+}
+.account-container { position: relative; }
+.account-interface {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background: #fff;
+    z-index: 9999;
+    min-width: 180px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    transition: opacity 0.35s, visibility 0.35s, transform 0.35s;
+    transform: translateY(-16px) scale(0.98);
+}
+.account-interface.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+.account-interface.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-16px) scale(0.98);
+}
+.account-menu { list-style: none; margin: 0; padding: 0; }
+.account-menu li { padding: 10px 16px; cursor: pointer; }
+.account-menu li a { color: #333; text-decoration: none; display: block; }
+.header {
+    background-color: #003B95;
+}
+body.is-home .header {
+    background-color: transparent !important;
+}
+.site-logo {
+    content: url('../img/logo.png');
+}
+.header:not(.is-home-header) .site-logo {
+    content: url('../img/logo2.png');
+}
+.account-container, #account {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end;
 }

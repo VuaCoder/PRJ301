@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_footer.css">
+    <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <footer class="footer">
         <div class="news-letter">
             <div class="news-letter-content">
@@ -18,8 +19,7 @@
             <div class="footer-content">
                 <div class="footer-logo">
                     <img src="${pageContext.request.contextPath}/img/logo.png" alt="Logo" />
-                    <p>Ch? ngh? nh? ? nh�
-                        cho chuy?n ?i ti?p theo</p>
+                    <p>Chỗ nghỉ như ở nhà cho chuyến đi tiếp theo.</p>
                     <div class="property-details">
                         <a href="https://play.google.com" target="_blank" class="store-btn">
                             <i class="fa-brands fa-google-play"></i> PlayStore

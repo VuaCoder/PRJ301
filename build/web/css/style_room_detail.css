@@ -1,10 +1,7 @@
 /* ===================== ROOM DETAIL MODERN & SOFT THEME ===================== */
 body {
     font-family: 'Noto Sans', Arial, sans-serif;
-    background: #f6f8fb;
-    color: #232946;
-    margin: 0;
-    padding: 0;
+    background: #f8fafc;
 }
 .lux-room-detail-container {
     max-width: 1100px;
@@ -34,6 +31,13 @@ body {
     border-radius: 22px;
     box-shadow: 0 6px 32px rgba(44,62,80,0.13);
     background: #e9eef6;
+}
+.lux-room-slider .swiper-slide img.lux-room-img-slide {
+    width: 100%;
+    height: 568px;
+    object-fit: cover;
+    border-radius: 24px;
+    display: block;
 }
 .lux-room-info-block {
     flex: 1 1 340px;
@@ -333,4 +337,29 @@ html {
         padding: 8px 2px 8px 2px;
         border-radius: 10px;
     }
+}
+.swiper-pagination-bullet {
+    background: #fff !important;
+    opacity: 0.5;
+}
+.swiper-pagination-bullet-active {
+    background: #fff !important;
+    opacity: 1;
+}
+.swiper-button-next, .swiper-button-prev {
+    color: #fff !important;
+    background: rgba(0,0,0,0.18) !important;
+    border-radius: 50% !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 2.2rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s, color 0.2s;
+}
+.swiper-button-next:hover, .swiper-button-prev:hover {
+    background: rgba(0,0,0,0.32) !important;
+    color: #fff !important;
 }

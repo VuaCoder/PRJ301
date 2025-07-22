@@ -37,7 +37,7 @@ public class RoomDetailServlet extends HttpServlet {
             }
 
             // Debug (tùy chọn)
-            System.out.println("➡️ Room Title: " + room.getTitle());
+            System.out.println("➡️Cac Room Title: " + room.getTitle());
             System.out.println("➡️ Room City: " + room.getCity());
 
             // Truyền dữ liệu sang JSP

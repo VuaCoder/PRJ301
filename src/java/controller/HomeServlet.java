@@ -101,7 +101,7 @@ public class HomeServlet extends HttpServlet {
             List<Room> allRooms = roomDAO.getAllActiveRooms();
             
             // Kiểm tra availability theo thời gian thực
-            if (checkIn != null && !checkIn.isEmpty() && checkOut != null && !checkOut.isEmpty()) {
+            if (checkIn != null && !checkIn.isEmpty() && checkOut != null && !checkOut.isEmpty()) { 
                 try {
                     // Parse ngày từ yyyy-MM-dd format (HTML date input)
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -140,7 +140,6 @@ public class HomeServlet extends HttpServlet {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
             if (!allRooms.isEmpty()) {
-                out.println("<div class='property-listing'>");
                 for (Room room : allRooms) {
                     String imageUrl = null;
                     if (room.getImages() != null && !room.getImages().isEmpty()) {
