@@ -84,7 +84,7 @@ public class HomeServlet extends HttpServlet {
                         + "</div>");
             }
             if (nearbyRooms.isEmpty()) {
-                out.println("<div>Không có phòng nào ở thành phố này.</div>");
+                out.println("<div>Không có phòng nào ở thành phố này/Hiện tại các phòng đã được đặt hết...</div>");
             }
             return;
         }

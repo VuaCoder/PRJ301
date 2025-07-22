@@ -10,7 +10,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border-radius: 50%;
             width: 60px;
@@ -18,17 +18,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
             z-index: 999;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 6px 24px rgba(102,126,234,0.32);
+            transition: all 0.3s cubic-bezier(.4,2,.6,1);
             border: none;
+            animation: pulse 2s infinite;
         }
 
         #chat-icon:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,123,255,0.6);
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+            box-shadow: 0 12px 36px rgba(102,126,234,0.45);
+            transform: scale(1.13) rotate(-8deg);
+        }
+
+        @keyframes shake {
+            0% { transform: scale(1) rotate(0deg); }
+            10% { transform: scale(1.08) rotate(-10deg); }
+            20% { transform: scale(1.12) rotate(8deg); }
+            30% { transform: scale(1.13) rotate(-8deg); }
+            40% { transform: scale(1.12) rotate(8deg); }
+            50% { transform: scale(1.13) rotate(-8deg); }
+            60% { transform: scale(1.12) rotate(8deg); }
+            70% { transform: scale(1.08) rotate(-10deg); }
+            80% { transform: scale(1.05) rotate(4deg); }
+            90% { transform: scale(1.02) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); }
         }
 
         /* Chatbox Container */
@@ -37,27 +54,31 @@
             position: fixed;
             bottom: 90px;
             right: 20px;
-            width: 350px;
-            height: 450px;
-            background: white;
+            width: 390px;
+            height: 540px;
+            background: rgba(255,255,255,0.98);
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 22px;
+            box-shadow: 0 16px 48px 0 rgba(102,126,234,0.22), 0 2px 8px 0 rgba(0,0,0,0.08);
             z-index: 1000;
             overflow: hidden;
             flex-direction: column;
+            backdrop-filter: blur(2px);
         }
 
         /* Chat Header */
         #chat-header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 15px 20px;
+            padding: 20px 28px 16px 28px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            font-size: 1.13rem;
+            letter-spacing: 0.01em;
+            box-shadow: 0 2px 12px rgba(102,126,234,0.10);
         }
 
         #chat-header .header-actions {
@@ -69,21 +90,21 @@
         #chat-header .close-btn,
         #chat-header .clear-btn {
             cursor: pointer;
-            font-size: 16px;
-            opacity: 0.8;
+            font-size: 18px;
+            opacity: 0.88;
             transition: all 0.3s;
             background: none;
             border: none;
             color: white;
-            padding: 5px;
+            padding: 8px;
             border-radius: 50%;
         }
 
         #chat-header .close-btn:hover,
         #chat-header .clear-btn:hover {
             opacity: 1;
-            background: rgba(255,255,255,0.1);
-            transform: scale(1.1);
+            background: rgba(255,255,255,0.22);
+            transform: scale(1.18);
         }
 
         /* Chat Body */
@@ -91,61 +112,72 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8fafc 80%, #e0e7ff 100%);
             overflow: hidden;
         }
 
         #messages {
             flex: 1;
-            padding: 15px;
+            padding: 22px 18px 14px 18px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 18px;
         }
 
         /* Messages */
         .message {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 15px;
-            font-size: 14px;
-            line-height: 1.5;
+            max-width: 88%;
+            padding: 14px 18px;
+            border-radius: 18px 18px 8px 18px;
+            font-size: 16px;
+            line-height: 1.7;
             word-wrap: break-word;
             animation: fadeInUp 0.3s ease;
+            box-shadow: 0 2px 12px rgba(102,126,234,0.10);
+            background: #fff;
+            border: 1.5px solid #e0e7ff;
         }
 
         .user-message {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
             align-self: flex-end;
-            border-bottom-right-radius: 4px;
             margin-left: auto;
+            border-radius: 18px 18px 10px 22px;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 4px 18px rgba(102,126,234,0.22);
+            text-align: right;
+            max-width: 88%;
         }
 
         .bot-message {
-            background: white;
-            color: #333;
+            background: #fff;
+            color: #222;
             align-self: flex-start;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-right: auto;
+            border-radius: 18px 18px 22px 10px;
+            border: 1.5px solid #e0e7ff;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+            text-align: left;
+            max-width: 70%; /* Thu hẹp lại để tin nhắn bot không quá dài */
         }
 
         /* Typing Indicator */
         .typing-indicator {
             display: none;
-            padding: 10px 14px;
+            padding: 12px 16px;
             font-style: italic;
             color: #666;
-            font-size: 13px;
-            background: white;
-            border-radius: 15px;
-            border-bottom-left-radius: 4px;
+            font-size: 14px;
+            background: #fff;
+            border-radius: 16px;
+            border-bottom-left-radius: 10px;
             align-self: flex-start;
             max-width: 85%;
-            border: 1px solid #e0e0e0;
+            border: 1.5px solid #e0e7ff;
         }
 
         .typing-dots::after {
@@ -161,60 +193,60 @@
 
         /* Quick Replies - FIXED CSS */
         .quick-replies {
-            padding: 10px 15px;
-            background: white;
-            border-top: 1px solid #f0f0f0;
+            padding: 14px 22px 12px 22px;
+            background: #f8fafc;
+            border-top: 1.5px solid #e5e7eb;
             flex-shrink: 0;
         }
 
         .quick-replies-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
             justify-content: flex-start;
         }
 
         .quick-reply-btn {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 18px;
-            padding: 8px 12px;
-            font-size: 12px;
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+            border: 1.5px solid #c7d2fe;
+            border-radius: 22px;
+            padding: 10px 20px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: #495057;
+            transition: all 0.2s;
+            color: #4f46e5;
             white-space: nowrap;
-            flex: 0 0 auto;
-            min-width: fit-content;
+            font-weight: 600;
+            box-shadow: 0 1px 6px rgba(102,126,234,0.10);
         }
 
         .quick-reply-btn:hover {
-            background: #e3f2fd;
-            border-color: #007bff;
-            color: #007bff;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,123,255,0.2);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            color: #fff;
+            transform: translateY(-2px) scale(1.06);
+            box-shadow: 0 4px 16px rgba(102,126,234,0.22);
         }
 
         .quick-reply-btn:active {
             transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0,123,255,0.2);
+            box-shadow: 0 1px 2px rgba(102,126,234,0.12);
         }
 
         /* Chat Input */
         #chat-input {
             display: flex;
-            border-top: 1px solid #e0e0e0;
-            background: white;
+            border-top: 1.5px solid #e0e0e0;
+            background: #fff;
             flex-shrink: 0;
         }
 
         #chat-input input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 16px 20px;
             border: none;
             outline: none;
-            font-size: 14px;
+            font-size: 16px;
             background: transparent;
         }
 
@@ -223,18 +255,19 @@
         }
 
         #chat-input button {
-            padding: 12px 18px;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: 500;
-            border-radius: 0;
+            font-weight: 700;
+            border-radius: 0 0 0 0;
+            font-size: 1.15rem;
         }
 
         #chat-input button:hover:not(:disabled) {
-            background: linear-gradient(135deg, #0056b3, #004085);
+            background: linear-gradient(135deg, #764ba2, #667eea);
         }
 
         #chat-input button:disabled {
@@ -356,6 +389,7 @@
      const BASE_URL = '<%= request.getContextPath() %>';
     let chatboxOpen = false;
     let conversationHistory = [];
+    let lastUserMessage = '';
 
     function toggleChatbox() {
         const box = document.getElementById("chatbox");
@@ -383,8 +417,13 @@
 
     function sendQuickReply(message) {
         if (message === 'Có, xem thêm phòng') {
-            // Gọi với showMore = true
-            sendMessageWithShowMore(message, true);
+            // Gọi với showMore = true, dùng lại message gốc cuối cùng
+            if (lastUserMessage) {
+                sendMessageWithShowMore(lastUserMessage, true);
+            } else {
+                // fallback: gửi lại quick reply như cũ
+                sendMessageWithShowMore(message, true);
+            }
         } else {
             document.getElementById("userInput").value = message;
             sendMessage();
@@ -395,6 +434,8 @@
         const input = document.getElementById("userInput");
         const message = input.value.trim();
         if (!message) return;
+
+        lastUserMessage = message; // Lưu lại message gốc cuối cùng
 
         const sendBtn = document.getElementById("sendBtn");
         const typing = document.getElementById("typing");
@@ -584,8 +625,8 @@
     function resetQuickReplies() {
         const quickReplies = document.getElementById("quickReplies");
         quickReplies.innerHTML = `
-            <button class="quick-reply-btn" onclick="sendQuickReply('Phòng dưới 500k')">💰 Dưới 500k</button>
-            <button class="quick-reply-btn" onclick="sendQuickReply('Phòng suit 2 người')">🏨 Suite 2 người</button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Phòng trên 500k')">💰 Trên 500k</button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Phòng suit 2 người')">🏨 Suit 2 người</button>
             <button class="quick-reply-btn" onclick="sendQuickReply('Phòng đơn giá rẻ')">🛏️ Phòng đơn</button>
             <button class="quick-reply-btn" onclick="sendQuickReply('Xem thêm phòng')">👀 Xem thêm</button>
         `;

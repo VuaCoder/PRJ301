@@ -21,13 +21,16 @@ public class SearchServlet extends HttpServlet {
         List<Room> searchResults = null;
         String searchType = ""; // To store the type of search performed for JSP
 
-        // Part 2 search (from the main form: location, check-in, check-out, guests)
+        // Lấy các tham số tìm kiếm
         String location = request.getParameter("location");
         String checkIn = request.getParameter("check_in");
         String checkOut = request.getParameter("check_out");
         String guestsParam = request.getParameter("guests");
+        String showAll = request.getParameter("showAll");
+        String type = request.getParameter("type");
+        String city = request.getParameter("city");
 
-        // Nếu có check_in và check_out, lọc phòng theo ngày
+        // 1. Tìm kiếm theo ngày (check-in/check-out)
         if (checkIn != null && !checkIn.trim().isEmpty() && checkOut != null && !checkOut.trim().isEmpty()) {
             try {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
@@ -49,7 +52,18 @@ public class SearchServlet extends HttpServlet {
                 searchResults = List.of();
                 searchType = "invalidDate";
             }
-        } else if (location != null && !location.trim().isEmpty() && guestsParam != null && !guestsParam.trim().isEmpty()) {
+        }
+        // 2. Nếu có showAll=true, trả về toàn bộ phòng và forward sang all-properties.jsp
+        else if (showAll != null && "true".equalsIgnoreCase(showAll)) {
+            searchResults = roomDAO.getAllActiveRooms();
+            searchType = "showAll";
+            request.setAttribute("searchResults", searchResults);
+            request.setAttribute("searchType", searchType);
+            request.getRequestDispatcher("all-properties.jsp").forward(request, response);
+            return;
+        }
+        // 3. Tìm kiếm theo location + guests
+        else if (location != null && !location.trim().isEmpty() && guestsParam != null && !guestsParam.trim().isEmpty()) {
             try {
                 int guests = Integer.parseInt(guestsParam);
                 searchResults = roomDAO.searchRooms(location.trim(), guests);
@@ -57,31 +71,25 @@ public class SearchServlet extends HttpServlet {
                 request.setAttribute("guests", guests);
                 searchType = "fullSearch";
             } catch (NumberFormatException e) {
-                // Handle invalid guests input
-                searchResults = List.of(); // Return empty list or handle error appropriately
+                searchResults = List.of();
                 System.err.println("Invalid guests parameter: " + guestsParam);
                 searchType = "invalidInput";
             }
-        } else {
-            // Part 1 search (from type or city links)
-            String type = request.getParameter("type");
-            String city = request.getParameter("city");
-
-            if (type != null && !type.trim().isEmpty()) {
-                // Search rooms by type
-                searchResults = roomDAO.searchRoomsByType(type.trim());
-                request.setAttribute("type", type.trim());
-                searchType = "typeSearch";
-            } else if (city != null && !city.trim().isEmpty()) {
-                // Search rooms by city
-                searchResults = roomDAO.getRoomsByCity(city.trim());
-                request.setAttribute("city", city.trim());
-                searchType = "citySearch";
-            } else {
-                // If no search parameters, return an empty list or all rooms
-                searchResults = List.of();
-                searchType = "noParams";
-            }
+        }
+        // 4. Tìm kiếm theo type/city
+        else if (type != null && !type.trim().isEmpty()) {
+            searchResults = roomDAO.searchRoomsByType(type.trim());
+            request.setAttribute("type", type.trim());
+            searchType = "typeSearch";
+        } else if (city != null && !city.trim().isEmpty()) {
+            searchResults = roomDAO.getRoomsByCity(city.trim());
+            request.setAttribute("city", city.trim());
+            searchType = "citySearch";
+        }
+        // 5. Không có tham số nào, trả về rỗng
+        else {
+            searchResults = List.of();
+            searchType = "noParams";
         }
 
         // Set the results and search type attribute to be used in JSP

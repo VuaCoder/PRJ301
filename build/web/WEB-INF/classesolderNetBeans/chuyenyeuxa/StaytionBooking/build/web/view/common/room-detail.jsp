@@ -125,9 +125,12 @@
             </div>
                 <div>
 
-                <a href="#booking-section" class="lux-btn lux-btn-primary lux-btn-large lux-btn-booktop" style="margin-top:22px;max-width:356px;height: 150px">
-                    <i class="fas fa-calendar-check"></i> Đặt phòng
-                </a>
+                <%-- Hiển thị nút Đặt phòng nếu là customer hoặc chưa đăng nhập --%>
+                <c:if test="${empty sessionScope.user or not empty sessionScope.user.customer}">
+                    <a href="#booking-section" class="lux-btn lux-btn-primary lux-btn-large lux-btn-booktop" style="margin-top:22px;max-width:356px;height: 150px">
+                        <i class="fas fa-calendar-check"></i> Đặt phòng
+                    </a>
+                </c:if>
                 </div>
             
             

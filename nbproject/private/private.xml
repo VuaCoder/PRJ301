@@ -3,11 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/controller/admin/AdminCustomerDetailServlet.java</file>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/admin/admin-customer-detail.jsp</file>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/view/admin/admin-host-detail.jsp</file>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/DTO/BookingHistory.java</file>
-            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/src/java/dao/BookingDAO.java</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/css/style_footer.css</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/home.jsp</file>
+            <file>file:/D:/fifa/JavaFolderNetBeans/chuyenyeuxa/StaytionBooking/web/css/style_home.css</file>
         </group>
     </open-files>
 </project-private>

@@ -7,6 +7,7 @@
 body {
     font-family: "Noto Sans", sans-serif;
     overflow-x: hidden;
+    background: #f8fafc;
 }
 
 .main-header {
@@ -1588,9 +1589,11 @@ a {
     z-index: 1;
 }
 .property-swiper .swiper-slide.show-all-slide {
-    border: 2px dashed #2d7dd2;
-    background: #f7fafc;
-    position: relative;
+    border: 2px dashed #667eea !important;
+    background: #f3f6fd !important;
+}
+.property-swiper .show-all-slide h4 {
+    color: #2563eb !important;
 }
 .property-swiper .swiper-nav-blur {
     z-index: 2;

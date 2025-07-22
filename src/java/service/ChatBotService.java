@@ -258,8 +258,14 @@ if (info.minPrice != null && info.maxPrice != null) {
      * ✅ NEW: Create no room found message
      */
 private String createNoRoomFoundMessage(ParsedInfo info) {
-    String priceText = info.priceCategory != null ? getPriceCategoryDisplay(info.priceCategory) : "Mọi mức giá";
-    
+    String priceText;
+    if (info.minPrice != null && info.maxPrice != null) {
+        priceText = String.format("Từ %,.0f₫ đến %,.0f₫", info.minPrice.doubleValue(), info.maxPrice.doubleValue());
+    } else if (info.priceCategory != null) {
+        priceText = getPriceCategoryDisplay(info.priceCategory);
+    } else {
+        priceText = "Mọi mức giá";
+    }
     return String.format(
         "😔 **Không tìm thấy phòng phù hợp**\n\n" +
         "🔍 **Yêu cầu của bạn**:\n" +
@@ -529,13 +535,16 @@ if (rangeMatcher.find()) {
 
     // ===== 4. Backup keyword mapping cho category =====
     if (info.priceCategory == null) {
-        if (message.matches(".*(?:giá\\s*rẻ|gia\\s*re|tiết\\s*kiệm|budget|cheap|dưới\\s*500).*")) {
-            info.priceCategory = "gia re";
-        } else if (message.matches(".*(?:trung\\s*bình.*thấp|500k|1tr|mid.*low|medium.*low).*")) {
+        if (message.matches(".*trên\s*500k.*|.*trên\s*500\s*nghìn.*|.*over\s*500k.*|.*above\s*500k.*")) {
             info.priceCategory = "trung binh thap";
-        } else if (message.matches(".*(?:trung\\s*bình.*cao|1tr.*2tr|mid.*high|medium.*high).*")) {
+            info.minPrice = new BigDecimal("500001"); // hoặc 500000.01 nếu muốn
+        } else if (message.matches(".*(?:giá\s*rẻ|gia\s*re|tiết\s*kiệm|budget|cheap|dưới\s*500).*")) {
+            info.priceCategory = "gia re";
+        } else if (message.matches(".*(?:trung\s*bình.*thấp|500k|1tr|mid.*low|medium.*low).*")) {
+            info.priceCategory = "trung binh thap";
+        } else if (message.matches(".*(?:trung\s*bình.*cao|1tr.*2tr|mid.*high|medium.*high).*")) {
             info.priceCategory = "trung binh cao";
-        } else if (message.matches(".*(?:cao\\s*cấp|sang\\s*trọng|luxury|premium|trên\\s*2tr|expensive).*")) {
+        } else if (message.matches(".*(?:cao\s*cấp|sang\s*trọng|luxury|premium|trên\s*2tr|expensive).*")) {
             info.priceCategory = "mr beast";
         }
     }
@@ -589,14 +598,13 @@ if (rangeMatcher.find()) {
     private boolean matchPriceFilter(BigDecimal price, String category) {
         if (price == null || category == null) return true;
 
-        
         BigDecimal fiveHundredK = new BigDecimal("500000");
         BigDecimal oneMillion = new BigDecimal("1000000");
         BigDecimal twoMillion = new BigDecimal("2000000");
-        
+
         return switch (category.toLowerCase()) {
             case "gia re" -> price.compareTo(fiveHundredK) < 0;
-            case "trung binh thap" -> price.compareTo(fiveHundredK) >= 0 && price.compareTo(oneMillion) <= 0;
+            case "trung binh thap" -> price.compareTo(fiveHundredK) > 0 && price.compareTo(oneMillion) <= 0;
             case "trung binh cao" -> price.compareTo(oneMillion) > 0 && price.compareTo(twoMillion) <= 0;
             case "mr beast" -> price.compareTo(twoMillion) > 0;
             default -> true;

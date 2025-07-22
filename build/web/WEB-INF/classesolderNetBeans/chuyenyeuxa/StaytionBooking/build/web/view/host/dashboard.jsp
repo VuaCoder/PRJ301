@@ -40,6 +40,63 @@
             .swiper {
                 position: relative !important;
             }
+
+            .stats-container {
+                display: flex;
+                gap: 32px;
+                padding: 32px 24px 24px 24px;
+                background: #fff;
+                border-radius: 18px;
+                box-shadow: 0 4px 24px rgba(44,62,80,0.08);
+                margin: 24px auto;
+                max-width: 1100px;
+                align-items: stretch;
+            }
+            .stat-card {
+                flex: 1 1 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-radius: 16px;
+                min-width: 180px;
+                min-height: 140px;
+                box-shadow: 0 2px 12px rgba(33,182,246,0.07);
+                transition: transform 0.18s, box-shadow 0.18s;
+                background: #f8fafc;
+                position: relative;
+            }
+            .stat-card.confirmed { background: linear-gradient(135deg, #e8f9f1 60%, #f8fafc 100%); }
+            .stat-card.rejected { background: linear-gradient(135deg, #fdeaea 60%, #f8fafc 100%); }
+            .stat-card.total { background: linear-gradient(135deg, #eaf1fd 60%, #f8fafc 100%); }
+            .stat-card:hover {
+                transform: translateY(-4px) scale(1.03);
+                box-shadow: 0 8px 32px rgba(33,182,246,0.13);
+            }
+            .stat-icon {
+                font-size: 2.7rem;
+                margin-bottom: 10px;
+                margin-top: 6px;
+            }
+            .stat-card.confirmed .stat-icon { color: #21b573; }
+            .stat-card.rejected .stat-icon { color: #e74c3c; }
+            .stat-card.total .stat-icon { color: #2563eb; }
+            .stat-value {
+                font-size: 2.2rem;
+                font-weight: 800;
+                color: #232946;
+                margin-bottom: 2px;
+            }
+            .stat-label {
+                font-size: 1.08rem;
+                color: #444;
+                font-weight: 600;
+                letter-spacing: 0.2px;
+            }
+            @media (max-width: 900px) {
+                .stats-container { flex-direction: column; gap: 18px; padding: 18px 6vw; }
+                .stat-card { min-width: unset; min-height: 100px; }
+            }
         </style>
     </head>
     <body class="bg-gray-50 font-sans">
@@ -118,8 +175,8 @@
                                     <!-- Room Status -->
                                     <div class="absolute top-3 right-3 z-30">
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold text-white
-                                              ${r.status eq 'Available' || r.status eq 'active' || r.status eq 'Active' ? 'bg-green-500' : 'bg-red-500'}">
-                                            ${r.status eq 'Available' || r.status eq 'active' || r.status eq 'Active' ? 'Available' : 'Unavailable'}
+                                              ${r.status eq 'Available'|| r.status eq 'available'|| r.status eq 'active' || r.status eq 'Active' ? 'bg-green-500' : 'bg-red-500'}">
+                                            ${r.status eq 'Available' || r.status eq 'available'|| r.status eq 'active' || r.status eq 'Active' ? 'Available' : 'Unavailable'}
                                         </span>
                                     </div>
                                 </div>
@@ -141,11 +198,8 @@
                                     </div>
 
                                     <div class="flex gap-3">
-                                         <a href="${pageContext.request.contextPath}/host/room?action=edit&id=${r.roomId}" class="flex-1 text-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                        <a href="${pageContext.request.contextPath}/host/room?action=edit&id=${r.roomId}" class="flex-1 text-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
                                             <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="${pageContext.request.contextPath}/host/reviews?roomId=${r.roomId}" class="text-center bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">
-                                            <i class="fas fa-star"></i> Reviews
                                         </a>
                                         <a href="${pageContext.request.contextPath}/host/room?action=delete&id=${r.roomId}"
                                            onclick="return confirm('Are you sure you want to delete this room?');"
@@ -182,29 +236,21 @@
             <!-- Booking Statistics Section -->
             <div class="mt-8 bg-white rounded-xl shadow-lg border p-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Thống kê đặt phòng</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                        <i class="fas fa-clock text-3xl text-yellow-600 mb-2"></i>
-                        <h3 class="text-2xl font-bold text-gray-800">${pendingBookings}</h3>
-                        <p class="text-sm text-gray-600">Chờ xác nhận</p>
+                <div class="stats-container">
+                    <div class="stat-card confirmed">
+                        <div class="stat-icon"><i class="fas fa-check"></i></div>
+                        <div class="stat-value">${confirmedCount}</div>
+                        <div class="stat-label">Đã xác nhận</div>
                     </div>
-
-                    <div class="text-center p-4 bg-green-50 rounded-lg">
-                        <i class="fas fa-check text-3xl text-green-600 mb-2"></i>
-                        <h3 class="text-2xl font-bold text-gray-800">${confirmedBookings}</h3>
-                        <p class="text-sm text-gray-600">Đã xác nhận</p>
+                    <div class="stat-card rejected">
+                        <div class="stat-icon"><i class="fas fa-times"></i></div>
+                        <div class="stat-value">${rejectedCount}</div>
+                        <div class="stat-label">Đã từ chối</div>
                     </div>
-
-                    <div class="text-center p-4 bg-red-50 rounded-lg">
-                        <i class="fas fa-times text-3xl text-red-600 mb-2"></i>
-                        <h3 class="text-2xl font-bold text-gray-800">${cancelledBookings}</h3>
-                        <p class="text-sm text-gray-600">Đã từ chối</p>
-                    </div>
-
-                    <div class="text-center p-4 bg-blue-50 rounded-lg">
-                        <i class="fas fa-calendar text-3xl text-blue-600 mb-2"></i>
-                        <h3 class="text-2xl font-bold text-gray-800">${totalBookings}</h3>
-                        <p class="text-sm text-gray-600">Tổng đặt phòng</p>
+                    <div class="stat-card total">
+                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-value">${totalCount}</div>
+                        <div class="stat-label">Tổng đặt phòng</div>
                     </div>
                 </div>
             </div>
