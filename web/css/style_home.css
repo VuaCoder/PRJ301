@@ -634,7 +634,7 @@ img.home-room-img {
     animation: brower-section both;
     animation-timeline: view(1% 0%);
 }
-@keyframes brower-section{
+@keyframes browser-section {
     from{
        filter: saturate(0) contrast(4) brightness(.1) blur(2px);
        opacity:0;

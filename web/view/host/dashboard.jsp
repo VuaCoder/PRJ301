@@ -11,18 +11,18 @@
         <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"
-            />
+              />
         <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
         <style>
             /* Đảm bảo pagination hiển thị */
-            .swiper-pagination { 
+            .swiper-pagination {
                 position: relative !important;
                 bottom: 0 !important;
                 z-index: 10 !important;
             }
 
             .swiper-pagination-bullet {
-                
+
                 background: #000 !important;
                 opacity: 0.5 !important;
                 transition: all 0.3s ease !important;
@@ -63,9 +63,21 @@
                 background: #f8fafc;
                 position: relative;
             }
-            .stat-card.confirmed { background: linear-gradient(135deg, #e8f9f1 60%, #f8fafc 100%); }
-            .stat-card.rejected { background: linear-gradient(135deg, #fdeaea 60%, #f8fafc 100%); }
-            .stat-card.total { background: linear-gradient(135deg, #eaf1fd 60%, #f8fafc 100%); }
+            .stat-card.confirmed {
+                background: linear-gradient(135deg, #e8f9f1 60%, #f8fafc 100%);
+            }
+            .stat-card.rejected {
+                background: linear-gradient(135deg, #fdeaea 60%, #f8fafc 100%);
+            }
+            .stat-card.total {
+                background: linear-gradient(135deg, #eaf1fd 60%, #f8fafc 100%);
+            }
+            .stat-card.active {
+                background: linear-gradient(135deg, #e0f7fa 60%, #f8fafc 100%);
+            }
+            .stat-card.empty {
+                background: linear-gradient(135deg, #fffde7 60%, #f8fafc 100%);
+            }
             .stat-card:hover {
                 transform: translateY(-4px) scale(1.03);
                 box-shadow: 0 8px 32px rgba(33,182,246,0.13);
@@ -75,9 +87,21 @@
                 margin-bottom: 10px;
                 margin-top: 6px;
             }
-            .stat-card.confirmed .stat-icon { color: #21b573; }
-            .stat-card.rejected .stat-icon { color: #e74c3c; }
-            .stat-card.total .stat-icon { color: #2563eb; }
+            .stat-card.confirmed .stat-icon {
+                color: #21b573;
+            }
+            .stat-card.rejected .stat-icon {
+                color: #e74c3c;
+            }
+            .stat-card.total .stat-icon {
+                color: #2563eb;
+            }
+            .stat-card.active .stat-icon {
+                color: #00bcd4;
+            }
+            .stat-card.empty .stat-icon {
+                color: #fbc02d;
+            }
             .stat-value {
                 font-size: 2.2rem;
                 font-weight: 800;
@@ -91,8 +115,15 @@
                 letter-spacing: 0.2px;
             }
             @media (max-width: 900px) {
-                .stats-container { flex-direction: column; gap: 18px; padding: 18px 6vw; }
-                .stat-card { min-width: unset; min-height: 100px; }
+                .stats-container {
+                    flex-direction: column;
+                    gap: 18px;
+                    padding: 18px 6vw;
+                }
+                .stat-card {
+                    min-width: unset;
+                    min-height: 100px;
+                }
             }
         </style>
     </head>
@@ -122,7 +153,7 @@
                         </div>
                     </a>
 
-                    <a href="${pageContext.request.contextPath}/host/dashboard" 
+                    <a href="${pageContext.request.contextPath}/host/statistics"
                        class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
                         <i class="fas fa-chart-line text-2xl text-purple-600 mr-4"></i>
                         <div>
@@ -229,58 +260,6 @@
                     </div>
                 </c:otherwise>
             </c:choose>
-
-            <!-- Booking Statistics Section -->
-            <div class="mt-8 bg-white rounded-xl shadow-lg border p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Thống kê đặt phòng</h2>
-                <div class="stats-container">
-                    <div class="stat-card confirmed">
-                        <div class="stat-icon"><i class="fas fa-check"></i></div>
-                        <div class="stat-value">${confirmedCount}</div>
-                        <div class="stat-label">Đã xác nhận</div>
-                    </div>
-                    <div class="stat-card rejected">
-                        <div class="stat-icon"><i class="fas fa-times"></i></div>
-                        <div class="stat-value">${rejectedCount}</div>
-                        <div class="stat-label">Đã từ chối</div>
-                    </div>
-                    <div class="stat-card total">
-                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
-                        <div class="stat-value">${totalCount}</div>
-                        <div class="stat-label">Tổng đặt phòng</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const swipers = document.querySelectorAll('[class^="swiper swiper-room-"]');
-                swipers.forEach((swiperEl, index) => {
-                    new Swiper(swiperEl, {
-                        loop: true,
-                        autoplay: {
-                            delay: 5000, // Tăng lên 5 giây
-                            disableOnInteraction: false,
-                            pauseOnMouseEnter: true
-                        },
-                        pagination: {
-                            el: `.swiper-pagination-${index}`,
-                            clickable: true,
-                            renderBullet: function (index, className) {
-                                return `<span class="${className} bg-black opacity-50 transition-all duration-300 w-3 h-3 rounded-full mx-1 inline-block"></span>`;
-                            }
-                        },
-                        // Thêm navigation nếu cần
-                        navigation: {
-                            nextEl: '.swiper-button-next',
-                            prevEl: '.swiper-button-prev',
-                        }
-                    });
-                });
-            });
-        </script>
-
-        <jsp:include page="/view/common/footer.jsp" />
+            <jsp:include page="/view/common/footer.jsp" />
     </body>
 </html>
