@@ -1314,7 +1314,7 @@ a {
     position: relative;
     z-index: 2;
     background: rgba(255,255,255,0.97); /* trắng đục nhẹ */
-    border-radius: 0 28px 28px 0;
+    border-radius: 28px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.10);
     padding: 48px 40px 36px 40px;
     min-width: 370px;

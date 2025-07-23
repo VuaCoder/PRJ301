@@ -28,7 +28,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Đăng nhập</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_home.css" />
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,7 @@
             <div style="color:#ff5252; margin-bottom:10px; font-weight:500;"> <%= error %> </div>
         <% } %>
         <form id="loginForm" action="${pageContext.request.contextPath}/login" method="post" autocomplete="off">
-            <label for="email" style="margin-bottom: 10px">Email hoặc Tên đăng nhập</label>
+            <label for="email" style="margin-bottom: 10px">Email/ Tên đăng nhập</label>
             <div style="position:relative;">
                 <span class="modern-auth-icon"><i class="fas fa-user"></i></span>
                 <input type="text" name="email" id="email" required value="<%= email %>" class="modern-auth-input" placeholder="Nhập email hoặc tên đăng nhập">

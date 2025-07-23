@@ -28,6 +28,7 @@ public class ChatBotServlet extends HttpServlet {
 
         String userMessage = null;
         String showMore = null;
+        String language = null;
 
         System.out.println("=== [ChatBotServlet] ===");
         System.out.println("Content-Type: " + request.getContentType());
@@ -36,6 +37,7 @@ public class ChatBotServlet extends HttpServlet {
         // Get form parameters
         userMessage = request.getParameter("message");
         showMore = request.getParameter("showMore");
+        language = request.getParameter("language");
 
         System.out.println("Form parameters - message: " + userMessage + ", showMore: " + showMore);
 
@@ -62,6 +64,9 @@ public class ChatBotServlet extends HttpServlet {
                     if (jsonRequest.has("showMore")) {
                         showMore = jsonRequest.get("showMore").getAsString();
                     }
+                    if (jsonRequest.has("language")) {
+                        language = jsonRequest.get("language").getAsString();
+                    }
                 } catch (Exception ex) {
                     System.err.println("❌ JSON parsing error: " + ex.getMessage());
                 }
@@ -81,7 +86,7 @@ public class ChatBotServlet extends HttpServlet {
 
         try {
             JsonObject jsonResponse = chatBotService.processChatRequest(
-                userMessage, "true".equalsIgnoreCase(showMore)
+                userMessage, "true".equalsIgnoreCase(showMore), language
             );
             response.getWriter().write(jsonResponse.toString());
             System.out.println("✅ ChatBot response sent successfully.");

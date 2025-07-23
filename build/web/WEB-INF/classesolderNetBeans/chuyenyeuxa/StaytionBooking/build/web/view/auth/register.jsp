@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="UTF-8">
-        <title>Register</title>
+        <title>Đăng ký</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_home.css" />
         <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,11 +14,19 @@
     </head>
 
     <body class="modern-auth-bg page-fadein">
+        <% String message = (String) request.getAttribute("message"); %>
+    <% String error = (String) request.getAttribute("error"); %>
         <div class="modern-auth-card">
             <div style="margin-bottom: 18px;">
                 <div class="modern-auth-sub" style="font-size:1.05rem;">START FOR FREE</div>
                 <div class="modern-auth-title">Create new account<span style="color:#3fa9f5;">.</span></div>
             </div>
+            <% if (message != null) { %>
+            <div style="color:#3fa9f5; margin-bottom:10px; font-weight:500;"> <%= message %> </div>
+        <% } %>
+        <% if (error != null) { %>
+            <div style="color:#ff5252; margin-bottom:10px; font-weight:500;"> <%= error %> </div>
+        <% } %>
             <form id="signupForm" action="${pageContext.request.contextPath}/register" method="post">
                 <label for="fullName">Họ và tên</label>
                 <div style="position:relative;">
@@ -41,12 +49,7 @@
             <div style="margin-top: 10px; text-align:center; color:#b0b8c9; font-size:0.98rem;">
                 Bạn đã có tài khoản? <a href="${pageContext.request.contextPath}/view/auth/login.jsp" class="modern-auth-switch">Đăng nhập</a>
             </div>
-            <c:if test="${not empty error}">
-                <div style="color:#ff5252; margin-bottom:10px; font-weight:500;">${error}</div>
-            </c:if>
-            <c:if test="${not empty message}">
-                <div style="color:#3fa9f5; margin-bottom:10px; font-weight:500;">${message}</div>
-            </c:if>
+            
         </div>
         <div class="modern-auth-side-bg"></div>
         <script>
