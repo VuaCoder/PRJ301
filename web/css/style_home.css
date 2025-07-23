@@ -1295,6 +1295,174 @@ a {
     opacity: 1;
 }
 
+/* Modern Auth (Login/Signup) UI */
+.modern-auth-bg {
+    min-height: 100vh;
+    width: 100vw;
+    background: #232733;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+.modern-auth-bg::before {
+    display: none !important;
+}
+.modern-auth-card {
+    position: relative;
+    z-index: 2;
+    background: #232733;
+    border-radius: 0 28px 28px 0;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    padding: 48px 40px 36px 40px;
+    min-width: 370px;
+    max-width: 410px;
+    width: 100%;
+    margin: 48px 0 48px 7vw;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.modern-auth-side-bg {
+    flex: 1 1 0;
+    width: 50vw;
+    height: 100vh;
+    background: linear-gradient(90deg, #232733 0%, rgba(35,39,51,0.7) 30%, rgba(35,39,51,0.1) 100%), url('../img/mountain.jpg') center/cover no-repeat;
+    border-radius: 0;
+    z-index: 1;
+}
+.modern-auth-title {
+    color: #fff;
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+.modern-auth-sub {
+    color: #b0b8c9;
+    font-size: 1.05rem;
+    margin-bottom: 18px;
+}
+.modern-auth-card label {
+    color: #b0b8c9;
+    font-size: 0.98rem;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+.modern-auth-input {
+    width: 100%;
+    background: #eaf1fb;
+    border: 1.5px solid #444a5a;
+    border-radius: 14px;
+    color: #232733;
+    font-size: 1.13rem;
+    height: 48px;
+    padding: 10px 18px 10px 44px;
+    margin-bottom: 8px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    font-weight: 500;
+}
+.modern-auth-input:focus {
+    border: 1.5px solid #3fa9f5;
+    box-shadow: 0 0 0 2px #3fa9f555;
+}
+.modern-auth-btn {
+    width: 100%;
+    background: linear-gradient(90deg, #3fa9f5 0%, #1976d2 100%);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.08rem;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 0;
+    margin-top: 8px;
+    margin-bottom: 6px;
+    box-shadow: 0 2px 12px #1976d233;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.modern-auth-btn:hover {
+    background: linear-gradient(90deg, #1976d2 0%, #3fa9f5 100%);
+    box-shadow: 0 4px 18px #1976d244;
+}
+.modern-auth-switch {
+    color: #3fa9f5;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+.modern-auth-switch:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+.modern-auth-row {
+    display: flex;
+    gap: 14px;
+}
+.modern-auth-row .modern-auth-input {
+    margin-bottom: 0;
+}
+.modern-auth-google {
+    width: 100%;
+    background: #fff;
+    color: #232733;
+    font-weight: 600;
+    font-size: 1.08rem;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 0;
+    margin-top: 8px;
+    margin-bottom: 6px;
+    box-shadow: 0 2px 12px #1976d233;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.modern-auth-google:hover {
+    background: #e3f0ff;
+    color: #1976d2;
+}
+.modern-auth-eye {
+    position: absolute;
+    right: 18px;
+    top: 43%;
+    transform: translateY(-50%);
+    color: #b0b8c9;
+    cursor: pointer;
+    font-size: 1.1rem;
+    z-index: 2;
+}
+.modern-auth-icon {
+    position: absolute;
+    left: 18px;
+    top: 43%;
+    transform: translateY(-50%);
+    color: #b0b8c9;
+    font-size: 1.25rem;
+    z-index: 2;
+    pointer-events: none;
+    margin-bottom: 0;
+}
+@media (max-width: 900px) {
+    .modern-auth-bg {
+        flex-direction: column;
+    }
+    .modern-auth-card {
+        border-radius: 28px;
+        margin: 32px auto;
+    }
+    .modern-auth-side-bg {
+        display: none;
+    }
+}
 @media (max-width: 900px) {
     .header-bottom {
         width: 98vw;
@@ -1817,3 +1985,23 @@ body {
                     opacity: 1;
                     background: #000 !important;
                 }
+
+/* Footer logo alignment fix */
+.footer-payments, .footer-partners {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+.footer-payments img, .footer-partners img {
+    height: 32px;
+    width: auto;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(26,35,126,0.07);
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

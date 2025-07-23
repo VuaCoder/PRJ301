@@ -55,6 +55,12 @@
             </div>
         </div>
 
+        <div class="footer-certifications">
+            <img src="${pageContext.request.contextPath}/img/cert1.png" alt="Chứng nhận 1" />
+            <img src="${pageContext.request.contextPath}/img/cert2.png" alt="Chứng nhận 2" />
+            <img src="${pageContext.request.contextPath}/img/cert3.png" alt="Chứng nhận 3" />
+            <img src="${pageContext.request.contextPath}/img/cert4.png" alt="Chứng nhận 4" />
+        </div>
         <div class="footer-bottom">
             <p>&copy; 2025 PRJCHIMUNG.design | All rights reserved</p>
             <p>Created with love by <strong>PRJ CHIM UNG</strong></p>

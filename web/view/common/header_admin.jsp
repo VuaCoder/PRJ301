@@ -132,9 +132,19 @@
                     <li style="font-weight: 600; color: #333; padding: 12px 16px; border-bottom: 1px solid #eee;">
                         Hello, <%= user.getFullName() != null ? user.getFullName() : user.getUsername()%>
                     </li>
-                    <li><a href="${pageContext.request.contextPath}/view/auth/edit-profile.jsp?tab=password">Đổi thông tin</a></li>
-                    <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-                        <% } else { %>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/view/auth/edit-profile.jsp" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-user-edit" style="margin-right: 8px; width: 16px;"></i> 
+                            Edit Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/logout" style="display: block; padding: 12px 16px; color: #dc2626; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-sign-out-alt" style="margin-right: 8px; width: 16px;"></i> 
+                            Logout
+                        </a>
+                    </li>
+                    <% } else { %>
                     <li>
                         <a href="${pageContext.request.contextPath}/view/auth/register.jsp" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
                             <i class="fas fa-user-plus" style="margin-right: 8px; width: 16px;"></i> 

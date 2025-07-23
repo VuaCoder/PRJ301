@@ -167,8 +167,11 @@ img {
 
 /*FOOTER*/
 .footer {
-    background-color: #f4f5f7;
-    color: #333;
+    background: linear-gradient(135deg, #e3f0ff 0%, #ffffff 100%);
+    color: #1a237e;
+    border-top: 2px solid #e3eafc;
+    padding-top: 32px;
+    padding-bottom: 0;
 }
 
 /*NEWS LETTER*/
@@ -246,21 +249,20 @@ img {
 .footer-inner {
     max-width: 1200px;
     margin: 0 auto;
+    padding-bottom: 0;
 }
 
 .footer-content {
     max-width: 1200px;
-    /* Hoáº·c 100%, nhÆ°ng 1200px giá»¯ bá»‘ cá»¥c Ä‘áº¹p hÆ¡n */
     margin: 0 auto;
-    /* CÄƒn giá»¯a ná»™i dung */
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 40px 20px 80px 20px;
+    padding: 40px 20px 40px 20px;
 }
 
 .footer-logo img {
-    max-width: 500px;
+    max-width: 220px;
     height: auto;
     display: block;
     margin-bottom: 20px;
@@ -274,6 +276,8 @@ img {
 
 .footer-logo p {
     text-align: left;
+    color: #1a237e;
+    font-weight: 500;
 }
 
 .property-details {
@@ -357,16 +361,46 @@ img {
     transform: scale(1.2);
 }
 
-.footer-bottom p {
-    padding: 20px;
-}
-
 .footer-bottom {
     display: flex;
     justify-content: space-evenly;
-    margin: 20px 0px;
+    margin: 20px 0px 0 0;
     text-align: center;
     font-size: 14px;
+    color: #1a237e;
+    background: transparent;
+    border-radius: 0 0 18px 18px;
+    padding-bottom: 18px;
+}
+
+.footer-certifications {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    margin: 24px 0 12px 0;
+    flex-wrap: wrap;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(26,35,126,0.07);
+    padding: 18px 32px;
+    border: 1.5px solid #e3eafc;
+}
+.footer-certifications img {
+    height: 54px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #f8fafc;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.06);
+    transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+    padding: 6px 14px;
+    border: 1.5px solid #e3eafc;
+}
+.footer-certifications img:hover {
+    transform: scale(1.09) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26,35,126,0.13);
+    border: 1.5px solid #1976d2;
 }
 
 /* Hamburger menu toggle báº±ng CSS */
