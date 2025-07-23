@@ -9,10 +9,10 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Become a Host - Staytion</title>
+    <title>Trở thành Chủ nhà - Staytion</title>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_home.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -75,29 +75,30 @@
 <jsp:include page="/view/common/header.jsp" />
 <div class="become-host-container">
     <div class="become-host-icon"><i class="fas fa-house-user"></i></div>
-    <div class="become-host-title">Become a Host</div>
+    <div class="become-host-title">Đăng ký trở thành Chủ nhà</div>
     <div class="become-host-desc">
-        Share your space, earn extra income, and join our trusted host community.<br>
-        Please provide your information and property details below.
+        Chia sẻ không gian của bạn, kiếm thêm thu nhập và trở thành một phần của cộng đồng Staytion.<br>
+        Vui lòng cung cấp thông tin cá nhân và chi tiết nơi ở bên dưới.
     </div>
     <form class="become-host-form" method="post" action="${pageContext.request.contextPath}/becomeHost">
-        <label for="hostDescription">Host Description <span style="color:red;">*</span></label>
-        <textarea name="description" id="hostDescription" required placeholder="Tell us about yourself or your hosting style..."></textarea>
-        <label for="propertyName">Property Name <span style="color:red;">*</span></label>
-        <input type="text" name="propertyName" id="propertyName" required placeholder="e.g. Dalat Cozy Homestay">
-        <label for="propertyDescription">Property Description <span style="color:red;">*</span></label>
-        <textarea name="propertyDescription" id="propertyDescription" required placeholder="Describe your property, amenities, and what makes it special..."></textarea>
-        <label for="propertyAddress">Address <span style="color:red;">*</span></label>
-        <input type="text" name="propertyAddress" id="propertyAddress" required placeholder="e.g. 12 Tran Hung Dao, Da Lat">
-        <label for="propertyCity">City <span style="color:red;">*</span></label>
-        <input type="text" name="propertyCity" id="propertyCity" required placeholder="e.g. Da Lat">
-        <label for="propertyLatitude">Latitude</label>
-        <input type="number" step="any" name="propertyLatitude" id="propertyLatitude" placeholder="e.g. 11.9411">
-        <label for="propertyLongitude">Longitude</label>
-        <input type="number" step="any" name="propertyLongitude" id="propertyLongitude" placeholder="e.g. 108.4380">
-        <button type="submit">Become a Host</button>
+        <label for="hostDescription">Giới thiệu về bạn <span style="color:red;">*</span></label>
+        <textarea name="description" id="hostDescription" required placeholder="Chia sẻ về bạn hoặc phong cách đón tiếp khách..."></textarea>
+
+        <label for="propertyName">Tên chỗ ở <span style="color:red;">*</span></label>
+        <input type="text" name="propertyName" id="propertyName" required placeholder="VD: Homestay ấm cúng Đà Lạt">
+
+        <label for="propertyDescription">Mô tả chỗ ở <span style="color:red;">*</span></label>
+        <textarea name="propertyDescription" id="propertyDescription" required placeholder="Mô tả tiện nghi, đặc điểm nổi bật, không gian..."></textarea>
+
+        <label for="propertyAddress">Địa chỉ <span style="color:red;">*</span></label>
+        <input type="text" name="propertyAddress" id="propertyAddress" required placeholder="VD: 12 Trần Hưng Đạo, Đà Lạt">
+
+        <label for="propertyCity">Thành phố <span style="color:red;">*</span></label>
+        <input type="text" name="propertyCity" id="propertyCity" required placeholder="VD: Đà Lạt">
+
+        <button type="submit">Gửi đăng ký</button>
     </form>
 </div>
 <jsp:include page="/view/common/footer.jsp" />
 </body>
-</html> 
+</html>

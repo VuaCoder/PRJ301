@@ -20,29 +20,24 @@ public class BecomeHostServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         UserAccount user = (UserAccount) session.getAttribute("user");
+
         if (user == null) {
             response.sendRedirect("view/auth/login.jsp");
             return;
         }
+
         int userId = user.getUserId();
         String description = request.getParameter("description");
         String propertyName = request.getParameter("propertyName");
         String propertyDescription = request.getParameter("propertyDescription");
         String propertyAddress = request.getParameter("propertyAddress");
         String propertyCity = request.getParameter("propertyCity");
-        String latStr = request.getParameter("propertyLatitude");
-        String lngStr = request.getParameter("propertyLongitude");
-        Double latitude = null, longitude = null;
-        try {
-            latitude = (latStr != null && !latStr.isEmpty()) ? Double.parseDouble(latStr) : null;
-            longitude = (lngStr != null && !lngStr.isEmpty()) ? Double.parseDouble(lngStr) : null;
-        } catch (Exception e) {
-            // ignore parse error, keep null
-        }
+
         HostDAO hostDAO = new HostDAO();
         UserDAO userDAO = new UserDAO();
         PropertyDAO propertyDAO = new PropertyDAO();
-        // Kiểm tra đã là host chưa
+
+        // Kiểm tra xem đã là host chưa
         Host host = hostDAO.getHostByUserId(userId);
         int hostId;
         if (host == null) {
@@ -54,8 +49,9 @@ public class BecomeHostServlet extends HttpServlet {
         } else {
             hostId = host.getHostId();
         }
+
         boolean updated = userDAO.updateRole(userId, 2); // 2 = host
-        // Tạo property mới
+
         if (hostId > 0 && updated) {
             Property property = new Property();
             property.setHostId(new Host(hostId));
@@ -63,16 +59,17 @@ public class BecomeHostServlet extends HttpServlet {
             property.setDescription(propertyDescription);
             property.setAddress(propertyAddress);
             property.setCity(propertyCity);
-            property.setLatitude(latitude);
-            property.setLongitude(longitude);
             property.setVerified(false);
+
             propertyDAO.createProperty(property);
-            // Cập nhật lại user trong session
+
+            // Cập nhật user trong session
             user.setRoleId(new model.Role(2));
             session.setAttribute("user", user);
+
             response.sendRedirect(request.getContextPath() + "/host/dashboard");
         } else {
-            response.getWriter().write("<script>alert('Error: Could not become host!');window.location='home.jsp';</script>");
+            response.getWriter().write("<script>alert('Lỗi: Không thể đăng ký làm chủ nhà!');window.location='home.jsp';</script>");
         }
     }
-} 
+}
