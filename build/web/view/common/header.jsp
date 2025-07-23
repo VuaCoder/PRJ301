@@ -22,9 +22,9 @@
         </div>
         <div class="main-header-option">
             <ul>
-                <li><a href="#">Find a Property</a></li>
-                <li><a href="#">Rental Guides</a></li>
-                <li><a href="#">Download Mobile App</a></li>
+                <li><a href="#find-property-section">Find a Property</a></li>
+                <li><a href="#rental-guides-section">Rental Guides</a></li>
+                <li><a href="#download-mobile-app-section">Download Mobile App</a></li>
                 <% if (user != null && isHost) { %>
                     <li style="background-color: #484848; color: white; padding: 13px 40px; border-radius: 20px; display: inline-block;">Hello, Host <%= user.getFullName() %></li>
                 <% } else { %>

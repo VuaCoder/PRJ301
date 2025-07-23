@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
-    <body class="modern-auth-bg">
+    <body class="modern-auth-bg page-fadein">
         <div class="modern-auth-card">
             <div style="margin-bottom: 18px;">
                 <div class="modern-auth-sub" style="font-size:1.05rem;">START FOR FREE</div>

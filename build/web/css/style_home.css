@@ -1299,7 +1299,7 @@ a {
 .modern-auth-bg {
     min-height: 100vh;
     width: 100vw;
-    background: #232733;
+    background: #e0f7fa; /* xanh biển nhạt */
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -1313,9 +1313,9 @@ a {
 .modern-auth-card {
     position: relative;
     z-index: 2;
-    background: #232733;
+    background: rgba(255,255,255,0.97); /* trắng đục nhẹ */
     border-radius: 0 28px 28px 0;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
     padding: 48px 40px 36px 40px;
     min-width: 370px;
     max-width: 410px;
@@ -1329,50 +1329,58 @@ a {
     flex: 1 1 0;
     width: 50vw;
     height: 100vh;
-    background: linear-gradient(90deg, #232733 0%, rgba(35,39,51,0.7) 30%, rgba(35,39,51,0.1) 100%), url('../img/mountain.jpg') center/cover no-repeat;
+    min-height: 100vh;
+    background: linear-gradient(90deg, #e0f7fa 0%, rgba(224,247,250,0.7) 30%, rgba(224,247,250,0.1) 100%), url('../img/madlivesss.jpg') center center/cover no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
     border-radius: 0;
     z-index: 1;
 }
 .modern-auth-title {
-    color: #fff;
+    color: #0288d1; /* xanh biển đậm */
     font-size: 2.1rem;
     font-weight: 700;
     margin-bottom: 8px;
     letter-spacing: 0.5px;
 }
 .modern-auth-sub {
-    color: #b0b8c9;
+    color: #4dd0e1; /* xanh ngọc nhạt */
     font-size: 1.05rem;
     margin-bottom: 18px;
 }
 .modern-auth-card label {
-    color: #b0b8c9;
+    color: #0288d1; /* xanh biển đậm */
     font-size: 0.98rem;
     margin-bottom: 4px;
     font-weight: 500;
 }
 .modern-auth-input {
     width: 100%;
-    background: #eaf1fb;
-    border: 1.5px solid #444a5a;
+    background: #e1f5fe; /* xanh dương nhạt */
+    border: 1.5px solid #4dd0e1;
     border-radius: 14px;
-    color: #232733;
+    color: #0277bd;
     font-size: 1.13rem;
     height: 48px;
     padding: 10px 18px 10px 44px;
     margin-bottom: 8px;
     outline: none;
-    transition: border 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.35s cubic-bezier(0.4,0,0.2,1),
+                box-shadow 0.35s cubic-bezier(0.4,0,0.2,1),
+                border 0.35s cubic-bezier(0.4,0,0.2,1),
+                color 0.35s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     font-weight: 500;
 }
 .modern-auth-input:focus {
-    border: 1.5px solid #3fa9f5;
-    box-shadow: 0 0 0 2px #3fa9f555;
+    border: 1.5px solid #0288d1;
+    box-shadow: 0 0 0 4px #4dd0e122;
+    filter: brightness(1.03);
 }
 .modern-auth-btn {
     width: 100%;
-    background: linear-gradient(90deg, #3fa9f5 0%, #1976d2 100%);
+    background: linear-gradient(90deg, #4dd0e1 0%, #0288d1 100%); /* xanh ngọc sang xanh biển */
     color: #fff;
     font-weight: 600;
     font-size: 1.08rem;
@@ -1381,24 +1389,29 @@ a {
     padding: 13px 0;
     margin-top: 8px;
     margin-bottom: 6px;
-    box-shadow: 0 2px 12px #1976d233;
+    box-shadow: 0 2px 12px #4dd0e133;
     cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
+    transition: background 0.35s cubic-bezier(0.4,0,0.2,1),
+                box-shadow 0.35s cubic-bezier(0.4,0,0.2,1),
+                border 0.35s cubic-bezier(0.4,0,0.2,1),
+                color 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 .modern-auth-btn:hover {
-    background: linear-gradient(90deg, #1976d2 0%, #3fa9f5 100%);
-    box-shadow: 0 4px 18px #1976d244;
+    background: linear-gradient(90deg, #0288d1 0%, #4dd0e1 100%);
+    box-shadow: 0 8px 24px #4dd0e144;
+    filter: brightness(1.06) saturate(1.1);
 }
 .modern-auth-switch {
-    color: #3fa9f5;
+    color: #0288d1;
     font-weight: 500;
     text-decoration: none;
     margin-left: 4px;
-    transition: color 0.2s;
+    transition: color 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 .modern-auth-switch:hover {
-    color: #fff;
+    color: #4dd0e1;
     text-decoration: underline;
+    filter: brightness(1.1);
 }
 .modern-auth-row {
     display: flex;
@@ -2004,4 +2017,21 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+html {
+  scroll-behavior: smooth;
+}
+/* Page transition fade-in cho login/signup */
+.page-fadein {
+  animation: fadeInPage 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes fadeInPage {
+  from { opacity: 0; transform: translateY(30px);}
+  to   { opacity: 1; transform: none;}
+}
+.modern-auth-input, .modern-auth-btn, .modern-auth-switch {
+    transition: background 0.35s cubic-bezier(0.4,0,0.2,1),
+                box-shadow 0.35s cubic-bezier(0.4,0,0.2,1),
+                border 0.35s cubic-bezier(0.4,0,0.2,1),
+                color 0.35s cubic-bezier(0.4,0,0.2,1);
 }

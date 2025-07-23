@@ -36,7 +36,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="modern-auth-bg">
+<body class="modern-auth-bg page-fadein">
     <% String message = (String) request.getAttribute("message"); %>
     <% String error = (String) request.getAttribute("error"); %>
     <div class="modern-auth-card">

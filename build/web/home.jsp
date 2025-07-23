@@ -111,7 +111,7 @@
                 </form>
             </div>
         </div>
-        <div class="second">
+        <div class="second" id="find-property-section">
             <div class="lastest-selection">
                 <div class="lastest-selection-header">
                     <h1>Danh sách tìm kiếm</h1>
@@ -186,7 +186,7 @@
                 </div>
             </section>
 
-            <div class="blog-section">
+            <div class="blog-section" id="rental-guides-section">
                 <h1>Mẹo Thuê Bất Động Sản &<br>Hướng Dẫn</h1>
 
                 <div class="blog-list">
@@ -215,7 +215,7 @@
             </div>
         </div>
 
-        <section class="download-mobile_app-section">
+        <section class="download-mobile_app-section" id="download-mobile-app-section">
             <div class="image-box"></div>
             <div class="content">
                 <h1>Tải App Chúng Tôi Tại</h1>
