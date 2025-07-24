@@ -9,7 +9,7 @@
         <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
@@ -18,7 +18,7 @@
     <% String error = (String) request.getAttribute("error"); %>
         <div class="modern-auth-card">
             <div style="margin-bottom: 18px;">
-                <div class="modern-auth-sub" style="font-size:1.05rem;">START FOR FREE</div>
+                <div class="modern-auth-sub" style="font-size:1.05rem;">ĐĂNG KÝ VÌ NÓ MIỄN PHÍ</div>
                 <div class="modern-auth-title">Create new account<span style="color:#3fa9f5;">.</span></div>
             </div>
             <% if (message != null) { %>

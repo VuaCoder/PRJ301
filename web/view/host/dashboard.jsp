@@ -97,7 +97,7 @@
         </style>
     </head>
     <body class="bg-gray-50 font-sans">
-        <jsp:include page="/view/common/header.jsp" />
+        <jsp:include page="/view/common/header_admin.jsp"/>
 
         <div class="max-w-7xl mx-auto p-6">
             <!-- Quick Actions Section -->
@@ -122,7 +122,7 @@
                         </div>
                     </a>
 
-                    <a href="${pageContext.request.contextPath}/host/dashboard" 
+                    <a href="${pageContext.request.contextPath}/host/statistics"
                        class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
                         <i class="fas fa-chart-line text-2xl text-purple-600 mr-4"></i>
                         <div>

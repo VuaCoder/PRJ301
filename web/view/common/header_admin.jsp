@@ -8,6 +8,8 @@
 <head>
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+              rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -117,7 +119,7 @@
 <div class="header" style="background:#003B95;">
     <div style="flex:1"></div>
     <div class="main-header-logo flex items-center justify-center" style="flex:0 0 auto;">
-        <img src="${pageContext.request.contextPath}/img/logo2.png" alt="Staytion Logo" style="height:200px;width:auto;object-fit:contain;filter:none;">
+        <a href="${pageContext.request.contextPath}/home"><img src="${pageContext.request.contextPath}/img/logo2.png" alt="Staytion Logo" style="height:200px;width:auto;object-fit:contain;filter:none;"></a>
     </div>
     <div style="flex:1; display:flex; justify-content:flex-end; align-items:center;">
         <div class="account-container">
@@ -132,6 +134,22 @@
                     <li style="font-weight: 600; color: #333; padding: 12px 16px; border-bottom: 1px solid #eee;">
                         Hello, <%= user.getFullName() != null ? user.getFullName() : user.getUsername()%>
                     </li>
+                    <% if (user.getRoleId() != null && "host".equalsIgnoreCase(user.getRoleId().getRoleName())) { %>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/host/dashboard" style="display: block; padding: 12px 16px; color: #2563eb; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-chart-line" style="margin-right: 8px; width: 16px;"></i>
+                            Host Dashboard
+                        </a>
+                    </li>
+                    <% } %>
+                    <% if (user.getRoleId() != null && "admin".equalsIgnoreCase(user.getRoleId().getRoleName())) { %>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/admin/dashboard" style="display: block; padding: 12px 16px; color: #2563eb; text-decoration: none; transition: background-color 0.2s;">
+                            <i class="fas fa-chart-pie" style="margin-right: 8px; width: 16px;"></i>
+                            Admin Dashboard
+                        </a>
+                    </li>
+                    <% } %>
                     <li>
                         <a href="${pageContext.request.contextPath}/view/auth/edit-profile.jsp" style="display: block; padding: 12px 16px; color: #333; text-decoration: none; transition: background-color 0.2s;">
                             <i class="fas fa-user-edit" style="margin-right: 8px; width: 16px;"></i> 

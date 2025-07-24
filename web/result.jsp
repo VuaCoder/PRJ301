@@ -12,9 +12,10 @@
         <link rel="icon" type="image/x-icon" href="img/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-              rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
         <style>
             * {
                 margin: 0;
@@ -645,69 +646,110 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <c:forEach var="room" items="${searchResults}" varStatus="status">
-                        <div class="room-card">
-                            <div class="room-layout">
-                                <!-- Hình ảnh bên trái -->
-                                <div class="room-image">
-                                    <c:choose>
-                                        <c:when test="${not empty room.images}">
-                                            <c:set var="imgArr" value="${fn:split(room.images, ',')}" />
-                                            <c:set var="imgRaw" value="${imgArr[0]}" />
-                                            <img src="${imgRaw}" alt="Room Image">
-                                        </c:when>
-                                        <c:otherwise>
-                                            <div class="image-placeholder">
-                                                <i class="fas fa-bed"></i>
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                            <c:forEach var="room" items="${searchResults}" varStatus="status">
+                                <c:if test="${status.index < 5 || showAll eq true}">
+                                <div class="swiper-slide">
+                                    <div class="room-card">
+                                        <div class="room-layout">
+                                            <div class="room-image">
+                                                <c:choose>
+                                                    <c:when test="${not empty room.images}">
+                                                        <c:set var="imgArr" value="${fn:split(room.images, ',')}" />
+                                                        <c:set var="imgRaw" value="${imgArr[0]}" />
+                                                        <img src="${imgRaw}" alt="Room Image">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="image-placeholder">
+                                                            <i class="fas fa-bed"></i>
+                                                        </div>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </div>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                                
-                                <!-- Thông tin bên phải -->
-                                <div class="room-info">
-                                    <div class="room-header">
-                                        <h3>${room.title}</h3>
-                                        <span class="price">
-                                            <fmt:formatNumber value="${room.price}" type="number" maxFractionDigits="0" groupingUsed="true"/> VNĐ
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="room-details">
-                                        <div class="detail-item">
-                                            <i class="fas fa-users"></i>
-                                            <span><strong>Sức chứa:</strong> ${room.capacity} khách</span>
+                                            <div class="room-info">
+                                                <div class="room-header">
+                                                    <h3>${room.title}</h3>
+                                                    <span class="price">
+                                                        <fmt:formatNumber value="${room.price}" type="number" maxFractionDigits="0" groupingUsed="true"/> VNĐ
+                                                    </span>
+                                                </div>
+                                                <div class="room-details">
+                                                    <div class="detail-item">
+                                                        <i class="fas fa-users"></i>
+                                                        <span><strong>Sức chứa:</strong> ${room.capacity} khách</span>
+                                                    </div>
+                                                    <c:if test="${room.propertyId != null}">
+                                                        <div class="detail-item">
+                                                            <i class="fas fa-home"></i>
+                                                            <span><strong>Property:</strong> ${room.propertyId.name}</span>
+                                                        </div>
+                                                        <div class="detail-item">
+                                                            <i class="fas fa-map-marker-alt"></i>
+                                                            <span><strong>Thành phố:</strong> ${room.propertyId.city}</span>
+                                                        </div>
+                                                    </c:if>
+                                                </div>
+                                                <div class="room-actions">
+                                                    <a href="${pageContext.request.contextPath}/detail?id=${room.roomId}" class="btn">
+                                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <c:if test="${room.propertyId != null}">
-                                            <div class="detail-item">
-                                                <i class="fas fa-home"></i>
-                                                <span><strong>Property:</strong> ${room.propertyId.name}</span>
-                                            </div>
-                                            <div class="detail-item">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <span><strong>Thành phố:</strong> ${room.propertyId.city}</span>
-                                            </div>
-                                        </c:if>
-                                    </div>
-                                    
-                                    <div class="room-actions">
-                                        <a href="${pageContext.request.contextPath}/detail?id=${room.roomId}" class="btn">
-                                            <i class="fas fa-eye"></i> Xem chi tiết
-                                        </a>
                                     </div>
                                 </div>
-                            </div>
+                                </c:if>
+                            </c:forEach>
                         </div>
-                    </c:forEach>
-                    
-                    <div class="back-button">
-                        <a href="${pageContext.request.contextPath}/home" class="btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Quay lại trang chủ
-                        </a>
+                        <div class="swiper-pagination"></div>
                     </div>
+                    <c:if test="${fn:length(searchResults) > 5 && showAll ne true}">
+                        <div style="text-align:center; margin: 24px 0;">
+                            <button class="btn" id="showMoreBtn">Xem thêm</button>
+                        </div>
+                    </c:if>
+                    <c:if test="${showAll eq true}">
+                        <div style="text-align:center; margin: 24px 0;">
+                            <button class="btn btn-secondary" id="showLessBtn">Ẩn bớt</button>
+                        </div>
+                    </c:if>
                 </c:otherwise>
             </c:choose>
         </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var swiper = new Swiper('.mySwiper', {
+                slidesPerView: 3,
+                spaceBetween: 30,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    0: { slidesPerView: 1 },
+                    600: { slidesPerView: 2 },
+                    900: { slidesPerView: 3 }
+                }
+            });
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            if (showMoreBtn) {
+                showMoreBtn.onclick = function() {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('showAll', 'true');
+                    window.location.href = url.toString();
+                }
+            }
+            const showLessBtn = document.getElementById('showLessBtn');
+            if (showLessBtn) {
+                showLessBtn.onclick = function() {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('showAll');
+                    window.location.href = url.toString();
+                }
+            }
+        });
+        </script>
 
         <!-- Debug section (có thể ẩn sau) -->
         <div class="debug" style="display: none;">

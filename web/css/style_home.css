@@ -624,70 +624,105 @@ img.home-room-img {
 /* Browser-section */
 .browser-section {
     position: relative;
-    border-radius: 12px;
-    padding: 40px 60px;
+    border-radius: 28px;
+    padding: 56px 80px;
     width: 100%;
-    overflow: hidden;
+    min-height: 320px;
+    margin: 56px auto 40px auto;
+    box-shadow: 0 8px 32px rgba(37,99,235,0.18), 0 1.5px 8px rgba(56,189,248,0.08);
+    background: none;
+    border: 3px solid #2563eb;
     display: flex;
     align-items: center;
-    height: 615px;
-    animation: brower-section both;
-    animation-timeline: view(1% 0%);
+    overflow: hidden;
+    animation: ad-section-fadein 1.2s cubic-bezier(.4,1.4,.6,1) both;
+    will-change: opacity, transform, filter;
+    max-width: unset;
 }
-@keyframes brower-section{
-    from{
-       filter: saturate(0) contrast(4) brightness(.1) blur(2px);
-       opacity:0;
-       scale:.95;
-       translate: 0 4rem;
+@keyframes ad-section-fadein {
+    0% {
+        opacity: 0;
+        filter: blur(16px) brightness(.7) grayscale(1);
+        transform: scale(.92) translateY(60px) skewY(2deg);
     }
-    to{
-        filter:none;
-        opacity:1;
-        scale:1;
-        translate: 0 0;
+    60% {
+        opacity: 1;
+        filter: blur(2px) brightness(1.1) grayscale(.2);
+        transform: scale(1.03) translateY(-8px) skewY(-1deg);
+    }
+    100% {
+        opacity: 1;
+        filter: none;
+        transform: scale(1) translateY(0) skewY(0);
     }
 }
 .browser-section .image-box {
     position: absolute;
-    top: 20px;
-    left: 60px;
-    right: 20px;
-    bottom: 20px;
-    background-image: url('https://img5.thuthuatphanmem.vn/uploads/2021/12/06/hinh-nen-xam-trang-tuyet-dep_095634010.jpg');
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    border-radius: 28px;
+    background-image:
+        linear-gradient(120deg, rgba(37,99,235,0.22) 0%, rgba(56,189,248,0.18) 100%),
+        url('https://img5.thuthuatphanmem.vn/uploads/2021/12/06/hinh-nen-xam-trang-tuyet-dep_095634010.jpg');
     background-size: cover;
     background-position: center;
-    border-radius: 20px;
-    z-index: 0;
+    opacity: 1;
+    filter: blur(1.5px) grayscale(0.08);
 }
-
-.content {
+.browser-section .content {
     position: relative;
     z-index: 1;
-    color: #333;
-    max-width: 400px;
+    color: #1e293b;
+    max-width: 480px;
     margin-left: 30px;
+    text-align: left;
+    font-family: 'Noto Sans', Arial, sans-serif;
 }
-
-.content h1 {
-    font-size: 50px;
+.browser-section .content h1 {
+    font-size: 2.7rem;
+    font-weight: 900;
+    color: #2563eb;
+    margin-bottom: 18px;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 12px #fff8, 0 1px 0 #fff;
+    animation: ad-title-pop 1.1s cubic-bezier(.4,1.4,.6,1) both;
 }
-
-.content p {
-    margin: 20px 0;
-    font-size: 1.1rem;
+@keyframes ad-title-pop {
+    0% { opacity: 0; transform: scale(.8) translateY(40px); }
+    60% { opacity: 1; transform: scale(1.08) translateY(-8px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
-
-.content button {
-    font-size: 17px;
-    margin-top: 20px;
-    padding: 24px 52px;
+.browser-section .content p {
+    margin: 18px 0 28px 0;
+    font-size: 1.18rem;
+    color: #334155;
+    font-weight: 500;
+    text-shadow: 0 1px 0 #fff8;
+    animation: ad-text-fade 1.3s .2s both;
+}
+@keyframes ad-text-fade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.browser-section .content a button, .browser-section .content button {
+    font-size: 1.25rem;
+    margin-top: 10px;
+    padding: 22px 56px;
     border: none;
-    background-color: #333;
-    color: white;
+    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+    color: #fff;
     border-radius: 40px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 800;
+    box-shadow: 0 4px 24px #2563eb33, 0 1.5px 8px #38bdf833;
+    letter-spacing: 1px;
+    transition: background .18s, transform .13s, box-shadow .18s;
+    animation: ad-btn-pop 1.2s .3s both;
+}
+.browser-section .content a button:hover, .browser-section .content button:hover {
+    background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
+    transform: scale(1.06) translateY(-2px);
+    box-shadow: 0 8px 32px #2563eb44, 0 2px 12px #38bdf844;
 }
 
 /* Blog-section */
@@ -2034,4 +2069,24 @@ html {
                 box-shadow 0.35s cubic-bezier(0.4,0,0.2,1),
                 border 0.35s cubic-bezier(0.4,0,0.2,1),
                 color 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.ad-animate-on-scroll {
+    opacity: 0;
+    transform: translateY(60px) scale(.96);
+    transition: opacity 0.5s, transform 0.5s;
+}
+.ad-animate-on-scroll.ad-animated {
+    opacity: 1;
+    transform: none;
+    animation: ad-section-fadein 1.2s cubic-bezier(.4,1.4,.6,1) both;
+}
+.ad-animate-on-scroll.ad-animated .content h1 {
+    animation: ad-title-pop 1.1s cubic-bezier(.4,1.4,.6,1) both;
+}
+.ad-animate-on-scroll.ad-animated .content p {
+    animation: ad-text-fade 1.3s .2s both;
+}
+.ad-animate-on-scroll.ad-animated .content a button,
+.ad-animate-on-scroll.ad-animated .content button {
+    animation: ad-btn-pop 1.2s .3s both;
 }

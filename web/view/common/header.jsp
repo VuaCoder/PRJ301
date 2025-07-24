@@ -7,6 +7,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     UserAccount user = (UserAccount) session.getAttribute("user");
+    boolean isAdmin = user != null && user.getRoleId() != null && "admin".equalsIgnoreCase(user.getRoleId().getRoleName());
     boolean isHost = user != null && user.getRoleId() != null && "host".equalsIgnoreCase(user.getRoleId().getRoleName());
     String uri = request.getRequestURI();
     boolean isHome = uri.endsWith("/home") || uri.endsWith("/home.jsp");
@@ -14,9 +15,14 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_header.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<div class="header<%= isHome ? " is-home-header" : "" %>">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<%-- Tách phần main-header thành file riêng cho host/admin --%>
+<% if (isHost || isAdmin) { %>
+    <jsp:include page="main-header-admin.jsp" />
+<% } else { %>
     <div class="main-header">
-        
         <div class="main-header-logo">
             <a href="${pageContext.request.contextPath}/home"><img class="site-logo" src="${pageContext.request.contextPath}/img/logo.png"></a>
         </div>
@@ -25,8 +31,8 @@
                 <li><a href="#find-property-section">Find a Property</a></li>
                 <li><a href="#rental-guides-section">Rental Guides</a></li>
                 <li><a href="#download-mobile-app-section">Download Mobile App</a></li>
-                <% if (user != null && isHost) { %>
-                    <li style="background-color: #484848; color: white; padding: 13px 40px; border-radius: 20px; display: inline-block;">Hello, Host <%= user.getFullName() %></li>
+                <% if (user != null) { %>
+                    <li style="background-color: #484848; color: white; padding: 13px 40px; border-radius: 20px; display: inline-block;">Hello, <%= user.getFullName() != null ? user.getFullName() : user.getUsername() %></li>
                 <% } else { %>
                     <li><a href="${pageContext.request.contextPath}/view/host/becomeHost.jsp" id="become-a-host">Become a host</a></li>
                 <% } %>
@@ -106,7 +112,7 @@
             </div>
         </div>
     </div>
-</div>
+<% } %>
 <script>
     const menuButton = document.getElementById("menuButton");
     const menuDropdown = document.getElementById("menuDropdown");

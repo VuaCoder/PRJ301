@@ -10,6 +10,7 @@ import model.Room;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -53,17 +54,14 @@ public class HomeServlet extends HttpServlet {
         String city = request.getParameter("city");
         // Chuẩn hóa city cho các trường hợp phổ biến
         if (city != null) {
-            String cityLower = city.toLowerCase();
-            if (cityLower.contains("hồ chí minh") || cityLower.contains("ho chi minh")) city = "Ho Chi Minh";
-            
+            city = city.trim();
         }
-
-        if (city != null && !city.trim().isEmpty()) {
-            List<Room> nearbyRooms = new RoomDAO().getRoomsByCity(city);
-
+        if (city != null && !city.isEmpty()) {
+            String searchKey = removeVietnameseAccent(city).toLowerCase();
+            List<Room> nearbyRooms = new RoomDAO().getRoomsByCity(""); // lấy tất cả phòng
+            nearbyRooms.removeIf(r -> r.getCity() == null || !removeVietnameseAccent(r.getCity()).toLowerCase().contains(searchKey));
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
-
             for (Room room : nearbyRooms) {
                 String imageUrl = null;
                 if (room.getImages() != null && !room.getImages().isEmpty()) {
@@ -84,7 +82,7 @@ public class HomeServlet extends HttpServlet {
                         + "</div>");
             }
             if (nearbyRooms.isEmpty()) {
-                out.println("<div>Không có phòng nào ở thành phố này/Hiện tại các phòng đã được đặt hết...</div>");
+                out.println("<div>Vui lòng chọn thông tin để hiển thị</div>");
             }
             return;
         }
@@ -121,8 +119,8 @@ public class HomeServlet extends HttpServlet {
             
             // Lọc theo location
             if (location != null && !location.isEmpty()) {
-                allRooms.removeIf(r -> r.getCity() == null || 
-                    !r.getCity().toLowerCase().contains(location.toLowerCase()));
+                String searchKey = removeVietnameseAccent(location).toLowerCase();
+                allRooms.removeIf(r -> r.getCity() == null || !removeVietnameseAccent(r.getCity()).toLowerCase().contains(searchKey));
             }
             
             // Lọc theo money (giá tiền)
@@ -206,5 +204,11 @@ public class HomeServlet extends HttpServlet {
             default:
                 return true;
         }
+    }
+
+    private String removeVietnameseAccent(String s) {
+        if (s == null) return "";
+        String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
+        return temp.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").replace('đ', 'd').replace('Đ', 'D');
     }
 }

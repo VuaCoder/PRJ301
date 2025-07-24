@@ -1,3 +1,6 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_footer.css">
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <footer class="footer">
@@ -53,7 +56,7 @@
                 <div class="footer-col footer-col-right">
                     <h4>Payment Methods</h4>
                     <div class="footer-payments">
-                        <a href="https://www.apple.com/apple-pay/" target="_blank"><img src="https://thietkelogo.mondial.vn/wp-content/uploads/2024/02/apple_pay-logo-brandlogos.net_.png" alt="Apple Pay" /></a>
+                        <a href="https://www.apple.com/apple-pay/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Apple_Pay_logo.svg/768px-Apple_Pay_logo.svg.png" alt="Apple Pay" /></a>
                         <a href="https://www.paypal.com/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/2560px-PayPal.svg.png" alt="Paypal" /></a>
                         <a href="https://www.mastercard.com/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/1280px-MasterCard_Logo.svg.png" alt="Mastercard" /></a>
                         <a href="https://www.visa.com/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1024px-Visa_Inc._logo.svg.png" alt="Visa" /></a>

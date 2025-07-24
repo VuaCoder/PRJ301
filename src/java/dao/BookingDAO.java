@@ -2,6 +2,7 @@ package dao;
 
 import DTO.RoomStat;
 import dto.BookingHistory;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -63,14 +64,37 @@ public class BookingDAO extends genericDAO<Booking> {
         }
     }
 
+    public List<Booking> getBookingsByCustomerIdWithReviews(int customerId, int page, int pageSize) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("""
+                SELECT DISTINCT b FROM Booking b
+                LEFT JOIN FETCH b.reviewList rv
+                JOIN FETCH b.roomId r
+                WHERE b.customerId.customerId = :cid
+                ORDER BY b.createdAt DESC
+            """, Booking.class)
+                    .setParameter("cid", customerId)
+                    .setFirstResult((page - 1) * pageSize)
+                    .setMaxResults(pageSize)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     // Lấy danh sách booking theo roomId
     public List<Booking> getBookingsByRoomId(int roomId) {
         EntityManager em = getEntityManager();
         try {
-            String jpql = "SELECT b FROM Booking b WHERE b.roomId.roomId = :roomId";
-            TypedQuery<Booking> query = em.createQuery(jpql, Booking.class);
-            query.setParameter("roomId", roomId);
-            return query.getResultList();
+            return em.createQuery(
+                    "SELECT b FROM Booking b WHERE b.roomId.roomId = :roomId ORDER BY b.checkinDate ASC",
+                    Booking.class)
+                    .setParameter("roomId", roomId)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         } finally {
             em.close();
         }
@@ -168,4 +192,17 @@ public class BookingDAO extends genericDAO<Booking> {
             em.close();
         }
     }
+
+    public long countBookingsByCustomerId(int customerId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT COUNT(b) FROM Booking b WHERE b.customerId.customerId = :cid", Long.class)
+                    .setParameter("cid", customerId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
 }

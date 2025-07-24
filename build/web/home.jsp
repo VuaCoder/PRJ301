@@ -50,7 +50,7 @@
                     <div class="input-header-option">
                         <!-- Địa điểm custom dropdown -->
                         <div class="option-field">
-                            <label for="location">Địa Điểm / Location</label>
+                            <label for="location" style="position: relative; left: 7px; top: 0px;">Địa Điểm / Location</label>
                             <div class="custom-dropdown" id="location-dropdown">
                                 <div class="custom-dropdown-selected" id="location-selected">Nhập địa điểm du lịch</div>
                                 <div class="custom-dropdown-list" id="location-list">
@@ -76,7 +76,7 @@
                         </div>
                         <!-- Giá tiền custom dropdown -->
                         <div class="option-field">
-                            <label for="money">Giá Tiền / Money</label>
+                            <label for="money" style="height: 21.5875px; width: 124.875px; position: relative; left: 14px; top: 0px; transition: none;">Giá Tiền / Money</label>
                             <div class="custom-dropdown" id="money-dropdown">
                                 <div class="custom-dropdown-selected" id="money-selected">Xin vui lòng chọn mức giá</div>
                                 <div class="custom-dropdown-list" id="money-list">
@@ -96,15 +96,15 @@
                         </div>
                         <!-- Thay input ngày vào/ngày ra sang type="text" để flatpickr hoạt động -->
                         <div class="option-field">
-                            <label for="check-in">Ngày Vào / Check In</label>
-                            <input type="text" id="check-in" name="check_in" placeholder="Chọn ngày">
+                            <label for="check-in" style="position: relative; left: 12px; top: 0px;">Ngày Vào / Check In</label>
+                            <input type="text" id="check-in" name="check_in" placeholder="Chọn ngày" style="position: relative; left: 9px; top: 5px;">
                         </div>
                         <div class="option-field">
-                            <label for="check-out">Ngày Ra / Check Out</label>
-                            <input type="text" id="check-out" name="check_out" placeholder="Chọn ngày">
+                            <label for="check-out" style="height: 19.2px; transform: translate(0px, 0.800003px); position: relative; left: 10px; top: 0px; transition: none;">Ngày Ra / Check Out</label>
+                            <input type="text" id="check-out" name="check_out" placeholder="Chọn ngày" style="position: relative; left: 10px; top: 8px;">
                         </div>
                         <div class="option-field">
-                            <label for="guests">Số lượng khách / Guest</label>
+                            <label for="guests" style="position: relative; left: 13px; top: 0px;">Số lượng khách / Guest</label>
                             <input type="number" id="guests" name="guests" min="1" max="50" placeholder="Add Guests">
                         </div>
                     </div>
@@ -177,14 +177,16 @@
         </div>
 
         <div class="sixth">
-            <section class="browser-section">
+            <% if (user == null) { %>
+            <section class="browser-section ad-animate-on-scroll">
                 <div class="image-box"></div>
                 <div class="content">
-                    <h1>Browse For More Properties</h1>
-                    <p>Explore properties by their categories/types...</p>
-                    <button>Find A Property</button>
+                    <h1>Đăng ký ngay, nhận quà liền tay!</h1>
+                    <p>Chỉ cần tạo tài khoản, bạn sẽ nhận được ưu đãi hấp dẫn dành riêng cho thành viên mới.</p>
+                    <a href="${pageContext.request.contextPath}/view/auth/register.jsp"><button>Đăng ký ngay</button></a>
                 </div>
             </section>
+            <% } %>
 
             <div class="blog-section" id="rental-guides-section">
                 <h1>Mẹo Thuê Bất Động Sản &<br>Hướng Dẫn</h1>

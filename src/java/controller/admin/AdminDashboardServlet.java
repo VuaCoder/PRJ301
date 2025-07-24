@@ -37,7 +37,7 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
-        // ==== 2. Lấy tham số tab + page ====
+        // ==== 2. Lấy tham số tab + page + pending/allRooms ====
         String tab = request.getParameter("tab");
         if (tab == null || (!"host".equals(tab) && !"customer".equals(tab))) {
             tab = "customer"; // mặc định
@@ -140,7 +140,19 @@ public class AdminDashboardServlet extends HttpServlet {
         request.setAttribute("totalBookings", totalBookings);
         request.setAttribute("totalRevenue", totalRevenue);
 
-        // ==== 10. Forward ====
+        // ==== 10. Quản lý pending host/phòng và all rooms (forward sang trang riêng nếu có request) ====
+        String pendingType = request.getParameter("pendingType");
+        String allRooms = request.getParameter("allRooms");
+        if (pendingType != null) {
+            // Forward sang trang quản lý pending (giữ lại giao diện dashboard)
+            response.sendRedirect(request.getContextPath() + "/admin-pending?action=list&type=" + pendingType);
+            return;
+        }
+        if (allRooms != null) {
+            response.sendRedirect(request.getContextPath() + "/admin-pending?action=list&type=allRooms");
+            return;
+        }
+        // ==== 11. Forward về dashboard như cũ ====
         request.getRequestDispatcher("/view/admin/dashboard.jsp").forward(request, response);
     }
 
@@ -194,7 +206,29 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
             return;
         }
-
+        // ==== Xử lý các action duyệt/từ chối host/phòng, xóa phòng, lọc phòng theo trạng thái ====
+        String pendingAction = request.getParameter("pendingAction");
+        String pendingType = request.getParameter("pendingType");
+        if (pendingAction != null && pendingType != null) {
+            if ("approve".equals(pendingAction)) {
+                if ("host".equals(pendingType)) {
+                    adminService.approveHost(id);
+                } else if ("room".equals(pendingType)) {
+                    adminService.approveRoom(id);
+                }
+            } else if ("reject".equals(pendingAction)) {
+                if ("host".equals(pendingType)) {
+                    adminService.rejectHost(id);
+                } else if ("room".equals(pendingType)) {
+                    adminService.rejectRoom(id);
+                }
+            } else if ("deleteRoom".equals(pendingAction) && "room".equals(pendingType)) {
+                adminService.deleteRoom(id);
+            }
+            // Sau khi thao tác, redirect về trang quản lý pending tương ứng
+            response.sendRedirect(request.getContextPath() + "/admin-pending?action=list&type=" + pendingType);
+            return;
+        }
         // fallback
         response.sendRedirect(request.getContextPath() + "/admin/dashboard?tab=" + tab + "&page=" + page);
     }

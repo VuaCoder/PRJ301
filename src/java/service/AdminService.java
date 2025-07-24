@@ -7,6 +7,7 @@ import dao.RoomDAO;
 import dao.UserDAO;
 import dto.BookingHistory;
 import java.util.List;
+import model.Booking;
 import model.Host;
 import model.Room;
 import model.UserAccount;
@@ -46,6 +47,22 @@ public class AdminService {
 
     public long countActiveUsers() {
         return userDAO.countActiveUsers();
+    }
+
+    public model.Customer getCustomerByUserId(int userId) {
+        return userDAO.getCustomerByUserId(userId);
+    }
+
+    public model.Customer getCustomerById(int customerId) {
+        return userDAO.getCustomerById(customerId);
+    }
+
+    public Host getHostById(int hostId) {
+        return hostDAO.findById(hostId);
+    }
+
+    public Host getHostByUserId(int userId) {
+        return hostDAO.getHostByUserId(userId);
     }
 
     /* ---------------- HOST PENDING ---------------- */
@@ -103,15 +120,20 @@ public class AdminService {
     }
 
     // Lịch sử booking của customer
-    public List<BookingHistory> getBookingHistoryByCustomer(int customerId) {
-        return bookingDAO.getBookingHistoryByCustomer(customerId);
+    public List<Booking> getBookingHistoryByCustomer(int customerId) {
+        return bookingDAO.getBookingsByCustomerId(customerId);
     }
 
     public long countAllBookings() {
         return bookingDAO.countAllBookings();
     }
+
     public java.math.BigDecimal getTotalRevenue() {
         return bookingDAO.getTotalRevenue();
+    }
+
+    public List<Booking> getBookingsByHostId(int hostId) {
+        return bookingDAO.getBookingsByHostId(hostId);
     }
 
     /* ---------------- ROOMS BY STATUS ---------------- */
@@ -145,4 +167,14 @@ public class AdminService {
     public void updateNewRole(int userId, int roleId) {
         userDAO.updateRole(userId, roleId);
     }
+
+    public long countBookingsByCustomerId(int customerId) {
+        return bookingDAO.countBookingsByCustomerId(customerId);
+    }
+
+    public List<Booking> getBookingsByCustomerIdWithReviews(int customerId, int page, int pageSize) {
+        return bookingDAO.getBookingsByCustomerIdWithReviews(customerId, page, pageSize);
+    }
+    
+    
 }

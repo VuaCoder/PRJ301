@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.Normalizer;
 
 public class ChatBotService {
 
@@ -548,41 +549,43 @@ private String createNoRoomFoundMessage(ParsedInfo info, String language) {
     }
 
    private String extractCityFromMessage(String message) {
-    if (message == null) {
-        System.out.println("🔍 DEBUG - Message is null, returning empty city");
-        return "";
-    }
-    
-    String originalMessage = message;
-    message = message.toLowerCase().trim();
-    // Nhận diện từ viết tắt phổ biến
-    if (message.matches(".*\\bhcm\\b.*")) return "Hồ Chí Minh";
-    if (message.matches(".*\\bhn\\b.*")) return "Hà Nội";
-    if (message.matches(".*\\bdn\\b.*")) return "Đà Nẵng";
-    System.out.println("🔍 DEBUG - Processing message for city: '" + originalMessage + "'");
-    
-    // Vietnamese city detection with more variations
-    String[] cityPatterns = {
-        "nha\\s*trang", "Nha Trang",
-        "đà\\s*nẵng|da\\s*nang", "Đà Nẵng", 
-        "đà\\s*lạt|da\\s*lat|dalat", "Đà Lạt",
-        "hà\\s*nội|ha\\s*noi|hanoi", "Hà Nội",
-        "hồ\\s*chí\\s*minh|ho\\s*chi\\s*minh|saigon|sài\\s*gòn|tphcm", "Hồ Chí Minh",
-        "cần\\s*thơ|can\\s*tho", "Cần Thơ",
-        "vũng\\s*tàu|vung\\s*tau", "Vũng Tàu"
-    };
-    
-    for (int i = 0; i < cityPatterns.length; i += 2) {
-        if (message.matches(".*" + cityPatterns[i] + ".*")) {
-            String detectedCity = cityPatterns[i + 1];
-            System.out.println("🔍 DEBUG - Detected city: '" + detectedCity + "'");
-            return detectedCity;
+        if (message == null) {
+            System.out.println("🔍 DEBUG - Message is null, returning empty city");
+            return "";
         }
+        String originalMessage = message;
+        String normalizedMsg = removeVietnameseAccent(message).toLowerCase();
+        // Nhận diện các thành phố phổ biến không phân biệt dấu, vị trí từ trong câu
+        String[] cities = {"Hồ Chí Minh", "Huế", "Đà Nẵng", "Hà Nội", "Nha Trang", "Vũng Tàu", "Đà Lạt"};
+        String[] cityPatterns = {
+            "ho\s*chi\s*minh|sai\s*gon|tphcm",
+            "hue",
+            "da\s*nang|danang|da-nang|da_nang",
+            "ha\s*noi|hanoi|ha-noi|ha_noi",
+            "nha\s*trang|nhatrang|nha-trang|nha_trang",
+            "vung\s*tau|vungtau|vung-tau|vung_tau",
+            "da\s*lat|dalat|da-lat|da_lat"
+        };
+        for (int i = 0; i < cities.length; i++) {
+            // Tìm "phòng ở <city>", "room in <city>", "<city> room", ...
+            String regex1 = "phong\s*o\s*" + cityPatterns[i];
+            String regex2 = cityPatterns[i] + ".*phong";
+            String regex3 = cityPatterns[i];
+            if (normalizedMsg.matches(".*" + regex1 + ".*") ||
+                normalizedMsg.matches(".*" + regex2 + ".*") ||
+                normalizedMsg.matches(".*" + regex3 + ".*")) {
+                return cities[i];
+            }
+        }
+        System.out.println("🔍 DEBUG - No city detected, searching all cities");
+        return ""; // Empty string means search all cities
     }
-    
-    System.out.println("🔍 DEBUG - No city detected, searching all cities");
-    return ""; // Empty string means search all cities
-}
+
+    private String removeVietnameseAccent(String s) {
+        if (s == null) return "";
+        String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
+        return temp.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").replace('đ', 'd').replace('Đ', 'D');
+    }
 
     // ✅ IMPROVED: Better info extraction with more patterns
     private ParsedInfo extractInfoFromMessage(String message) {

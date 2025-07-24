@@ -9,35 +9,32 @@ import java.io.IOException;
 import java.util.List;
 
 import model.Booking;
-import model.UserAccount;
+import model.Customer;
 import service.AdminService;
-import service.BookingService;
 
 @WebServlet("/admin/admin-customer-detail")
 public class AdminCustomerDetailServlet extends HttpServlet {
-
     private final AdminService adminService = new AdminService();
-    private final BookingService bookingService = new BookingService();
+    private static final int PAGE_SIZE = 10;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int customerId = Integer.parseInt(req.getParameter("customerId"));
+        int page = req.getParameter("page") != null ? Integer.parseInt(req.getParameter("page")) : 1;
 
-        try {
-            int customerId = Integer.parseInt(request.getParameter("customerId"));
-
-            // Lấy thông tin customer
-            UserAccount customer = adminService.getUserById(customerId);
-            request.setAttribute("customer", customer);
-
-            // Lấy lịch sử booking của customer
-            List<Booking> bookings = bookingService.getBookingsByCustomerId(customer.getCustomer().getCustomerId());
-            request.setAttribute("bookings", bookings);
-
-            request.getRequestDispatcher("/view/admin/admin-customer-detail.jsp").forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid customer ID");
+        Customer customer = adminService.getCustomerById(customerId); // Lấy theo customerId
+        if (customer == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Customer not found");
+            return;
         }
+        long totalBookings = adminService.countBookingsByCustomerId(customerId);
+        List<Booking> bookings = adminService.getBookingsByCustomerIdWithReviews(customerId, page, PAGE_SIZE);
+
+        req.setAttribute("customer", customer);
+        req.setAttribute("bookings", bookings);
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", (int) Math.ceil((double) totalBookings / PAGE_SIZE));
+        req.getRequestDispatcher("/view/admin/admin-customer-detail.jsp").forward(req, resp);
     }
 }
+

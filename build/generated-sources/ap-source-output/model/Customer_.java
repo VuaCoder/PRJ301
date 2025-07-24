@@ -8,7 +8,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 import model.Booking;
 import model.UserAccount;
 
-@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-23T10:29:46", comments="EclipseLink-2.7.12.v20230209-rNA")
+@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-24T08:59:31", comments="EclipseLink-2.7.12.v20230209-rNA")
 @StaticMetamodel(Customer.class)
 public class Customer_ { 
 

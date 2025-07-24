@@ -176,7 +176,7 @@
         @keyframes dots {
             0%, 20% { content: '.'; }
             40% { content: '..'; }
-            60%; 100% { content: '...'; }
+            60%, 100% { content: '...'; }
         }
         /* Quick Replies */
         .quick-replies {
@@ -638,8 +638,9 @@
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
         resetQuickReplies();
-        
-        // Add pulse effect after 2 seconds
+        // KHÔNG tự động mở chatbox khi load trang nữa
+        // Nếu có đoạn nào như: document.getElementById("chatbox").style.display = "flex"; thì hãy xóa hoặc comment lại
+        // Chỉ add hiệu ứng pulse cho icon
         setTimeout(() => {
             document.getElementById("chat-icon").classList.add("pulse");
         }, 2000);

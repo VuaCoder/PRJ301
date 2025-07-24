@@ -26,33 +26,35 @@ public class AdminHostDetailServlet extends HttpServlet {
 
             Integer hostId = null;
             UserAccount hostAccount = null;
+            Host host = null;
 
-            if (hidParam != null) {
-                hostId = Integer.parseInt(hidParam);
-            } else if (uidParam != null) {
+            if (uidParam != null) {
                 int userId = Integer.parseInt(uidParam);
-                hostAccount = adminService.getUserById(userId);
-                if (hostAccount != null && hostAccount.getHost() != null) {
-                    hostId = hostAccount.getHost().getHostId();
+                host = adminService.getHostByUserId(userId);
+                if (host != null) {
+                    hostId = host.getHostId();
+                    hostAccount = host.getUserId();
+                }
+            } else if (hidParam != null) {
+                hostId = Integer.parseInt(hidParam);
+                host = adminService.getHostById(hostId);
+                if (host != null) {
+                    hostAccount = host.getUserId();
                 }
             }
 
-            if (hostId == null) {
+            if (hostId == null || hostAccount == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing or invalid hostId/userId.");
                 return;
             }
 
-            if (hostAccount == null) {
-                // nếu truyền hostId thẳng mà bạn muốn xem user
-                // AdminService cần hàm getUserByHostId nếu cần; tạm để null
-            }
-
-            // Lấy thống kê phòng (bạn đã thêm AdminService.getRoomStatsByHost)
             List<RoomStat> roomStats = adminService.getRoomStatsByHost(hostId);
+            List<model.Booking> bookings = adminService.getBookingsByHostId(hostId);
 
             request.setAttribute("hostAccount", hostAccount);
             request.setAttribute("hostId", hostId);
             request.setAttribute("roomStats", roomStats);
+            request.setAttribute("bookings", bookings);
 
             request.getRequestDispatcher("/view/admin/admin-host-detail.jsp").forward(request, response);
 

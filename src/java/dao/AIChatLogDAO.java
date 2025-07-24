@@ -32,4 +32,20 @@ public class AIChatLogDAO extends genericDAO<AIChatLog> {
             em.close();
         }
     }
+
+    // Lấy N bản ghi chat gần nhất của user, sắp xếp theo timestamp giảm dần
+    public java.util.List<model.AIChatLog> findLastNByUser(int userId, int n) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT a FROM AIChatLog a WHERE a.userId.userId = :userId ORDER BY a.timestamp DESC",
+                model.AIChatLog.class
+            )
+            .setParameter("userId", userId)
+            .setMaxResults(n)
+            .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }

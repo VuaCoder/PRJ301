@@ -197,4 +197,60 @@ public class UserDAO extends genericDAO<UserAccount> {
             em.close();
         }
     }
+
+    public model.Customer getCustomerByUserId(int userId) {
+        EntityManager em = getEntityManager();
+        try {
+            UserAccount user = em.find(UserAccount.class, userId);
+            if (user != null) {
+                return user.getCustomer();
+            }
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public model.Customer getCustomerById(int customerId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(model.Customer.class, customerId);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public void delete(Object id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            UserAccount user = em.find(UserAccount.class, id);
+            if (user != null) {
+                // Xóa Booking liên quan (nếu có)
+                em.createQuery("DELETE FROM Booking b WHERE b.customerId.userId.userId = :uid")
+                  .setParameter("uid", user.getUserId()).executeUpdate();
+                // Xóa AIChatLog liên quan
+                em.createQuery("DELETE FROM AIChatLog a WHERE a.userId.userId = :uid")
+                  .setParameter("uid", user.getUserId()).executeUpdate();
+                // Xóa Host nếu có
+                if (user.getHost() != null) {
+                    Host host = user.getHost();
+                    em.remove(em.contains(host) ? host : em.merge(host));
+                }
+                // Xóa Customer nếu có
+                if (user.getCustomer() != null) {
+                    model.Customer customer = user.getCustomer();
+                    em.remove(em.contains(customer) ? customer : em.merge(customer));
+                }
+                em.remove(user);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -1,8 +1,11 @@
 package dao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -516,5 +519,75 @@ public class RoomDAO extends genericDAO<Room> {
 
         }
 
+    }
+    // đếm phòng đang được cho thuê và có status = "available và được approved"
+
+    public long countActiveRoomsByHost(int hostId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("""
+            SELECT COUNT(r) FROM Room r
+            WHERE r.propertyId.hostId.hostId = :hostId
+            AND r.status = 'Available'
+            AND r.approvalStatus = 'Approved'
+        """, Long.class)
+                    .setParameter("hostId", hostId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    //thống kê số phòng hiện tại
+    public long countEmptyRoomsByHost(int hostId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("""
+            SELECT COUNT(r) FROM Room r
+            WHERE r.propertyId.hostId.hostId = :hostId
+            AND r.status = 'Available'
+            AND r.approvalStatus = 'Approved'
+            AND NOT EXISTS (
+                SELECT b FROM Booking b
+                WHERE b.roomId = r
+                AND b.status IN ('Confirmed', 'Pending')
+                AND CURRENT_DATE BETWEEN b.checkinDate AND b.checkoutDate
+            )
+        """, Long.class)
+                    .setParameter("hostId", hostId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    //biểu đồ doanh thu theo từng tháng
+    public Map<String, Double> getMonthlyRevenueByHost(int hostId) {
+        EntityManager em = getEntityManager();
+        try {
+            List<Object[]> results = em.createNativeQuery("""
+            SELECT FORMAT(b.checkin_date, 'yyyy-MM') AS Month,
+                   SUM(b.total_price) AS TotalRevenue
+            FROM Booking b
+            JOIN Room r ON b.room_id = r.room_id
+            JOIN Property p ON r.property_id = p.property_id
+            WHERE p.host_id = ?
+              AND b.status = 'Confirmed'
+            GROUP BY FORMAT(b.checkin_date, 'yyyy-MM')
+            ORDER BY Month
+        """)
+                    .setParameter(1, hostId)
+                    .getResultList();
+
+            Map<String, Double> revenueMap = new LinkedHashMap<>();
+            for (Object[] row : results) {
+                String month = (String) row[0];
+                Double revenue = ((BigDecimal) row[1]).doubleValue();
+                revenueMap.put(month, revenue);
+            }
+            return revenueMap;
+        } finally {
+            em.close();
+        }
     }
 }

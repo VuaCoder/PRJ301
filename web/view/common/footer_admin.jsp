@@ -1,5 +1,8 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css" />
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
 
 <footer class="footer">
 

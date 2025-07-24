@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Profile</title>
+    <title>Cài đặt</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_home.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_header.css" />
     <style>
@@ -145,12 +145,16 @@
     </style>
 </head>
 <body>
-<jsp:include page="../common/header.jsp" />
+<% if ("host".equalsIgnoreCase(role) || "admin".equalsIgnoreCase(role)) { %>
+    <jsp:include page="../common/header_admin.jsp" />
+<% } else { %>
+    <jsp:include page="../common/header.jsp" />
+<% } %>
 <div class="edit-profile-container">
-    <h2>Edit Profile</h2>
+    <h2>Điều chỉnh ảnh đại diện</h2>
     <div class="edit-profile-tabs">
-        <div class="edit-profile-tab active" id="tab-avatar">Update Avatar</div>
-        <div class="edit-profile-tab" id="tab-password">Change Password</div>
+        <div class="edit-profile-tab active" id="tab-avatar">Cập nhật ảnh</div>
+        <div class="edit-profile-tab" id="tab-password">Đổi mật khẩu</div>
     </div>
     <form class="edit-profile-form active" id="form-avatar" method="post" action="${pageContext.request.contextPath}/edit-profile" enctype="multipart/form-data">
         <div class="avatar-preview">
@@ -165,20 +169,20 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-            <label for="avatar">Change Avatar</label>
+            <label for="avatar">Thay đổi ảnh đại diện</label>
             <input type="file" id="avatar" name="avatar" accept="image/*" />
             <input type="hidden" id="deleteAvatar" name="deleteAvatar" value="false" />
         </div>
-        <button type="submit">Update Avatar</button>
+        <button type="submit">Thay đổi</button>
     </form>
     <form class="edit-profile-form" id="form-password" method="post" action="${pageContext.request.contextPath}/edit-profile" enctype="multipart/form-data">
-        <label for="currentPassword">Current Password</label>
+        <label for="currentPassword">Mật khẩu hiện tại</label>
         <input type="password" id="currentPassword" name="currentPassword" required />
-        <label for="newPassword">New Password</label>
+        <label for="newPassword">Mật khẩu mới</label>
         <input type="password" id="newPassword" name="newPassword" required />
-        <label for="confirmPassword">Confirm New Password</label>
+        <label for="confirmPassword">Xác nhận mật khẩu mới</label>
         <input type="password" id="confirmPassword" name="confirmPassword" required />
-        <button type="submit">Change Password</button>
+        <button type="submit">Thay đổi</button>
     </form>
 </div>
 <jsp:include page="../common/footer.jsp" />
